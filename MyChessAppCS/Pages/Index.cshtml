@@ -1,0 +1,20 @@
+﻿@page
+@model IndexModel
+
+<h2>Chess Board</h2>
+<form method="post" asp-page-handler="FEN">
+    <input type="text" name="submitFEN" />
+    <input type="submit" value="Submit FEN" />
+</form>
+<pre>@Model.BoardAscii</pre> <!-- Display the ASCII chess board -->
+
+<div class="form-container">
+    <form method="post" asp-page-handler="Move">
+        <input type="text" name="move" />
+        <input type="submit" value="Make Move" />
+    </form>
+    <form method="post">
+        <input type="submit" value="Undo Move" />
+    </form>
+</div>
+
