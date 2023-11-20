@@ -21,15 +21,14 @@ ui <- fluidPage(
         background-color: lightblue;
       }
       body #move {
-          background-color: pink;
+        width: 450px;
+        background-color: pink;
       }
       body #submitMove {
-          background-color: darkgreen;
-          color: white;
+        background-color: darkgreen;
       }
       body #undo {
-          background-color: darkred;
-          color: white;
+        background-color: darkred;
       }
     ")),
     titlePanel("Ascii Chessboard"),
