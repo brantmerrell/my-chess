@@ -11,6 +11,7 @@ ui <- fluidPage(
     tags$style(HTML("
       body {
           color: orange;
+          margin-bottom: 200px;
       }
       body .my-split-layout #fen {
         width: 650px;
@@ -20,9 +21,10 @@ ui <- fluidPage(
         width: 700px;
         background-color: lightblue;
       }
+      body #selectedMove {
+      }
       body #move {
-        width: 450px;
-        background-color: pink;
+        width: 100px;
       }
       body #submitMove {
         background-color: darkgreen;
@@ -36,7 +38,7 @@ ui <- fluidPage(
     verticalLayout(
         mainPanel(
             splitLayout(
-                cellWidths = c("569px", "auto"),
+                cellWidths = c("586px", "auto"),
                 textInput("fen", NULL, startFen),
                 actionButton("submitFEN", "Submit FEN"),
                 cellArgs = list(
@@ -46,9 +48,15 @@ ui <- fluidPage(
             ),
             verbatimTextOutput("board"),
             splitLayout(
+                cellWidths = c("130px", "130px", "130px", "130px"),
+                cellArgs = list(
+                    style = "vertical-align: top; overflow: visible;"
+                ),
+                selectInput("selectedMove", NULL, "", width = "100px", selectize = FALSE),
                 textInput("move", NULL, ""),
                 actionButton("submitMove", "Submit Move"),
                 actionButton("undo", "Undo Move"),
+                class = "my-split-layout"
             ),
         )
     )
@@ -58,14 +66,19 @@ server <- function(input, output, session) {
 
     # Initialize the chess object
     chess <- Chess$new()
+    mySummary <- function() {
+        cat(paste("FEN:", chess$fen(), "\n"))
+        cat("\nBoard:\n")
+        cat(chess$ascii())
+        cat(paste("\nTurn:", ifelse(chess$turn() == "w", "White", "Black"), "\n"))
+        cat("\n")
+        cat(paste(c("\nHistory:", chess$history(), "\n")))
+        cat("\nOptions to move:\n")
+        cat(chess$moves() %>% sort())
+    }
 
     # Reactive value to store the chessboard
-    asciiBoard <- reactiveVal(c(
-                                capture.output(chess$print()), 
-                                "\n",
-                                capture.output(chess$moves())
-                                )
-    )
+    asciiBoard <- reactiveVal(capture.output(mySummary()))
 
     # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
@@ -79,10 +92,9 @@ server <- function(input, output, session) {
             showNotification("Invalid FEN. Please try again.")
         } else {
             # Update the reactive values to reflect the new state
-            asciiBoard(c(
-                         capture.output(chess$print()),
-                         "\n",
-                         capture.output(chess$moves())))
+            asciiBoard(capture.output(mySummary()))
+            availableMoves <- chess$moves() %>% sort
+            updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
     })
 
@@ -101,20 +113,32 @@ server <- function(input, output, session) {
             showNotification("Invalid move. Please try again.")
         } else {
             # Update the reactive values to reflect the new state
-            asciiBoard(c(
-                         capture.output(chess$print()),
-                         "\n",
-                         capture.output(chess$moves())
-                         ))
+            asciiBoard(capture.output(mySummary()))
+            availableMoves <- chess$moves() %>% sort
+            updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
     })
     observeEvent(input$undo, {
         chess$undo()
-        asciiBoard(c(
-                     capture.output(chess$print()),
-                     "\n",
-                     capture.output(chess$moves())
-                     ))
+        asciiBoard(capture.output(mySummary()))
+        updateTextInput(session, "move", value = input$selectedMove)
+        availableMoves <- chess$moves() %>% sort
+        updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
+    })
+
+    observeEvent(input$selectedMove, {
+        updateTextInput(session, "move", value = input$selectedMove)
+    })
+
+    observeEvent(input$move, {
+        if(input$move != input$selectedMove) {
+            updateSelectInput(session, "selectedMove", selected = "")
+        }
+    })
+
+    observe({
+        availableMoves <- chess$moves() %>% sort
+        updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
     })
 
     output$board <- renderText({
