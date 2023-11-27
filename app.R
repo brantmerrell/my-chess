@@ -82,6 +82,7 @@ server <- function(input, output, session) {
 
     # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
+        print(paste("submitFEN", input$fen))
         # Use tryCatch to handle errors
         fen_result <- tryCatch({
             chess$load(input$fen)
@@ -101,6 +102,7 @@ server <- function(input, output, session) {
 
     # Function to render chessboard based on move submission
     observeEvent(input$submitMove, {
+        print(paste("submitMove", input$move))
         # Use tryCatch to handle errors
         move_result <- tryCatch({
             chess$move(input$move)
@@ -119,6 +121,7 @@ server <- function(input, output, session) {
         }
     })
     observeEvent(input$undo, {
+        print("undo")
         chess$undo()
         asciiBoard(capture.output(mySummary()))
         updateTextInput(session, "move", value = input$selectedMove)
@@ -127,16 +130,16 @@ server <- function(input, output, session) {
     })
 
     observeEvent(input$selectedMove, {
+        print(paste("input$selectedMove", input$selectedMove))
         updateTextInput(session, "move", value = input$selectedMove)
     })
 
     observeEvent(input$move, {
-        if(input$move != input$selectedMove) {
-            updateSelectInput(session, "selectedMove", selected = "")
-        }
+        print(paste("input$move", input$move))
     })
 
     observe({
+        print("observe chess$moves()")
         availableMoves <- chess$moves() %>% sort
         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
     })
