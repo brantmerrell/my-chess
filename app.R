@@ -11,7 +11,7 @@ ui <- fluidPage(
     tags$style(HTML("
       body {
           color: orange;
-          margin-bottom: 200px;
+          margin-bottom: 50px;
       }
       body .my-split-layout #fen {
         width: 650px;
