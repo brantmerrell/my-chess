@@ -19,6 +19,10 @@ export class ChessGame {
         this.game = new Chess(fen);
     }
 
+    public getMoves() {
+        return this.game.moves();
+    }
+
     public ascii() {
         return this.game.ascii();
     }
