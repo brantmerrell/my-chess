@@ -10,13 +10,17 @@ export class ChessGame {
     public makeMove(move: string) {
         const result = this.game.move(move);
         if (result === null) {
-            throw new Error("Invalid move");
+            throw new Error("Invalid move provided to ChessGame.makeMove");
         }
         return result;
     }
 
     public loadFen(fen: string) {
         this.game = new Chess(fen);
+    }
+
+    public undo() {
+        return this.game.undo();
     }
 
     public getMoves() {
