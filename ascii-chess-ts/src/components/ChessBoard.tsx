@@ -4,7 +4,8 @@ import { ChessGame } from '../chess/chessLogic';
 const ChessBoard: React.FC = () => {
 
     const initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    const [chessGame] = useState(new ChessGame(initialFen));
+    const [chessGame] = useState(() => new ChessGame(initialFen));
+
     const [fen, setFen] = useState(initialFen);
     const [board, setBoard] = useState(chessGame.ascii());
     const [moves, setMoves] = useState<string[]>([]);

@@ -16,7 +16,7 @@ export class ChessGame {
     }
 
     public loadFen(fen: string) {
-        this.game = new Chess(fen);
+        return this.game.load(fen);
     }
 
     public undo() {
