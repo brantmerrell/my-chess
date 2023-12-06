@@ -7,8 +7,10 @@ function App() {
   return (
     <div className="App">
       <div>
-          <h1>Ascii Chess</h1>
+        <h1 className="title">Ascii Chess</h1>
+        </div>
           <ChessBoard />
+        <div>
       </div>
     </div>
   );

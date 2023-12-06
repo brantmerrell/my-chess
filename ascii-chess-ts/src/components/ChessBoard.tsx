@@ -51,20 +51,26 @@ const ChessBoard: React.FC = () => {
 
     return (
         <div>
-            <div className="fen-layout">
-                <input id="fen" type="text" value={fen} onChange={handleFenChange} />
-                <button id="submitFen" onClick={submitFen}>Submit FEN</button>
+            <pre className="fen-layout">
+                <input id="edit-string" type="text" value={fen} onChange={handleFenChange} />
+                <button id="submit" onClick={submitFen}>Submit FEN</button>
+            </pre>
+            <pre className="ascii-layout">
+                <pre id="txt">
+                    {board}
+                </pre>
+            </pre>
+            <div className="moves-layout">
+                <select id="selectedMove" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)}>
+                    <option value="">Moves</option>
+                    {moves.map((move, index) => (
+                        <option key={index} value={move}>{move}</option>
+                    ))}
+                </select>
+                <input id="move" type="text" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)} />
+                <button id="submitMove" onClick={submitMove}>Submit Move</button>
+                <button id="undo" onClick={undoMove}>Undo Move</button>
             </div>
-            <pre className="ascii-output">{board}</pre>
-            <select id="selectedMove" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)}>
-                <option value="">Moves</option>
-                {moves.map((move, index) => (
-                    <option key={index} value={move}>{move}</option>
-                ))}
-            </select>
-            <input id="move" type="text" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)} />
-            <button id="submitMove" onClick={submitMove}>Submit Move</button>
-            <button id="undo" onClick={undoMove}>Undo Move</button>
         </div>
     );
 };
