@@ -51,18 +51,20 @@ const ChessBoard: React.FC = () => {
 
     return (
         <div>
-            <input type="text" value={fen} onChange={handleFenChange} />
-            <button onClick={submitFen}>Submit FEN</button>
-            <pre>{board}</pre>
-            <select value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)}>
-                <option value="">Select a move</option>
+            <div className="fen-layout">
+                <input id="fen" type="text" value={fen} onChange={handleFenChange} />
+                <button id="submitFen" onClick={submitFen}>Submit FEN</button>
+            </div>
+            <pre className="ascii-output">{board}</pre>
+            <select id="selectedMove" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)}>
+                <option value="">Moves</option>
                 {moves.map((move, index) => (
                     <option key={index} value={move}>{move}</option>
                 ))}
             </select>
-            <input type="text" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)} />
-            <button onClick={submitMove}>Submit Move</button>
-            <button onClick={undoMove}>Undo Move</button>
+            <input id="move" type="text" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)} />
+            <button id="submitMove" onClick={submitMove}>Submit Move</button>
+            <button id="undo" onClick={undoMove}>Undo Move</button>
         </div>
     );
 };
