@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { ChessGame } from '../chess/chessLogic';
 
 const ChessBoard: React.FC = () => {
@@ -38,10 +38,10 @@ const ChessBoard: React.FC = () => {
         }
     };
 
-    const updateMoves = () => {
+    const updateMoves = useCallback(() => {
         const legalMoves = chessGame.getMoves();
         setMoves(legalMoves);
-    };
+    }, [chessGame]);
     const undoMove = () => {
         const move = chessGame.undo();
         if (move !== null) {
