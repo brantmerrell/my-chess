@@ -1,10 +1,13 @@
+library(httr)
 library(shiny)
 library(rchess)
 library(magrittr)
 library(shinythemes)
 
-startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
+chessComPuzzle <- "https://api.chess.com/pub/puzzle"
+startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+source("fen_map.R")
 
 ui <- fluidPage(
     theme = shinytheme("superhero"),
@@ -13,36 +16,51 @@ ui <- fluidPage(
           color: orange;
           margin-bottom: 50px;
       }
+      body #selectedFEN {
+        width: 587px;
+        border-radius: 5px;
+      }
       body .my-split-layout #fen {
         width: 650px;
-        background-color: pink;
+        border-radius: 5px;
       }
       body pre.shiny-text-output#board {
         width: 700px;
         background-color: lightblue;
+        border-radius: 5px;
+      }
+      body pre.shiny-text-output#revisualized {
+        width: 700px;
+        background-color: lightblue;
+        border-radius: 5px;
       }
       body #selectedMove {
+        border-radius: 5px;
       }
       body #move {
         width: 100px;
+        border-radius: 5px;
       }
       body #submitMove {
         background-color: darkgreen;
+        border-radius: 5px;
       }
       body #undo {
         background-color: darkred;
+        border-radius: 5px;
       }
     ")),
     titlePanel("Ascii Chessboard"),
     
     verticalLayout(
         mainPanel(
+            selectInput("selectedFEN", NULL, c("standard starting position", "chess.com daily puzzle"), selectize = FALSE),
             splitLayout(
                 cellWidths = c("586px", "auto"),
                 textInput("fen", NULL, startFen),
                 actionButton("submitFEN", "Submit FEN"),
                 cellArgs = list(
-                    style = "vertical-align: top;"
+                    style = "vertical-align: top; border-radius: 5px;"
                 ),
                 class = "my-split-layout"
             ),
@@ -58,11 +76,27 @@ ui <- fluidPage(
                 actionButton("undo", "Undo Move"),
                 class = "my-split-layout"
             ),
+            #h1("Revisualized Board"),
+            #selectInput("selectedVisual", NULL, c("No Visual Selected", "FEN map"), selectize = FALSE),
+            #verbatimTextOutput("revisualized"),
         )
     )
 )
 
 server <- function(input, output, session) {
+
+    populateFEN <- function(opt) {
+        if (opt == "standard starting position") {
+            return(startFen)
+        }
+        if (opt == "chess.com daily puzzle") {
+            puzzle <- GET(chessComPuzzle) %>%
+                content() %>%
+                .$fen
+            return(puzzle)
+        }
+        opt
+    }
 
     # Initialize the chess object
     chess <- Chess$new()
@@ -77,12 +111,16 @@ server <- function(input, output, session) {
         cat(chess$moves() %>% sort())
     }
 
-    # Reactive value to store the chessboard
+    # Reactive value
     asciiBoard <- reactiveVal(capture.output(mySummary()))
+    #revisualizedBoard <- reactiveVal()
+
+    #observeEvent(input$selectedFEN, {
+    #    updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
+    #})
 
     # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
-        print(paste("submitFEN", input$fen))
         # Use tryCatch to handle errors
         fen_result <- tryCatch({
             chess$load(input$fen)
@@ -94,6 +132,7 @@ server <- function(input, output, session) {
         } else {
             # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary()))
+            #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
@@ -102,7 +141,6 @@ server <- function(input, output, session) {
 
     # Function to render chessboard based on move submission
     observeEvent(input$submitMove, {
-        print(paste("submitMove", input$move))
         # Use tryCatch to handle errors
         move_result <- tryCatch({
             chess$move(input$move)
@@ -116,33 +154,39 @@ server <- function(input, output, session) {
         } else {
             # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary()))
+            #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
     })
     observeEvent(input$undo, {
-        print("undo")
         chess$undo()
         asciiBoard(capture.output(mySummary()))
+        #revisualizedBoard(capture.output(visualSwitch()))
         updateTextInput(session, "move", value = input$selectedMove)
         availableMoves <- chess$moves() %>% sort
         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
     })
 
     observeEvent(input$selectedMove, {
-        print(paste("input$selectedMove", input$selectedMove))
         updateTextInput(session, "move", value = input$selectedMove)
     })
 
+
     observeEvent(input$move, {
-        print(paste("input$move", input$move))
     })
 
     observe({
-        print("observe chess$moves()")
         availableMoves <- chess$moves() %>% sort
         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
     })
+    #observe({
+    #    # Capture the output as a character vector, ensuring newline characters are respected
+    #    revisualizedOutput <- capture.output(visualSwitch())
+    #    # Combine the vector into a single string, separating elements with a newline
+    #    combinedOutput <- paste(revisualizedOutput, collapse = "\n")
+    #    revisualizedBoard(combinedOutput)
+    #})
 
     output$board <- renderText({
         asciiBoard() %>% 
@@ -150,6 +194,9 @@ server <- function(input, output, session) {
             gsub(pattern = "\\.", 
                  replacement = " ")
     })
+    #output$revisualized <- renderText({
+    #    revisualizedBoard()
+    #})
 
 }
 
