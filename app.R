@@ -49,6 +49,9 @@ ui <- fluidPage(
         background-color: darkred;
         border-radius: 5px;
       }
+      body #selectedVisual {
+        border-radius: 5px;
+      }
     ")),
     titlePanel("Ascii Chessboard"),
     
@@ -76,9 +79,9 @@ ui <- fluidPage(
                 actionButton("undo", "Undo Move"),
                 class = "my-split-layout"
             ),
-            #h1("Revisualized Board"),
-            #selectInput("selectedVisual", NULL, c("No Visual Selected", "FEN map"), selectize = FALSE),
-            #verbatimTextOutput("revisualized"),
+            h3("Helper Visual"),
+            selectInput("selectedVisual", NULL, c("No Visual Selected", "FEN map"), selectize = FALSE),
+            verbatimTextOutput("revisualized"),
         )
     )
 )
@@ -110,14 +113,21 @@ server <- function(input, output, session) {
         cat("\nOptions to move:\n")
         cat(chess$moves() %>% sort())
     }
+    helperSummary <- function() {
+        x <- fen_map(chess$fen())
+        for (l in x) {
+            cat(l, "\n")
+        }
+    }
 
     # Reactive value
     asciiBoard <- reactiveVal(capture.output(mySummary()))
+    helperVisual <- reactiveVal(capture.output(helperSummary()))
     #revisualizedBoard <- reactiveVal()
 
-    #observeEvent(input$selectedFEN, {
-    #    updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
-    #})
+    observeEvent(input$selectedFEN, {
+        updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
+    })
 
     # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
@@ -132,6 +142,7 @@ server <- function(input, output, session) {
         } else {
             # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary()))
+            helperVisual(capture.output(helperSummary()))
             #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
@@ -154,6 +165,7 @@ server <- function(input, output, session) {
         } else {
             # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary()))
+            helperVisual(capture.output(helperSummary()))
             #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
@@ -162,6 +174,7 @@ server <- function(input, output, session) {
     observeEvent(input$undo, {
         chess$undo()
         asciiBoard(capture.output(mySummary()))
+        helperVisual(capture.output(helperSummary()))
         #revisualizedBoard(capture.output(visualSwitch()))
         updateTextInput(session, "move", value = input$selectedMove)
         availableMoves <- chess$moves() %>% sort
@@ -194,9 +207,14 @@ server <- function(input, output, session) {
             gsub(pattern = "\\.", 
                  replacement = " ")
     })
-    #output$revisualized <- renderText({
-    #    revisualizedBoard()
-    #})
+    output$revisualized <- renderText({
+        if (input$selectedVisual == "FEN map") {
+            helperVisual() %>%
+                paste(collapse = "\n")
+        } else {
+            "Select Helper Visual"
+        }
+    })
 
 }
 
