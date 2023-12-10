@@ -1,0 +1,10 @@
+name: my-chess
+title:
+username: josh-b-merrell
+account: josh-b-merrell
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10738012
+bundleId: 8031517
+url: https://josh-b-merrell.shinyapps.io/my-chess/
+version: 1

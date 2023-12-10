@@ -3,11 +3,11 @@ library(shiny)
 library(rchess)
 library(magrittr)
 library(shinythemes)
-
-
-chessComPuzzle <- "https://api.chess.com/pub/puzzle"
-startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+source("mySummary.R")
 source("fen_map.R")
+
+
+startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 ui <- fluidPage(
     theme = shinytheme("superhero"),
@@ -28,6 +28,7 @@ ui <- fluidPage(
         width: 700px;
         background-color: lightblue;
         border-radius: 5px;
+        white-space: pre-wrap;
       }
       body pre.shiny-text-output#revisualized {
         width: 700px;
@@ -57,7 +58,7 @@ ui <- fluidPage(
     
     verticalLayout(
         mainPanel(
-            selectInput("selectedFEN", NULL, c("standard starting position", "chess.com daily puzzle"), selectize = FALSE),
+            selectInput("selectedFEN", NULL, c("standard starting position", "lichess daily puzzle", "chess.com daily puzzle"), selectize = FALSE),
             splitLayout(
                 cellWidths = c("586px", "auto"),
                 textInput("fen", NULL, startFen),
@@ -88,31 +89,52 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
 
+    chessComPuzzle <- "https://api.chess.com/pub/puzzle"
+    liChessPuzzle <- "https://lichess.org/api/puzzle/daily"
+
+    chess <- Chess$new()
+    liChessState <- Chess$new()
+
     populateFEN <- function(opt) {
         if (opt == "standard starting position") {
             return(startFen)
         }
+        if (opt == "lichess daily puzzle") {
+            content <- GET(liChessPuzzle) %>%
+                content()
+            if (is.null(content)) {
+                showNotification("Error retrieving puzzle. Defaulting to standard starting position.")
+                puzzle <- startFen
+            }
+            pgn <- strsplit(content$game$pgn," ")[[1]]
+            initialPly <- content$puzzle$initialPly
+            game <- Chess$new()
+            for (move in pgn[1:(initialPly+1)]) {
+                game$move(move)
+            }
+            liChessState <<- game
+            return(game$fen())
+        }
         if (opt == "chess.com daily puzzle") {
-            puzzle <- GET(chessComPuzzle) %>%
-                content() %>%
-                .$fen
+            tryCatch ({
+                puzzle <- GET(chessComPuzzle) %>%
+                    content() %>%
+                    .$fen
+            }, error = function(e) {
+                print("error detected by tryCatch")
+                showNotification("Error retrieving puzzle. Defaulting to standard starting position.")
+                puzzle <- startFen
+            }) 
+            if (is.null(puzzle)) {
+                print("error not detected by tryCatch")
+                showNotification("Error retrieving puzzle. Defaulting to standard starting position.")
+                puzzle <- startFen
+            }
             return(puzzle)
         }
         opt
     }
 
-    # Initialize the chess object
-    chess <- Chess$new()
-    mySummary <- function() {
-        cat(paste("FEN:", chess$fen(), "\n"))
-        cat("\nBoard:\n")
-        cat(chess$ascii())
-        cat(paste("\nTurn:", ifelse(chess$turn() == "w", "White", "Black"), "\n"))
-        cat("\n")
-        cat(paste(c("\nHistory:", chess$history(), "\n")))
-        cat("\nOptions to move:\n")
-        cat(chess$moves() %>% sort())
-    }
     helperSummary <- function() {
         x <- fen_map(chess$fen())
         for (l in x) {
@@ -121,7 +143,7 @@ server <- function(input, output, session) {
     }
 
     # Reactive value
-    asciiBoard <- reactiveVal(capture.output(mySummary()))
+    asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
     helperVisual <- reactiveVal(capture.output(helperSummary()))
     #revisualizedBoard <- reactiveVal()
 
@@ -131,7 +153,6 @@ server <- function(input, output, session) {
 
     # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
-        # Use tryCatch to handle errors
         fen_result <- tryCatch({
             chess$load(input$fen)
         }, error = function(e) {
@@ -140,8 +161,11 @@ server <- function(input, output, session) {
         if (!fen_result) {
             showNotification("Invalid FEN. Please try again.")
         } else {
+            if (input$selectedFEN == "lichess daily puzzle") {
+                chess <<- liChessState
+            }
             # Update the reactive values to reflect the new state
-            asciiBoard(capture.output(mySummary()))
+            asciiBoard(capture.output(mySummary(chess)))
             helperVisual(capture.output(helperSummary()))
             #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
@@ -152,7 +176,6 @@ server <- function(input, output, session) {
 
     # Function to render chessboard based on move submission
     observeEvent(input$submitMove, {
-        # Use tryCatch to handle errors
         move_result <- tryCatch({
             chess$move(input$move)
             TRUE
@@ -164,7 +187,7 @@ server <- function(input, output, session) {
             showNotification("Invalid move. Please try again.")
         } else {
             # Update the reactive values to reflect the new state
-            asciiBoard(capture.output(mySummary()))
+            asciiBoard(capture.output(mySummary(chess)))
             helperVisual(capture.output(helperSummary()))
             #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
@@ -173,7 +196,7 @@ server <- function(input, output, session) {
     })
     observeEvent(input$undo, {
         chess$undo()
-        asciiBoard(capture.output(mySummary()))
+        asciiBoard(capture.output(mySummary(chess)))
         helperVisual(capture.output(helperSummary()))
         #revisualizedBoard(capture.output(visualSwitch()))
         updateTextInput(session, "move", value = input$selectedMove)
@@ -204,7 +227,7 @@ server <- function(input, output, session) {
     output$board <- renderText({
         asciiBoard() %>% 
             paste(collapse = "\n") %>%
-            gsub(pattern = "\\.", 
+            gsub(pattern = "\\.",
                  replacement = " ")
     })
     output$revisualized <- renderText({

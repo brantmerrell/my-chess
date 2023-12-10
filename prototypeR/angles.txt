@@ -1,0 +1,14 @@
+
+∟    U+221F  &angrt;           RIGHT ANGLE (Sm) (-L)                                    https://unicode-table.com/en/221F/
+∠    U+2220  &ang;             ANGLE (Sm) (-V)                                          https://unicode-table.com/en/2220/
+⊾    U+22BE  &angrtvb;         RIGHT ANGLE WITH ARC (Sm)                                https://unicode-table.com/en/22BE/
+⊿    U+22BF  &lrtri;           RIGHT TRIANGLE (Sm)                                      https://unicode-table.com/en/22BF/
+◣    U+25E3  &#x25E3;          BLACK LOWER LEFT TRIANGLE (So) (Bd)                      https://unicode-table.com/en/25E3/
+◥    U+25E5  &#x25E5;          BLACK UPPER RIGHT TRIANGLE (So)                          https://unicode-table.com/en/25E5/
+◹    U+25F9  &urtri;           UPPER RIGHT TRIANGLE (Sm)                                https://unicode-table.com/en/25F9/
+◺    U+25FA  &lltri;           LOWER LEFT TRIANGLE (Sm)                                 https://unicode-table.com/en/25FA/
+⦜    U+299C  &vangrt;          RIGHT ANGLE VARIANT WITH SQUARE (Sm)                     https://unicode-table.com/en/299C/
+⦝    U+299D  &angrtvbd;        MEASURED RIGHT ANGLE WITH DOT (Sm)                       https://unicode-table.com/en/299D/
+⦦    U+29A6  &dwangle;         OBLIQUE ANGLE OPENING UP (Sm)                            https://unicode-table.com/en/29A6/
+⦧    U+29A7  &uwangle;         OBLIQUE ANGLE OPENING DOWN (Sm)                          https://unicode-table.com/en/29A7/
+⸀    U+2E00  &#x2E00;          RIGHT ANGLE SUBSTITUTION MARKER (Po)                     https://unicode-table.com/en/2E00/
