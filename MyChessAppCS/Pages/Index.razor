@@ -1,0 +1,62 @@
+﻿@page "/"
+@using Chess
+
+<h3>Chess Game</h3>
+
+<div>
+    <label>FEN:</label>
+    <input @bind="fen" />
+    <button @onclick="() => SubmitFen(fen)">Submit FEN</button>
+</div>
+
+<pre>@boardAscii</pre>
+
+<div>
+    <label>Move:</label>
+    <input @bind="move" />
+    <button @onclick="() => SubmitMove(move)">Submit Move</button>
+</div>
+
+@code {
+    private string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private string? move;
+
+    private ChessBoard chessBoard = new ChessBoard();
+
+    private string? boardAscii;
+
+    protected override void OnInitialized()
+    {
+        boardAscii = chessBoard.ToAscii();
+    }
+
+    private void SubmitFen(string fen)
+    {
+        Console.WriteLine("SubmitFen");
+        chessBoard = ChessBoard.LoadFromFen(fen);
+        UpdateBoard();
+    }
+
+    private void SubmitMove(string move)
+    {
+        Console.WriteLine("SubmitMove");
+        if(!String.IsNullOrEmpty(move)){
+            chessBoard.Move(move);
+            UpdateBoard();
+        }
+    }
+
+    //private void UndoMove()
+    //{
+    //    chessBoard.UndoMove();
+    //    UpdateBoard();
+    //}
+
+    private void UpdateBoard()
+    {
+        Console.WriteLine("UpdateBoard");
+        // Update the ASCII representation of the board
+        boardAscii = chessBoard.ToAscii();
+    }
+}
+
