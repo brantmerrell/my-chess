@@ -1,17 +1,10 @@
+source("globals.R")
+
 fen_map <- function(FEN, chess_symbol = TRUE, validate = FALSE) {
     result <- c()
-    fen_to_symbol <- list(
-        K = '♔', Q = '♕', R = '♖', B = '♗', N = '♘', P = '♙', 
-        k = '♚', q = '♛', r = '♜', b = '♝', n = '♞', p = '♟︎'
-    )
-    sq_files <- list(
-        '1' = 'a', '2' = 'b', '3' = 'c', '4' = 'd', 
-        '5' = 'e', '6' = 'f', '7' = 'g', '8' = 'h'
-    )
     sq_file <- 1
     sq_rank <- 8
     fen_length <- 0
-
 
     FEN_split <- strsplit(FEN, "")[[1]]
 

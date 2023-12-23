@@ -54,7 +54,6 @@ ui <- fluidPage(
       }
     ")),
     titlePanel("Ascii Chessboard"),
-    
     verticalLayout(
         mainPanel(
             selectInput("selectedFEN", NULL, c("standard starting position", "lichess daily puzzle", "chess.com daily puzzle"), selectize = FALSE),
