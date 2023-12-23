@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  margin-bottom: 50px;
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: lightgrayscale;
+  .fen-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    #edit-string {
+      background-color: pink;
+      width: 500px;
+      margin: 5px;
+      border-radius: 5px;
+    }
+    #submit {
+      background-color: darkgreen;
+      border-radius: 5px;
+      color: white;
+      margin: 5px;
+    }
+  }
+  .ascii-layout {
+    #txt {
+      background-color: lightblue;
+      color: black;
+    }
+      
+  }
+  .moves-layout {
+    #selectedMove {
+      background-color: white;
+      height: 32px;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    #move {
+      width: 100px;
+      border-radius: 5px;
+      margin: 5px;
+      background-color: white;
+    }
+    #submitMove {
+      background-color: darkgreen;
+      color: white;
+      margin: 5px;
+      border-radius: 5px;
+    }
+    #undo {
+      background-color: darkred;
+      color: white;
+      margin: 5px;
+      border-radius: 0px;
+    }
+      
+  }
+
+}
+
