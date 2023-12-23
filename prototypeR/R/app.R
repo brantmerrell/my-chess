@@ -6,7 +6,6 @@ library(shinythemes)
 source("mySummary.R")
 source("fen_map.R")
 
-
 startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 ui <- fluidPage(
@@ -89,13 +88,12 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
 
-    chessComPuzzle <- "https://api.chess.com/pub/puzzle"
-    liChessPuzzle <- "https://lichess.org/api/puzzle/daily"
-
     chess <- Chess$new()
-    liChessState <- Chess$new()
+    liChessState <- chess$clone()
 
     populateFEN <- function(opt) {
+        chessComPuzzle <- "https://api.chess.com/pub/puzzle"
+        liChessPuzzle <- "https://lichess.org/api/puzzle/daily"
         if (opt == "standard starting position") {
             return(startFen)
         }
@@ -121,12 +119,10 @@ server <- function(input, output, session) {
                     content() %>%
                     .$fen
             }, error = function(e) {
-                print("error detected by tryCatch")
                 showNotification("Error retrieving puzzle. Defaulting to standard starting position.")
                 puzzle <- startFen
             }) 
             if (is.null(puzzle)) {
-                print("error not detected by tryCatch")
                 showNotification("Error retrieving puzzle. Defaulting to standard starting position.")
                 puzzle <- startFen
             }
@@ -142,16 +138,13 @@ server <- function(input, output, session) {
         }
     }
 
-    # Reactive value
     asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
     helperVisual <- reactiveVal(capture.output(helperSummary()))
-    #revisualizedBoard <- reactiveVal()
 
     observeEvent(input$selectedFEN, {
         updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
     })
 
-    # Function to render chessboard based on FEN submission
     observeEvent(input$submitFEN, {
         fen_result <- tryCatch({
             chess$load(input$fen)
@@ -164,17 +157,13 @@ server <- function(input, output, session) {
             if (input$selectedFEN == "lichess daily puzzle") {
                 chess <<- liChessState
             }
-            # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary(chess)))
             helperVisual(capture.output(helperSummary()))
-            #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
     })
 
-
-    # Function to render chessboard based on move submission
     observeEvent(input$submitMove, {
         move_result <- tryCatch({
             chess$move(input$move)
@@ -186,19 +175,17 @@ server <- function(input, output, session) {
         if (!move_result) {
             showNotification("Invalid move. Please try again.")
         } else {
-            # Update the reactive values to reflect the new state
             asciiBoard(capture.output(mySummary(chess)))
             helperVisual(capture.output(helperSummary()))
-            #revisualizedBoard(capture.output(visualSwitch()))
             availableMoves <- chess$moves() %>% sort
             updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
         }
     })
+
     observeEvent(input$undo, {
         chess$undo()
         asciiBoard(capture.output(mySummary(chess)))
         helperVisual(capture.output(helperSummary()))
-        #revisualizedBoard(capture.output(visualSwitch()))
         updateTextInput(session, "move", value = input$selectedMove)
         availableMoves <- chess$moves() %>% sort
         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
@@ -208,7 +195,6 @@ server <- function(input, output, session) {
         updateTextInput(session, "move", value = input$selectedMove)
     })
 
-
     observeEvent(input$move, {
     })
 
@@ -216,13 +202,6 @@ server <- function(input, output, session) {
         availableMoves <- chess$moves() %>% sort
         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
     })
-    #observe({
-    #    # Capture the output as a character vector, ensuring newline characters are respected
-    #    revisualizedOutput <- capture.output(visualSwitch())
-    #    # Combine the vector into a single string, separating elements with a newline
-    #    combinedOutput <- paste(revisualizedOutput, collapse = "\n")
-    #    revisualizedBoard(combinedOutput)
-    #})
 
     output$board <- renderText({
         asciiBoard() %>% 
@@ -230,6 +209,7 @@ server <- function(input, output, session) {
             gsub(pattern = "\\.",
                  replacement = " ")
     })
+
     output$revisualized <- renderText({
         if (input$selectedVisual == "FEN map") {
             helperVisual() %>%
@@ -238,7 +218,6 @@ server <- function(input, output, session) {
             "Select Helper Visual"
         }
     })
-
 }
 
 
