@@ -1,0 +1,20 @@
+<!-- views/index.erb -->
+
+<h1>Ascii Chessboard</h1>
+
+<% if session[:current_board] %>
+  <pre><%= session[:current_board] %></pre>
+<% else %>
+  <p>No board to display. Current session: <%= session.inspect %></p>
+<% end %>
+<form action="/submit_move" method="post">
+  <input type="text" name="move" placeholder="Enter your move (e.g., e4, Nf3)">
+  <input type="submit" value="Make Move">
+</form>
+
+<form action="/navigate" method="post">
+  <button type="submit" name="direction" value="-1">Previous</button>
+  <button type="submit" name="direction" value="1">Next</button>
+</form>
+
+
