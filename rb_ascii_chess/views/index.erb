@@ -1,9 +1,8 @@
-<!-- views/index.erb -->
-
 <h1>Ascii Chessboard</h1>
 
 <form action="/submit_fen" method="post">
-  <input type="text" name="move" placeholder="Submit FEN">
+  <input type="text" name="fen" value="<%= session[:fenState] %>">
+
   <input type="submit" value="Submit FEN">
 </form>
 
