@@ -1,9 +1,15 @@
 <h1>Ascii Chessboard</h1>
 
+<form action="/select_fen" method="post" id="fen_selection_form">
+  <select name="fen_dropdown" id="fen_dropdown">
+    <option value="standard starting position" <%= 'selected' if session[:last_selected_fen_source] == 'standard starting position' %>>Standard Starting Position</option>
+    <option value="lichess daily puzzle" <%= 'selected' if session[:last_selected_fen_source] == 'lichess daily puzzle' %>>Lichess Daily Puzzle</option>
+    <option value="chess.com daily puzzle" <%= 'selected' if session[:last_selected_fen_source] == 'chess.com daily puzzle' %>>Chess.com Daily Puzzle</option>
+  </select>
+</form>
 <form action="/submit_fen" method="post">
-  <input type="text" name="fen" value="<%= session[:fenState] %>">
-
-  <input type="submit" value="Submit FEN">
+  <input type="text" name="fenBox" value="<%= session[:fenState] %>">
+  <input type="submit" value="Update Board">
 </form>
 
 <% if session[:current_board] %>
@@ -21,4 +27,12 @@
   <button type="submit" name="direction" value="1">Next Move</button>
 </form>
 
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    var dropdown = document.getElementById('fen_dropdown');
+    dropdown.addEventListener('change', function() {
+      document.getElementById('fen_selection_form').submit(); // Submit the form when the dropdown changes
+    });
+  });
+</script>
 
