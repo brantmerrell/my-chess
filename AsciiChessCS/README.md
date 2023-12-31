@@ -14,7 +14,7 @@ Then visit `http://localhost:5204` to interact with the interface.
 
 ## Interface Overview
 
-The interface consists of a razor page with three sections. From top to bottom, they are as follows:  
+The interface consists of three sections. From top to bottom, they are as follows:  
 
  1. **FEN**: A box and button to edit and submit FEN strings (see the [Wikipedia Page on FEN Strings](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation)).
  2. **Board**: An ASCII representation of a chessboard, showing pieces in theposition appropriate based on the submitted FEN string and moves.
@@ -43,11 +43,21 @@ RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1
 ^^^^^^^^ ^^^^^^^^         ^^^^^^^^ ^^^^^^^^
 ```
 
+### Move Manipulation
+The input box allows you to type a move, then the "Submit Move" button will make that move on the chessboard.  
+
+Note: Although submitting moves will change the Ascii Chess board, it will not change the FEN shown in the FEN input box. The FEN box and Submit FEN button provide the ability to reset the board to the desired position.  
+
 ## Missing Features: 
 
 The following features are provided in other prototypes of this applicaiton and are TODOs for this prototype:  
 
- - **daily puzzles**: It would come with a dropdown to select a daily puzzle from chess.com or lichess.org and populate the FEN box.
+ - **daily puzzles**: This feature provides a dropdown to select a daily puzzle from chess.com or lichess.org and populate the FEN box. A working example can be found in the R prototype of AsciiChess.
+ - **Ascii FEN**: The Ascii chessboard should also have a FEN representation. This should be separate from the FEN Input box, which allows for reseting the board and choosing starting positions. A second FEN string should depict the board's current state. This can be seen in the R prototype of AsciiChess.
+ - **Select Move**: Not supported by the Gera.Chess nuget package which this prototype uses. Options under consideration for adding it to the application include:
+     * Submitting a change request to the Gera.Chess nuget package
+     * Adding it as a helper method to the Ascii Chess CS prototype
+     * Choosing a new chess package to support Ascii Chess CS
  - **Undo Move**: Not supported by the Gera.Chess nuget package which this prototype uses. There are two possible solutions: 
      * The ruby prototype of ascii chess solves a similar challenge by tracking a list of positions in a session.
      * Use a different package (there are many). I have not found one with an undo functionality that fits the lightweight needs of Ascii Chess.

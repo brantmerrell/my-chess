@@ -1,46 +1,66 @@
-# Getting Started with Create React App
+# Ascii Chess TS
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Ascii Chess TS is the TypeScript prototype for an Ascii Chess Application.
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+To run ascii-chess-ts, npm must be installed. Then from the ascii-chess-ts directory, run:  
+```bash
+npm install
+```
+and 
+```bash
+npm start
+```
 
-### `npm start`
+Then visit `http://localhost:3000` to interact with the interface.  
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Interface Overview
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The interface consists of three sections. From top to bottom, they are as follows:  
 
-### `npm test`
+ 1. **FEN**: A box and button to edit and submit FEN strings (see the [Wikipedia Page on FEN Strings](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation)).
+ 2. **Board**: An ASCII representation of a chessboard, showing pieces in theposition appropriate based on the submitted FEN string and moves.
+ 3. **Move**: A dropdown, box and buttons to select, submit, and undo moves.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features:
 
-### `npm run build`
+### FEN Manipulation
+The board starts out in the standard opening position, with the FEN box pre-populated with the standard opening FEN string: `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`.  
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The FEN string can be used to modify the position, the active player (whose move it is), castling eligibility, en passant eligibility, the move count, and the "halfmove clock." For example, to remove the white rook from h1, change the string's second capital R to 1 like so:  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```text
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1
+                                          ^
+```
+To give black the first move, change the `w` to `b` like so:  
+```text
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNB b KQkq - 0 1
+                                            ^
+```
+To switch sides, simply change all positional uppercase letters to lowercase and vice versa like so:
+```text
+RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1
+^^^^^^^^ ^^^^^^^^         ^^^^^^^^ ^^^^^^^^
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Move Manipulation
+The **"Moves" dropdown** allows you to choose a move, and that move will populate the **Move input box**. The move has not yet been made because the **"Submit Move" button** has not been clicked.  
 
-### `npm run eject`
+The **Move input box** for a move can be manually edited or populated from the "Moves" dropdown to its left.  
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The **"Submit Move" button** will submit the move shown in the **Move input box** to the, and (if valid) this will be reflected on the Ascii Chess board.  
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The **"Undo Move" button** will undo the last move that was submitted.  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+**Note**: Although submitting and undoing moves will change the Ascii Chess board, it will not change the FEN shown in the FEN input box. The FEN box and Submit FEN button provide the ability to reset the board to the desired position.  
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Missing Features:
 
-## Learn More
+The following features are provided in other prototypes of this applicaiton and are TODOs for this prototype:  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+ - **daily puzzles**: This feature provides a dropdown to select a daily puzzle from chess.com or lichess.org and populate the FEN box. A working example can be found in the R prototype of AsciiChess.
+ - **Ascii FEN**: The Ascii chessboard should also have a FEN representation. This should be separate from the FEN Input box, which allows for reseting the board and choosing starting positions. A second FEN string should depict the board's current state. This can be seen in the R prototype of AsciiChess.
+ - **Redo Move**: The converse to the Undo Move feature. Likely requires tracking a list of positions in a session. 
+ - **CSS Styling**: CSS styling is present, but awkwardly. 
