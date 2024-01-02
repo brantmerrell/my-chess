@@ -1,7 +1,7 @@
 library(rchess)
 library(magrittr)
-source("asciiPrint.R")
-source("asciiSub.R")
+source("R/asciiPrint.R")
+source("R/asciiSub.R")
 
 mySummary <- function(chessObject) {
     cat(paste("FEN:", chessObject$fen(), "\n"))

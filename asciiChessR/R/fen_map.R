@@ -1,4 +1,4 @@
-source("globals.R")
+source("R/globals.R")
 
 fen_map <- function(FEN, chess_symbol = TRUE, validate = FALSE) {
     result <- c()

@@ -3,8 +3,8 @@ library(shiny)
 library(rchess)
 library(magrittr)
 library(shinythemes)
-source("mySummary.R")
-source("fen_map.R")
+source("R/mySummary.R")
+source("R/fen_map.R")
 
 startFen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
