@@ -46,7 +46,7 @@ RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1
 ```
 
 ### Move Manipulation
-The **"Moves" dropdown** allows you to choose a move, and that move will populate the **Move input box**. The move has not yet been made because the **"Submit Move" button** has not been clicked.  
+The **"Moves" dropdown** allows the user to choose a move, and that move will populate the **Move input box**. The move has not yet been made because the **"Submit Move" button** has not been clicked.  
 
 The **Move input box** for a move can be manually edited or populated from the "Moves" dropdown to its left.  
 
