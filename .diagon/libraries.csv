@@ -1,0 +1,6 @@
+Feature,rchess,chess.js,PGN(rb),Chess(.NET),impact
+Board to FEN,✓,✓,✕,✓,FEN display omitted from AsciiChessCS
+Multi-Move,✕,✕,✓,✕,no need to explicitly iterate through moves in asci_chess_rb
+Legal moves list,✓,✓,✕,✓,dropdown of moves omitted from asci_chess_rb
+Undo move,✓,✓,✕,✕,undo functionality omitted from AsciiChessCS
+

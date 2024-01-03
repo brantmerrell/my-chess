@@ -17,12 +17,18 @@ Efforts were made to select chess libraries which closely resemble each other, a
 
 There were also features which were offered by some libraries but not others, and therefore impacted the differences between prototypes:
 
-```csv
-Feature,rchess,chess.js,PGN (rb),Gera.Chess (.NET),impact
-Board to FEN,✅,✅,❌,✅,FEN display omitted from AsciiChessCS
-Multi Move,❌,❌,✅,❌,no need to explicitly iterate through moves in asci_chess_rb
-Legal moves list,✅,✅,❌,✅,dropdown of moves omitted from asci_chess_rb
-Undo move,✅,✅,❌,❌,undo functionality omitted from AsciiChessCS
+```text
+┌────────────────┬──────┬────────┬───────┬───────────┬────────────────────────────────────────────────────────────┐
+│Feature         │rchess│chess.js│PGN(rb)│Chess(.NET)│impact                                                      │
+├────────────────┼──────┼────────┼───────┼───────────┼────────────────────────────────────────────────────────────┤
+│Board to FEN    │✓     │✓       │✕      │✓          │FEN display omitted from AsciiChessCS                       │
+├────────────────┼──────┼────────┼───────┼───────────┼────────────────────────────────────────────────────────────┤
+│Multi Move      │✕     │✕       │✓      │✕          │no need to explicitly iterate through moves in asci_chess_rb│
+├────────────────┼──────┼────────┼───────┼───────────┼────────────────────────────────────────────────────────────┤
+│Legal moves list│✓     │✓       │✕      │✓          │dropdown of moves omitted from asci_chess_rb                │
+├────────────────┼──────┼────────┼───────┼───────────┼────────────────────────────────────────────────────────────┤
+│Undo move       │✓     │✓       │✕      │✕          │undo functionality omitted from AsciiChessCS                │
+└────────────────┴──────┴────────┴───────┴───────────┴────────────────────────────────────────────────────────────┘
 ```
 Note that although "Undo move" is not offered by the ruby chess library (PGN) or the .NET chess library (Gera.Chess), it is not omitted from the ruby prototype (asci_chess_rb). Ruby's PGN library defines a game object as a list of positions, and the current position is an index that points to a position in the list. Rather than being explicitly built-in as methods, "Undo" and "Redo" are a simple matter of changing this index.  
 
