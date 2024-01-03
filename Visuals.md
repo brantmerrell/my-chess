@@ -1,28 +1,5 @@
-# Planned Features
-This list of planned features includes some that will be included in this prototype, but it primarily exists to guide the planning of a more mature application (perhaps one not so reliant on Ascii operations or sessions).  
-
-## Lichess Integration
-
-Integrate with the lichess API to access the following features:  
-
- - **Puzzle Training**: the puzzles chosen by lichess to match the logged-in user's skill level. This comes in two parts:
-     * **Puzzle Viewing**: the ability to view the puzzle through the ascii app
-     * **Puzzle Submission**: the ability to submit pieces to lichess for validation
- - **Featured Game Viewing**: view the games displayed at lichess.org/games. This comes in two parts:
-     * **Game Selection**: the ability to view and select a list of games to watch
-     * **Game Viewing**: the ability to view the game through the ascii app
- - **User Game Viewing**: the ability to view user's games on lichess.org. This includes:
-     * **Current Game Selection**: the ability to see and select which games are currently being played
-     * **Historical Game Selection**: the ability to see games which have been played
-     * **Game Viewing**: the ability to browse through the moves of a game
-
-## Chess.com Integration
-
-Integrate with the chess.com API to access the following features:  
-
- - **Puzzle Training**: access the puzzles chosen by chess.com to match the logged-in user's skill level. This comes in two parts:
-     * **Puzzle Viewing**: the ability to view the puzzle through the ascii app
-     * **Puzzle Submission**: the ability to submit pieces to chess.com for validation
+# Planned Visuals
+This document provides Ascii representations of planned Visual Features. Although this is an Ascii Chess application, it is a prototype that serves to assist in planning a more mature application. The Ascii visuals below help to outline the requirements for the visualization capabilities of the mature application.  
 
 ## Coordinate Location
 
@@ -251,21 +228,21 @@ Add shapes to remember board positions. For example, consider the following boar
 Convert to:  
 ```text
    +----------------------------------------+
- 8 |           ✱ ⋯⋯ ✱         ✱ ⋯⋯ ✱        |
-   |        ⋰⋰   ⋱⋱ ⋮ ⋱⋱   ⋰⋰ ⋮      ⋱⋱     |
- 7 | ✱ ⋯⋯ ✱         ✱ ⋯⋯ ✱ ⋯⋯ ✱         ✱   |
-   |                 ⋱⋱  ⋮ ⋰⋰   ⋱⋱          |
+ 8 |           ✱────✱         ✱────✱        |
+   |        ⟋    ⟍ │  ⟍   ⟋ │       ⟍     |
+ 7 | ✱────✱         ✱────✱────✱         ✱   |
+   |                  ⟍ │ ⟋     ⟍          |
  6 |                     ✱         ✱        |
-   |                     ⋮⋱⋱    ⋰⋰ ⋮        |
- 5 |                     ✱ ⋯⋯ ✱ ⋯⋯ ✱        |
+   |                     │ ⟍    ⟋ │        |
+ 5 |                     ✱────✱────✱        |
    |                                        |
  4 |           ✱                            |
    |                                        |
  3 |                               ✱        |
-   |                            ⋰⋰ ⋮ ⋱⋱     |
- 2 | ✱ ⋯⋯ ✱                   ✱ ⋯⋯ ✱ ⋯⋯ ✱   |
-   | ⋮ ⋰⋰   ⋱⋱                ⋮ ⋱⋱ ⋮ ⋰⋰     |
- 1 | ✱         ✱              ✱ ⋯⋯ ✱        |
+   |                            ⟋  │ ⟍     |
+ 2 | ✱ ── ✱                   ✱────✱────✱   |
+   | │ ⟋    ⟍                │    │  ⟋     |
+ 1 | ✱         ✱              ✱────✱        |
    +----------------------------------------+
      a    b    c    d    e    f    g    h   
 ```
@@ -307,5 +284,72 @@ Convert to:
  1 | ✱         ✱              ✱ ⋯⋯ ✱        |
    +----------------------------------------+
      a    b    c    d    e    f    g    h   
-``
+```
 
+### FEN Map
+
+The FEN map should look something like this:
+```text
+FEN : rnbqkbnr/pp2pppp/2p5/3p4/P6P/5N2/1PPPPPP1/RNBQKB1R b KQkq h3 0 3
+♜_a8: ♜                                                              
+♞_b8: └♞                                                              
+♝_c8:   ♝
+♛_d8:   │♛
+♚_e8:   ││♚
+♝_f8:   │││♝
+♞_g8:   ││││♞
+♜_h8:   │││││♜
+-----   ││││││                                                       
+♟︎_a7:   └┼┼┼┼┼>♟︎
+♟︎_b7:    │││││  ♟︎
+♟︎_e7:    └┼┼└┼>───♟︎
+♟︎_f7:     └┼─┼>────♟︎
+♟︎_g7:      └─┼>─────♟︎
+♟︎_h7:        └>──────♟︎
+-----
+♟︎_c6:                   ♟︎
+-----
+♟︎_d5:                       ♟︎
+-----
+♙_a4:                          ♙
+♙_h4:                          │ ♙              
+-----                          │ │              
+♘_f3:                          │ │  ♘           
+-----                          │ │              
+♙_b2:                          │ │      ♙       
+♙_c2:                          │ │       ♙      
+♙_d2:                          │ │        ♙     
+♙_e2:                          │ │        │♙    
+♙_f2:                          │ │        ││♙   
+♙_g2:                          │ │        ││ ♙  
+-----                          │ │        ││ │  
+♖_a1:                          └─│────────││─│<─♖ 
+♘_b1:                            │        └│─│<──♘
+♗_c1:                            │        └│─│<───♗
+♕_d1:                            │        └│─│<───└♕
+♔_e1:                            │        └│─│<────└♔
+♗_f1:                            │         └─└<─────└♗
+♖_h1:                            └────────────<──────└─♖
+FEN : rnbqkbnr/pp2pppp/2p5/3p4/P6P/5N2/1PPPPPP1/RNBQKB1R b KQkq h3 0 3
+```
+
+
+# Design Implications
+
+This requires a visualization library with the following capabilities:  
+
+ - node coordinates can be specified
+ - edges can be declared as node-to-node relationships
+ - edges will be drawn between nodes using straight lines
+ - trees can be drawn with full and dotted lines
+ - links between branches and leaves of trees can be drawn
+ - nodes can have specified shapes and colors
+ - nodes can be bidirectional, unidirectional, nor with no direction specified
+ - square-based edges with specifiable paths
+ - distinguishable overlapping edges
+
+The chess analysis required is somewhat unusual:  
+
+ - Discovering threats, protections, and other moves by the inactive player
+ - Discoverying protections by both players, challenging because they are not covered by legal moves
+ - Discovering geometrically adjacent pieces even if they do not threaten or protect each other
