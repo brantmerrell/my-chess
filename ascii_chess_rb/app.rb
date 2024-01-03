@@ -30,17 +30,14 @@ helpers do
       pgn_text = content['game']['pgn'].split()
       initial_ply = content['puzzle']['initialPly'].to_i
 
-      # Parse the PGN and get the moves
       game = PGN::Game.new(pgn_text)
-      moves = game.moves[0...initial_ply]  # Get the moves up to the initial ply
+      moves = game.moves[0...initial_ply]
 
-      # Create a new chess game and apply the moves
       chess_game = PGN::Game.new(moves)
 
-      # Return the FEN for the position after applying the moves
       chess_game.positions.last.to_fen.to_s
     rescue
-      PGN::FEN.start.to_s  # Default to standard position on error
+      PGN::FEN.start.to_s
     end
   end
 

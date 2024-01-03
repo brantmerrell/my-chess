@@ -1,0 +1,15 @@
+Feature,asciiChessR,ascii-chess-ts,ascii_chess_rb,AsciiChessCS
+Select Daily Lichess Puzzle,✓,✕,✓,✕
+Select Daily chess.com Puzzle,✓,✕,✕,✕
+Edit FEN,✓,✓,✓,✓
+Submit FEN,✓,✓,✓,✓
+Current FEN state,✓,✕,✕,✕,
+Ascii Board,✓,✓,✓,✓
+Move History,✓,✕,✕,✕
+Select Move,✓,✓,✕,✓
+Edit Move,✓,✓,✓,✓
+Undo Move,✓,✓,✓,✕
+Redo Move,✕,✕,✓,✕
+Helper Visual Dropdown,✓,✕,✕,✕
+FEN Map,✓,✕,✕,✕
+
