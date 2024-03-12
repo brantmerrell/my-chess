@@ -1,15 +1,15 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { ChessGame } from '../chess/chessLogic';
+import React, { useCallback, useState, useEffect } from "react";
+import { ChessGame } from "../chess/chessGame";
 
 const ChessBoard: React.FC = () => {
-
-    const initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const initialFen =
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const [chessGame] = useState(() => new ChessGame(initialFen));
 
     const [fen, setFen] = useState(initialFen);
     const [board, setBoard] = useState(chessGame.ascii());
     const [moves, setMoves] = useState<string[]>([]);
-    const [selectedMove, setSelectedMove] = useState('');
+    const [selectedMove, setSelectedMove] = useState("");
     useEffect(() => {
         setBoard(chessGame.ascii());
         updateMoves();
@@ -32,7 +32,7 @@ const ChessBoard: React.FC = () => {
             chessGame.makeMove(selectedMove);
             setBoard(chessGame.ascii());
             updateMoves();
-            setSelectedMove('');
+            setSelectedMove("");
         } catch (error) {
             console.error("Error submitting move");
         }
@@ -42,6 +42,7 @@ const ChessBoard: React.FC = () => {
         const legalMoves = chessGame.getMoves();
         setMoves(legalMoves);
     }, [chessGame]);
+
     const undoMove = () => {
         const move = chessGame.undo();
         if (move !== null) {
@@ -52,29 +53,56 @@ const ChessBoard: React.FC = () => {
 
     return (
         <div>
-            <pre className="fen-layout">
-                <input id="edit-string" type="text" value={fen} onChange={handleFenChange} />
-                <button id="submit" onClick={submitFen}>Submit FEN</button>
-            </pre>
-            <pre className="ascii-layout">
-                <pre id="txt">
-                    {board}
+            <pre className="chess-table">
+                <pre className="fen-layout">
+                    <input
+                        id="edit-string"
+                        type="text"
+                        value={fen}
+                        onChange={handleFenChange}
+                    />
+                    <button id="submit" onClick={submitFen}>
+                        Submit FEN
+                    </button>
                 </pre>
+                <pre className="ascii-layout">
+                    <pre id="board">{board}</pre>
+                </pre>
+                <div className="moves-layout">
+                    <div className="moves-forward">
+                        <select
+                            id="selectedMove"
+                            value={selectedMove}
+                            onChange={(event) =>
+                                setSelectedMove(event.target.value)
+                            }
+                        >
+                            <option value="">Moves</option>
+                            {moves.map((move, index) => (
+                                <option key={index} value={move}>
+                                    {move}
+                                </option>
+                            ))}
+                        </select>
+                        <input
+                            id="move"
+                            type="text"
+                            value={selectedMove}
+                            onChange={(event) =>
+                                setSelectedMove(event.target.value)
+                            }
+                        />
+                        <button id="submitMove" onClick={submitMove}>
+                            Submit Move
+                        </button>
+                    </div>
+                    <button id="undo" onClick={undoMove}>
+                        Undo Move
+                    </button>
+                </div>
             </pre>
-            <div className="moves-layout">
-                <select id="selectedMove" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)}>
-                    <option value="">Moves</option>
-                    {moves.map((move, index) => (
-                        <option key={index} value={move}>{move}</option>
-                    ))}
-                </select>
-                <input id="move" type="text" value={selectedMove} onChange={(event) => setSelectedMove(event.target.value)} />
-                <button id="submitMove" onClick={submitMove}>Submit Move</button>
-                <button id="undo" onClick={undoMove}>Undo Move</button>
-            </div>
         </div>
     );
 };
 
 export default ChessBoard;
-
