@@ -1,0 +1,8 @@
+body {
+    .start-fen {
+        margin: 5px;
+        height: 38px;
+        border-radius: 5px;
+        width: 485px;
+    }
+}

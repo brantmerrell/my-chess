@@ -1,1 +1,34 @@
-{"game":{"id":"uVC4PwEo","perf":{"key":"blitz","name":"Blitz"},"rated":true,"players":[{"name":"ilkturnuvam","color":"white","rating":2153},{"name":"Saqochess","title":"FM","flair":"activity.sports-medal","color":"black","rating":2413}],"pgn":"e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 f4 Nc6 Be3 Bg7 Qd2 O-O O-O-O Ng4 Bg1 Nxd4 Bxd4 Bxd4 Qxd4 Qb6 Qxb6 axb6 Rd2 Be6 a3 Rfc8 Be2 Nf2 Rf1 Rxc3 Rxf2 Rc5 Bf3 b5 Rd4 Rac8 Rb4 b6 Rd2 Bc4 Kb1 Kg7 b3 Be6 Be2 Bd7 e5 Bf5 Bd1 dxe5 fxe5 Rxe5 g4 Be6 Be2 Rcc5 Kb2 h5 gxh5 gxh5 Rbd4 Kh6 Rd8 Bf5 Rb8 Bg6 Rxb6 Kg7 b4 Rxc2+ Rxc2 Bxc2 Bxb5 Bg6 a4 f5 a5 f4 a6 f3 a7 Be4 Bc6 f2 a8=Q","clock":"5+0"},"puzzle":{"id":"fohcR","rating":1989,"plays":51507,"solution":["f2f1q","c6e4","f1f2"],"themes":["endgame","advancedPawn","master","short","advantage","promotion"],"initialPly":88}}
+{
+    "game": {
+        "id": "uVC4PwEo",
+        "perf": { "key": "blitz", "name": "Blitz" },
+        "rated": true,
+        "players": [
+            { "name": "ilkturnuvam", "color": "white", "rating": 2153 },
+            {
+                "name": "Saqochess",
+                "title": "FM",
+                "flair": "activity.sports-medal",
+                "color": "black",
+                "rating": 2413
+            }
+        ],
+        "pgn": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 f4 Nc6 Be3 Bg7 Qd2 O-O O-O-O Ng4 Bg1 Nxd4 Bxd4 Bxd4 Qxd4 Qb6 Qxb6 axb6 Rd2 Be6 a3 Rfc8 Be2 Nf2 Rf1 Rxc3 Rxf2 Rc5 Bf3 b5 Rd4 Rac8 Rb4 b6 Rd2 Bc4 Kb1 Kg7 b3 Be6 Be2 Bd7 e5 Bf5 Bd1 dxe5 fxe5 Rxe5 g4 Be6 Be2 Rcc5 Kb2 h5 gxh5 gxh5 Rbd4 Kh6 Rd8 Bf5 Rb8 Bg6 Rxb6 Kg7 b4 Rxc2+ Rxc2 Bxc2 Bxb5 Bg6 a4 f5 a5 f4 a6 f3 a7 Be4 Bc6 f2 a8=Q",
+        "clock": "5+0"
+    },
+    "puzzle": {
+        "id": "fohcR",
+        "rating": 1989,
+        "plays": 51507,
+        "solution": ["f2f1q", "c6e4", "f1f2"],
+        "themes": [
+            "endgame",
+            "advancedPawn",
+            "master",
+            "short",
+            "advantage",
+            "promotion"
+        ],
+        "initialPly": 88
+    }
+}

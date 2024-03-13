@@ -18,6 +18,9 @@ export class ChessGame {
     public loadFen(fen: string) {
         return this.game.load(fen);
     }
+    public toFen() {
+        return this.game.fen();
+    }
 
     public undo() {
         return this.game.undo();

@@ -1,15 +1,13 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import ChessBoard from './components/ChessBoard';
+import AsciiBoard from './components/AsciiBoard';
 
 function App() {
   return (
     <div className="App">
       <div>
-        <h1 className="title">Ascii Chess</h1>
+        <h1 className="title">Ascii Chessboard</h1>
         </div>
-          <ChessBoard />
+          <AsciiBoard />
         <div>
       </div>
     </div>

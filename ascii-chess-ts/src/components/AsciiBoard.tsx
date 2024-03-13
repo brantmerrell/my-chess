@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { ChessGame } from "../chess/chessGame";
+import SelectPosition from "./SelectPosition";
 
-const ChessBoard: React.FC = () => {
+const AsciiBoard: React.FC = () => {
     const initialFen =
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const [chessGame] = useState(() => new ChessGame(initialFen));
@@ -55,15 +56,18 @@ const ChessBoard: React.FC = () => {
         <div>
             <pre className="chess-table">
                 <pre className="fen-layout">
-                    <input
-                        id="edit-string"
-                        type="text"
-                        value={fen}
-                        onChange={handleFenChange}
-                    />
-                    <button id="submit" onClick={submitFen}>
-                        Submit FEN
-                    </button>
+                <SelectPosition />
+                    <pre id="horiz">
+                        <input
+                            id="edit-string"
+                            type="text"
+                            value={fen}
+                            onChange={handleFenChange}
+                        />
+                        <button id="submitFen" onClick={submitFen}>
+                            Submit FEN
+                        </button>
+                    </pre>
                 </pre>
                 <pre className="ascii-layout">
                     <pre id="board">{board}</pre>
@@ -105,4 +109,4 @@ const ChessBoard: React.FC = () => {
     );
 };
 
-export default ChessBoard;
+export default AsciiBoard;
