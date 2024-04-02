@@ -1,4 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
 import { ChessGame } from "../chess/chessGame";
 import SelectPosition from "./SelectPosition";
 
@@ -6,6 +8,9 @@ const AsciiBoard: React.FC = () => {
     const initialFen =
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const [chessGame] = useState(() => new ChessGame(initialFen));
+    const chessComPuzzle = useSelector<RootState>(
+        (state) => state.chessComPuzzle
+    );
 
     const [fen, setFen] = useState(initialFen);
     const [board, setBoard] = useState(chessGame.ascii());
@@ -17,6 +22,7 @@ const AsciiBoard: React.FC = () => {
     }, [chessGame]);
 
     const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("handleFenChange");
         setFen(event.target.value);
     };
     const submitFen = () => {
@@ -56,7 +62,7 @@ const AsciiBoard: React.FC = () => {
         <div>
             <pre className="chess-table">
                 <pre className="fen-layout">
-                <SelectPosition />
+                    <SelectPosition />
                     <pre id="horiz">
                         <input
                             id="edit-string"
