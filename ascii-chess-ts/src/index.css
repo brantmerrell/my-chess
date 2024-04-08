@@ -37,6 +37,7 @@ body {
             margin: 5px;
             display: flex;
             #board {
+                padding: 10px;
                 font-size: 15px;
                 background-color: lightblue;
                 color: black;

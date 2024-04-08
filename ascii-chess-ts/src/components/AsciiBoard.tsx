@@ -22,11 +22,11 @@ const AsciiBoard: React.FC = () => {
     );
 
     const [fen, setFen] = useState(initialFen);
-    const [board, setBoard] = useState(chessGame.ascii());
+    const [board, setBoard] = useState(chessGame.asciiView());
     const [moves, setMoves] = useState<string[]>([]);
     const [selectedMove, setSelectedMove] = useState("");
     useEffect(() => {
-        setBoard(chessGame.ascii());
+        setBoard(chessGame.asciiView());
         updateMoves();
     }, [chessGame]);
     useEffect(() => {
@@ -57,7 +57,7 @@ const AsciiBoard: React.FC = () => {
     const submitFen = () => {
         try {
             chessGame.loadFen(fen);
-            setBoard(chessGame.ascii());
+            setBoard(chessGame.asciiView());
             updateMoves();
         } catch (error) {
             console.error("Invalid FEN string");
@@ -66,7 +66,7 @@ const AsciiBoard: React.FC = () => {
     const submitMove = () => {
         try {
             chessGame.makeMove(selectedMove);
-            setBoard(chessGame.ascii());
+            setBoard(chessGame.asciiView());
             updateMoves();
             setSelectedMove("");
         } catch (error) {
@@ -82,7 +82,7 @@ const AsciiBoard: React.FC = () => {
     const undoMove = () => {
         const move = chessGame.undo();
         if (move !== null) {
-            setBoard(chessGame.ascii());
+            setBoard(chessGame.asciiView());
             updateMoves();
         }
     };
