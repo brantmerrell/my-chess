@@ -5,4 +5,8 @@ export interface ChessComPuzzleModel {
     initialPuzzleFEN: string;
     solutionPgn: string[];
     imageUrl: string;
+    fetchStatus: {
+        loading: boolean;
+        error: string | null | undefined;
+    };
 }

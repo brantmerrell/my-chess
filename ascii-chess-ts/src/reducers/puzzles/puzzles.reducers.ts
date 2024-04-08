@@ -2,48 +2,59 @@ import { ChessComPuzzleModel } from "../../models/ChessComPuzzleModel";
 import { ChessComPuzzleViewModel } from "../../models/ChessComPuzzleViewModel";
 import { createSlice } from "@reduxjs/toolkit";
 import { LiChessPuzzleModel } from "../../models/LiChessPuzzleModel";
-import { LiChessPuzzleResponse } from "../../models/LiChessPuzzleResponse";
-import { FOOT_FETCH_SUCCESS, FOOT_FETCH_FAILURE } from "./puzzles.actions";
-import { fetchChessComDailyPuzzle } from "./puzzles.actions";
+import { LiChessPuzzleViewModel } from "../../models/LiChessPuzzleViewModel";
+import {
+    fetchChessComDailyPuzzle,
+    fetchLiChessDailyPuzzle,
+} from "./puzzles.actions";
 
-export interface ChessComPuzzleState {
-    puzzle: ChessComPuzzleModel | null;
-    loading: boolean;
-    error: string | null;
-}
-
-const chessComPuzzleInitialState: ChessComPuzzleState = {
-    puzzle: null,
-    loading: false,
-    error: null,
+const chessComPuzzleInitialState: ChessComPuzzleModel = {
+    puzzleTitle: "",
+    puzzleUrl: "",
+    publishTime: "",
+    initialPuzzleFEN: "",
+    solutionPgn: [],
+    imageUrl: "",
+    fetchStatus: {
+        loading: false,
+        error: null,
+    },
 };
 
-interface LiChessPuzzleState {
-    liChessPuzzleModel: LiChessPuzzleModel | null;
-    liChessPuzzleResponse: LiChessPuzzleResponse | null;
-}
-
-const initialState: LiChessPuzzleState = {
-    liChessPuzzleModel: null,
-    liChessPuzzleResponse: null,
+const liChessPuzzleInitialState: LiChessPuzzleModel = {
+    puzzleId: "",
+    gameId: "",
+    puzzleRating: "",
+    puzzlePlays: 0,
+    solution: [],
+    themes: [],
+    initialPuzzleFEN: "",
+    fetchStatus: {
+        loading: false,
+        error: null,
+    },
 };
 
-export const liChessPuzzleReducer = (state = initialState, action: any) => {
-    switch (action.type) {
-        case FOOT_FETCH_SUCCESS:
-            return {
-                liChessPuzzleModel: action.payload.liChessPuzzle,
-                liChessPuzzleResponse: action.payload.liChessPuzzleResponse,
-            };
-        case FOOT_FETCH_FAILURE:
-            return {
-                liChessPuzzleModel: null,
-                liChessPuzzleResponse: null,
-            };
-        default:
-            return state;
-    }
-};
+export const liChessPuzzleSlice = createSlice({
+    name: "liChessPuzzle",
+    initialState: liChessPuzzleInitialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchLiChessDailyPuzzle.pending, (state) => {
+                state.fetchStatus.loading = true;
+                state.fetchStatus.error = null;
+            })
+            .addCase(fetchLiChessDailyPuzzle.fulfilled, (state, action) => {
+                const { puzzle } = new LiChessPuzzleViewModel(action.payload);
+                return puzzle;
+            })
+            .addCase(fetchLiChessDailyPuzzle.rejected, (state, action) => {
+                state.fetchStatus.loading = false;
+                state.fetchStatus.error = action?.error?.message;
+            });
+    },
+});
 
 export const chessComPuzzleSlice = createSlice({
     name: "chessComPuzzle",
@@ -51,24 +62,25 @@ export const chessComPuzzleSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(
-                fetchChessComDailyPuzzle.pending,
-                (state: ChessComPuzzleState) => {
-                    state.loading = true;
-                }
-            )
-            .addCase(fetchChessComDailyPuzzle.fulfilled, (state, action) => {
-                state.loading = false;
-                const viewModel = new ChessComPuzzleViewModel(action.payload); // Pass response
-                state.puzzle = viewModel.puzzle;
-                state.error = null;
+            .addCase(fetchChessComDailyPuzzle.pending, (state) => {
+                state.fetchStatus.loading = true;
+                state.fetchStatus.error = null;
             })
-            .addCase(
-                fetchChessComDailyPuzzle.rejected,
-                (state: ChessComPuzzleState, action) => {
-                    state.loading = false;
-                    state.error = action.error.message!;
-                }
-            );
+            .addCase(fetchChessComDailyPuzzle.fulfilled, (state, action) => {
+                const viewModel = new ChessComPuzzleViewModel(action.payload)
+                    .puzzle;
+                state.fetchStatus.error = null;
+                state.fetchStatus.loading = false;
+                state.puzzleTitle = viewModel.puzzleTitle;
+                state.puzzleUrl = viewModel.puzzleUrl;
+                state.publishTime = viewModel.publishTime;
+                state.initialPuzzleFEN = viewModel.initialPuzzleFEN;
+                state.solutionPgn = viewModel.solutionPgn;
+                state.imageUrl = viewModel.imageUrl;
+            })
+            .addCase(fetchChessComDailyPuzzle.rejected, (state, action) => {
+                state.fetchStatus.loading = false;
+                state.fetchStatus.error = action?.error?.message;
+            });
     },
 });

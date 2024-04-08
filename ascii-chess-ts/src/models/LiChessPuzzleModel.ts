@@ -6,4 +6,8 @@ export interface LiChessPuzzleModel {
     solution: string[];
     themes: string[];
     initialPuzzleFEN: string;
+    fetchStatus: {
+        loading: boolean;
+        error: string | null | undefined;
+    };
 }

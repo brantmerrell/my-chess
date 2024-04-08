@@ -1,16 +1,17 @@
+import defaultChessComPuzzle from '../../data/chessComPuzzle.json';
 import React, { useState, useEffect } from 'react';
 
 export const getChessComDailyPuzzle = async () => {
-  try {
-    const response = await fetch('https://api.chess.com/pub/puzzle'); 
+    try {
+        const response = await fetch('https://api.chess.com/pub/puzzle'); // Assuming this is your Chess.com endpoint
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-      return data;
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error('Chess.com API request failed');
+        }
+    } catch (error) {
+        console.error("API Fetch Error:", error);
+        return defaultChessComPuzzle;
     }
-  } catch (error) {
-      console.error(error);
-  }
 };
-

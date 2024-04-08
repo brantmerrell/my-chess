@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
-
-export interface LichessResponse {
-  // Add response data schema here
-}
+import defaultLiChessPuzzle from '../../data/liChessPuzzle.json';
 
 export const getLiChessDailyPuzzle = async () => {
-  try {
-    const response = await fetch('https://lichess.org/api/puzzle/daily'); 
+    try {
+        const response = await fetch('https://lichess.org/api/puzzle/daily');
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-      return data;
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        } else {
+            throw new Error('LiChess API request failed');
+        }
+    } catch (error) {
+        console.error("API Fetch Error:", error);
+        return defaultLiChessPuzzle;
     }
-  } catch (error) {
-      console.error(error);
-  }
 };
 

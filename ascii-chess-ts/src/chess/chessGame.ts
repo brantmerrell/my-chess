@@ -4,7 +4,11 @@ export class ChessGame {
     private game: Chess;
 
     constructor(fen?: string) {
-        this.game = new Chess(fen);
+        if (fen === undefined) {
+            this.game = new Chess();
+        } else {
+            this.game = new Chess(fen);
+        }
     }
 
     public makeMove(move: string) {

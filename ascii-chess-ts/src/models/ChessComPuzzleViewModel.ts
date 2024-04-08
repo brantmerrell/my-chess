@@ -17,6 +17,10 @@ export class ChessComPuzzleViewModel {
             imageUrl: this.chessComPuzzleResponse.image,
             solutionPgn: pgnArr,
             initialPuzzleFEN: this.chessComPuzzleResponse.fen,
+            fetchStatus: {
+                loading: false,
+                error: null
+            }
         };
     }
 }

@@ -1,6 +1,9 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
+import { ChessComPuzzleModel } from "../models/ChessComPuzzleModel";
+import { LiChessPuzzleModel } from "../models/LiChessPuzzleModel";
+import { SetupOptions } from "../models/SetupOptions";
 import { ChessGame } from "../chess/chessGame";
 import SelectPosition from "./SelectPosition";
 
@@ -8,8 +11,14 @@ const AsciiBoard: React.FC = () => {
     const initialFen =
         "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const [chessGame] = useState(() => new ChessGame(initialFen));
-    const chessComPuzzle = useSelector<RootState>(
+    const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
         (state) => state.chessComPuzzle
+    );
+    const selectedSetup = useSelector<RootState, string>(
+        (state) => state.selectedSetup
+    );
+    const liChessPuzzle = useSelector<RootState, LiChessPuzzleModel | null>(
+        (state) => state.liChessPuzzle
     );
 
     const [fen, setFen] = useState(initialFen);
@@ -20,9 +29,29 @@ const AsciiBoard: React.FC = () => {
         setBoard(chessGame.ascii());
         updateMoves();
     }, [chessGame]);
+    useEffect(() => {
+        switch (selectedSetup) {
+            case SetupOptions.STANDARD:
+                setFen(initialFen);
+                break;
+            case SetupOptions.LICHESS_DAILY_PUZZLE:
+                if (liChessPuzzle !== null) {
+                    setFen(liChessPuzzle.initialPuzzleFEN);
+                }
+                break;
+            case SetupOptions.CHESS_COM_DAILY_PUZZLE:
+                if(chessComPuzzle !== null) {
+                    setFen(chessComPuzzle.initialPuzzleFEN);
+                }
+                break;
+            default:
+                setFen(
+                    initialFen
+                ); // Standard FEN
+        }
+    }, [selectedSetup]); // Include dependencies to trigger the effect
 
     const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("handleFenChange");
         setFen(event.target.value);
     };
     const submitFen = () => {

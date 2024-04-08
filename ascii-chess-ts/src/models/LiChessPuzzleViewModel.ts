@@ -1,38 +1,42 @@
 import { LiChessPuzzleResponse } from "./LiChessPuzzleResponse";
 import { LiChessPuzzleModel } from "./LiChessPuzzleModel";
-import { ChessGame } from '../chess/chessGame';
+import { ChessGame } from "../chess/chessGame";
 
 export class LiChessPuzzleViewModel {
     private liChessPuzzleResponse: LiChessPuzzleResponse;
     constructor(liChessPuzzleResponse: LiChessPuzzleResponse) {
         this.liChessPuzzleResponse = liChessPuzzleResponse;
     }
+
     get puzzle(): LiChessPuzzleModel {
-        const startFen = 'your-standard-fen';
+        const game = new ChessGame(); // Start with empty (standard) chess board
+        const pgnMoves = this.liChessPuzzleResponse.game.pgn
+            .split(/\s+/)
+            .slice(0);
+        let movesApplied = 0;
+        for (const move of pgnMoves) {
+            game.makeMove(move);
+            movesApplied++;
 
-        // Construct game object from startFen
-        const game = new ChessGame(startFen);
-
-        // Split response pgn by space
-        const pgnArr = this.liChessPuzzleResponse.game.pgn.split(' ');
-
-        // For each pgn from index 0 to initialPly, pass to the game loadFEN method
-        for (let i = 0; i < this.liChessPuzzleResponse.puzzle.initialPly; i++) {
-            game.loadFen(pgnArr[i]);
+            if (movesApplied >= this.liChessPuzzleResponse.puzzle.initialPly) {
+                break; // Stop applying moves once we reach the puzzle start position
+            }
         }
 
-        // Call the game.toFen() method and store the output as initialPuzzleFEN
         const initialPuzzleFEN = game.toFen();
 
         return {
-            puzzleId: '123',
-            gameId: '123',
-            puzzleRating: '',
-            puzzlePlays: 123,
-            solution: ['foo', 'bar'],
-            themes: ['hello', 'world'],
-            initialPuzzleFEN: initialPuzzleFEN,
+            puzzleId: this.liChessPuzzleResponse.puzzle.id,
+            gameId: this.liChessPuzzleResponse.game.id,
+            puzzleRating: this.liChessPuzzleResponse.puzzle.rating,
+            puzzlePlays: this.liChessPuzzleResponse.puzzle.plays,
+            solution: this.liChessPuzzleResponse.puzzle.solution,
+            themes: this.liChessPuzzleResponse.puzzle.themes,
+            initialPuzzleFEN,
+            fetchStatus: {
+                loading: false,
+                error: null,
+            },
         };
     }
-
 }

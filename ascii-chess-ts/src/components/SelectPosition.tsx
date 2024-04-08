@@ -1,35 +1,34 @@
-import { useAppDispatch } from "../app/hooks";
-import { RootState } from "../app/store";
 import { useSelector } from "react-redux";
 import React, { useState } from "react";
+import { useAppDispatch } from "../app/hooks";
+import { RootState } from "../app/store";
+import { SetupOptions } from "../models/SetupOptions";
 import {
     fetchChessComDailyPuzzle,
     fetchLiChessDailyPuzzle,
 } from "../reducers/puzzles/puzzles.actions";
+import { setSelectedSetup } from "../reducers/setups/setups.actions";
 
 import "./SelectPosition.css";
 
 const SelectPosition: React.FC = () => {
-    const chessComPuzzle = useSelector<RootState>(
-        (state) => state.chessComPuzzle
-    );
 
     const dispatch = useAppDispatch();
 
-    const [selectedOption, setSelectedOption] = useState("");
+    const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
 
     const handleOptionChange = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
-        setSelectedOption(event.target.value);
-        if (event.target.value === "c.com-daily-puzzle") {
+        dispatch(setSelectedSetup(event.target.value));
+        if (event.target.value === SetupOptions.CHESS_COM_DAILY_PUZZLE) {
             dispatch(fetchChessComDailyPuzzle()).then(() => {
                 console.log("fetchChessComDailyPuzzle action dispatched");
             });
         }
-        if (event.target.value === "lichess-daily-puzzle") {
+        if (event.target.value === SetupOptions.LICHESS_DAILY_PUZZLE) {
             dispatch(fetchLiChessDailyPuzzle()).then(() => {
-                console.log("fetchChessComDailyPuzzle action dispatched");
+                console.log("fetchLiChessDailyPuzzle action dispatched");
             });
         }
     };
@@ -38,14 +37,14 @@ const SelectPosition: React.FC = () => {
         <div>
             <select
                 className="start-fen"
-                value={selectedOption}
+                value={selectedSetup}
                 onChange={handleOptionChange}
             >
-                <option value="standard">Standard Starting Position</option>
-                <option value="lichess-daily-puzzle">
+                <option value={SetupOptions.STANDARD}>Standard Starting Position</option>
+                <option value={SetupOptions.LICHESS_DAILY_PUZZLE}>
                     Daily Lichess Puzzle
                 </option>
-                <option value="c.com-daily-puzzle">
+                <option value={SetupOptions.CHESS_COM_DAILY_PUZZLE}>
                     Daily Chess.com Puzzle
                 </option>
             </select>

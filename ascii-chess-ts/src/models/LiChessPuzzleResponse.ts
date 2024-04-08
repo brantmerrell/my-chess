@@ -9,7 +9,7 @@ export interface LiChessPuzzleResponse {
     };
     puzzle: {
         id: string;
-        rating: number;
+        rating: string;
         plays: number;
         solution: string[];
         themes: string[];
