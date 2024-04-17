@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]  # Install Uvicorn for production
+chess
+httpx
+pytest
