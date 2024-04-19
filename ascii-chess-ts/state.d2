@@ -1,0 +1,37 @@
+_reduxChessFetch: Redux Chess Puzzle Fetch {
+  _components: Components {
+    _selectPosition: SelectPosition {
+      _onClick: onClick() -> fetchChessComDailyPuzzleAction
+    }
+  }
+
+  _actions: Actions {
+    _fetchChessComDailyPuzzleAction: fetchChessComDailyPuzzle()
+  }
+
+  _fetchChessComDailyPuzzleThunk: fetchChessComDailyPuzzle {
+    /* Logic to fetch puzzle from ChessCom */
+  }
+  _genericThunk: Generic Thunk
+  _fetchChessComDailyPuzzleThunk -- _genericThunk
+
+  _genericReducer: Generic Reducer {
+    _md: |md
+      ## Cases
+      * pending
+      * fulfilled
+      * rejected  
+    |
+  }
+
+  _puzzlesReducer: Puzzles Reducer
+  _puzzlesReducer -- _genericReducer
+
+  _store: Store {/* Holds updated puzzle state */}
+
+  _components -> _actions: Dispatches actions
+  _actions -> _puzzlesReducer: Triggers state change
+  _puzzlesReducer -> _store: Updates store state
+  _store -> _components: Notifies components of updates
+}
+
