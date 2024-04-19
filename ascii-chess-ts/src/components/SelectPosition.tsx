@@ -23,12 +23,10 @@ const SelectPosition: React.FC = () => {
         dispatch(setSelectedSetup(event.target.value));
         if (event.target.value === SetupOptions.CHESS_COM_DAILY_PUZZLE) {
             dispatch(fetchChessComDailyPuzzle()).then(() => {
-                console.log("fetchChessComDailyPuzzle action dispatched");
             });
         }
         if (event.target.value === SetupOptions.LICHESS_DAILY_PUZZLE) {
             dispatch(fetchLiChessDailyPuzzle()).then(() => {
-                console.log("fetchLiChessDailyPuzzle action dispatched");
             });
         }
     };

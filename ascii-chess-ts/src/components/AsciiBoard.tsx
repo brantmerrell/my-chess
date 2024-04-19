@@ -47,9 +47,9 @@ const AsciiBoard: React.FC = () => {
             default:
                 setFen(
                     initialFen
-                ); // Standard FEN
+                ); 
         }
-    }, [selectedSetup]); // Include dependencies to trigger the effect
+    }, [selectedSetup, liChessPuzzle, chessComPuzzle]); 
 
     const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFen(event.target.value);
