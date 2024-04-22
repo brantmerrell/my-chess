@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 export const getChessComDailyPuzzle = async () => {
     try {
-        const response = await fetch('https://api.chess.com/pub/puzzle'); // Assuming this is your Chess.com endpoint
+        const response = await fetch('https://api.chess.com/pub/puzzle');
 
         if (response.ok) {
             return await response.json();

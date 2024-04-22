@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, loadFen, makeMove, undoMove } from "../app/store";
+import { initialFen } from "../constants/env";
 import { ChessComPuzzleModel } from "../models/ChessComPuzzleModel";
 import { LiChessPuzzleModel } from "../models/LiChessPuzzleModel";
 import { SetupOptions } from "../models/SetupOptions";
@@ -8,8 +9,9 @@ import { ChessGame } from "../chess/chessGame";
 import SelectPosition from "./SelectPosition";
 
 const AsciiBoard: React.FC = () => {
-    const initialFen =
-        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const chessGameState = useSelector((state: RootState) => state.chessGame);
+    const dispatch = useDispatch();
+
     const [chessGame] = useState(() => new ChessGame(initialFen));
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
         (state) => state.chessComPuzzle
@@ -40,51 +42,34 @@ const AsciiBoard: React.FC = () => {
                 }
                 break;
             case SetupOptions.CHESS_COM_DAILY_PUZZLE:
-                if(chessComPuzzle !== null) {
+                if (chessComPuzzle !== null) {
                     setFen(chessComPuzzle.initialPuzzleFEN);
                 }
                 break;
             default:
-                setFen(
-                    initialFen
-                ); 
+                setFen(initialFen);
         }
-    }, [selectedSetup, liChessPuzzle, chessComPuzzle]); 
+    }, [selectedSetup, liChessPuzzle, chessComPuzzle]);
 
     const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFen(event.target.value);
     };
     const submitFen = () => {
-        try {
-            chessGame.loadFen(fen);
-            setBoard(chessGame.asciiView());
-            updateMoves();
-        } catch (error) {
-            console.error("Invalid FEN string");
-        }
+        dispatch(loadFen(fen));
     };
     const submitMove = () => {
-        try {
-            chessGame.makeMove(selectedMove);
-            setBoard(chessGame.asciiView());
-            updateMoves();
-            setSelectedMove("");
-        } catch (error) {
-            console.error("Error submitting move");
-        }
+        dispatch(makeMove(selectedMove));
+        setSelectedMove('');
     };
 
     const updateMoves = useCallback(() => {
-        const legalMoves = chessGame.getMoves();
-        setMoves(legalMoves);
-    }, [chessGame]);
+        setMoves(chessGameState.moves);  
+    }, [chessGameState.moves]); 
 
-    const undoMove = () => {
-        const move = chessGame.undo();
-        if (move !== null) {
-            setBoard(chessGame.asciiView());
-            updateMoves();
-        }
+    const submitUndoMove = () => {
+        dispatch(undoMove()); 
+        setBoard(chessGameState.fen);  
+        updateMoves();  
     };
 
     return (
@@ -135,7 +120,7 @@ const AsciiBoard: React.FC = () => {
                             Submit Move
                         </button>
                     </div>
-                    <button id="undo" onClick={undoMove}>
+                    <button id="undo" onClick={submitUndoMove}>
                         Undo Move
                     </button>
                 </div>

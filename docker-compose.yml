@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   ascii-chess-ts:
-    build: ./ascii-chess-ts 
+    build: ./ascii-chess-ts
     ports:
-      - "8080:80" 
+      - "8080:80"
+    environment:
+      - API_BASE_URL=http://connector:5000
   connector:
     build: ./connector
     ports:
-      - "5001:5000" 
+      - "5001:8000" 
 

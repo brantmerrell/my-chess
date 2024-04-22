@@ -1,6 +1,11 @@
 .App {
   text-align: left;
 }
+.App .chess-container {
+  display: grid;
+  flex-direction: row;
+  grid-template-columns: 1fr 1fr;
+}
 
 .App-logo {
   height: 40vmin;
@@ -31,6 +36,7 @@
 .title {
   color: orange;
 }
+
 
 @keyframes App-logo-spin {
   from {

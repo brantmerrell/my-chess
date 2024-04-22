@@ -1,8 +1,17 @@
+import chess
 from fastapi import FastAPI, Query
 from chess_utils import get_nodes, get_edges
-import chess
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 @app.get("/adjacencies/{input_string:path}")
 async def get_adjacencies(fen_string: str = Query(..., description="The FEN string representing the board state")):
