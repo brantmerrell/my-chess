@@ -1,0 +1,53 @@
+body {
+    color: orange;
+    margin-bottom: 50px;
+}
+body #selectedFEN {
+  width: 587px;
+  border-radius: 5px;
+}
+body .my-split-layout #fen {
+  width: 650px;
+  border-radius: 5px;
+}
+body pre.shiny-text-output#board {
+  width: 700px;
+  background-color: lightblue;
+  border-radius: 5px;
+  white-space: pre-wrap;
+}
+body pre.shiny-text-output#revisualized {
+  width: 700px;
+  background-color: lightblue;
+  border-radius: 5px;
+}
+body #selectedMove {
+  border-radius: 5px;
+}
+body #move {
+  width: 100px;
+  border-radius: 5px;
+}
+body #submitMove {
+  background-color: darkgreen;
+  border-radius: 5px;
+}
+body #undo {
+  background-color: darkred;
+  border-radius: 5px;
+}
+body #selectedVisual {
+  border-radius: 5px;
+}
+body #mainPanel pre.shiny-text-output#board { 
+    width: 700px;
+    background-color: lightblue;
+    border-radius: 5px;
+    white-space: pre-wrap;
+}
+
+/* Add specificity if needed */
+body #mainPanel #selectedFEN { 
+    width: 587px;
+    border-radius: 5px;
+}

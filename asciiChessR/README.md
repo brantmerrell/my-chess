@@ -19,7 +19,7 @@ Rscript -e "install.packages(c('httr', 'shiny', 'rchess', 'magrittr', 'shinythem
 
 After installing R and the appropriate packages, run the following command from the prototype's root to start the application:  
 ```bash
-Rscript app.R
+Rscript -e 'library(shiny);runApp(port=5679)'
 ```
 Then visit `http://localhost:5979` to interact with the interface.  
 

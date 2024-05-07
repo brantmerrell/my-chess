@@ -1,5 +1,5 @@
 library(httr)
-library(rchess)
+library(chess)
 library(magrittr)
 
 getLiChessPuzzle <- function(link = "https://lichess.org/api/puzzle/daily") {
@@ -12,9 +12,9 @@ getLiChessPuzzle <- function(link = "https://lichess.org/api/puzzle/daily") {
     }
     pgn <- strsplit(content$game$pgn," ")[[1]]
     initialPly <- content$puzzle$initialPly
-    game <- Chess$new()
+    game <- game()
     for (move in pgn[1:(initialPly+1)]) {
-        game$move(move)
+        game <- game %>% move(move)
     }
-    return(game$fen())
+    return(fen(game))
 }
