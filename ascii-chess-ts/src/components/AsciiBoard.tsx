@@ -10,6 +10,7 @@ import SelectPosition from "./SelectPosition";
 
 const AsciiBoard: React.FC = () => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
+
     const dispatch = useDispatch();
 
     const [chessGame] = useState(() => new ChessGame(initialFen));
@@ -31,6 +32,11 @@ const AsciiBoard: React.FC = () => {
         setBoard(chessGame.asciiView());
         updateMoves();
     }, [chessGame]);
+    useEffect(() => {
+        const chessGame = new ChessGame(chessGameState.fen); 
+        setBoard(chessGame.asciiView()); 
+        setMoves(chessGameState.moves); 
+    }, [chessGameState]);
     useEffect(() => {
         switch (selectedSetup) {
             case SetupOptions.STANDARD:
@@ -59,17 +65,17 @@ const AsciiBoard: React.FC = () => {
     };
     const submitMove = () => {
         dispatch(makeMove(selectedMove));
-        setSelectedMove('');
+        setSelectedMove("");
     };
 
     const updateMoves = useCallback(() => {
-        setMoves(chessGameState.moves);  
-    }, [chessGameState.moves]); 
+        setMoves(chessGameState.moves);
+    }, [chessGameState.moves]);
 
     const submitUndoMove = () => {
-        dispatch(undoMove()); 
-        setBoard(chessGameState.fen);  
-        updateMoves();  
+        dispatch(undoMove());
+        setBoard(chessGameState.fen);
+        updateMoves();
     };
 
     return (

@@ -8,6 +8,7 @@ source("R/helperSummary.R")
 source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
+source("getLinks.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
 
@@ -87,7 +88,16 @@ server <- function(input, output, session) {
     })
 
     output$revisualized <- renderText({
-        if (input$selectedVisual == "FEN map") {
+        if (input$selectedVisual == "Link Map") {
+            links <- getLinks(chess$fen())
+            output$revisualized <- renderText({
+                graph_text <-c() 
+                for (edge in links$edges) {
+                    graph_text <- c(graph_text, paste(edge$source, edge$target, sep = "->"))
+                }
+                graph_text
+            })
+        } else if (input$selectedVisual == "FEN map") {
             helperVisual() %>%
                 paste(collapse = "\n")
         } else {
