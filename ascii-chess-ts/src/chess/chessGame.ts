@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-function asciiSub(
+export function asciiSub(
     patternAscii: string,
     replacementAscii: string,
     asciiLines: string[]
@@ -14,7 +14,7 @@ function asciiSub(
         }
     });
 }
-function wrapString(str: string, maxLen: number) {
+export function wrapString(str: string, maxLen: number) {
     const regex = new RegExp(`(.{1,${maxLen}})(\\s+|.{1,${maxLen}}$)`, "g");
 
     const matches = str.match(regex);

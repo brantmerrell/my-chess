@@ -1,0 +1,61 @@
+vars: {
+  d2-config: {
+    layout-engine: dagre
+    theme-id: 103
+  }
+}
+_chessGameApp: Chess Game Application {
+  _uiComponents: UI Components {
+    _chessBoardComponent: ChessBoardComponent {
+      _submitFenButton: SubmitFenButton
+      _submitMoveButton: SubmitMoveButton
+      _undoMoveButton: UndoMoveButton
+    }
+  }
+
+  _reduxActions: Redux Actions {
+    _loadFenAction: loadFen(fen: string)
+    _makeMoveAction: makeMove(move: string)
+    _undoMoveAction: undoMove()
+  }
+
+  _chessGameSlice: Chess Game Slice {
+    _chessGameState: |md
+      ## ChessGameState
+      * FEN
+      * Moves
+      * History
+    |
+    _reducers: |md
+      ## Reducers
+      * loadFen
+      * makeMove
+      * undoMove  
+    |
+  }
+
+  _reduxStore: Redux Store {/* Holds the state of the chess game */}
+
+  _chessLogic: |md
+    ## class ChessGame  
+    * Constructor(fen: string)
+    * getMoves() -> array
+    * makeMove(move: string)
+    * undo()
+    * toFen() -> string
+  |
+
+  _uiComponents._chessBoardComponent._submitFenButton -> _reduxActions._loadFenAction: Dispatch
+  _uiComponents._chessBoardComponent._submitMoveButton -> _reduxActions._makeMoveAction: Dispatch
+  _uiComponents._chessBoardComponent._undoMoveButton -> _reduxActions._undoMoveAction: Dispatch
+
+  _reduxActions -> _chessGameSlice._reducers: Triggers state change
+
+  _chessGameSlice -> _reduxStore: Updates store state
+
+  _uiComponents <- _reduxStore: Notifies components of updates
+
+  _chessLogic -> _chessGameSlice._reducers: Defines logic for actions
+
+  _uiComponents._chessBoardComponent <- _chessLogic
+}

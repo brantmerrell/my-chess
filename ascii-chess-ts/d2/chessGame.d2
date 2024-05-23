@@ -1,0 +1,58 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 104
+  }
+}
+
+_chessGameManagement: Chess Game Management {
+  _components: Components {
+    _asciiBoard: AsciiBoard {
+      _submitFen: SubmitFen
+      _submitMove: SubmitMove
+      _undoMove: UndoMove
+    }
+  }
+
+  _actions: Actions {
+    _loadFen: loadFen()
+    _makeMove: makeMove()
+    _undoMove: undoMove()
+  }
+
+  _chessGameReducer: Chess Game Reducer {
+    _chessGameState: |md
+      ## ChessGameState
+      * FEN
+      * Moves
+      * History
+    |
+    _md: |md
+      ## Cases
+      * loadFen
+      * makeMove
+      * undoMove  
+    |
+  }
+
+  _store: Store {/* Holds chess game state */}
+
+  _chessGameClass: |md
+    ## class ChessGame:  
+    * Constructor
+    * getMoves() -> _moves
+    * makeMove(move: string)
+    * undo()
+    * toFen() -> _fen
+  |
+
+  _components._asciiBoard._submitFen -> _actions._loadFen: Dispatch
+  _components._asciiBoard._submitMove -> _actions._makeMove: Dispatch
+  _components._asciiBoard._undoMove -> _actions._undoMove: Dispatch
+  _actions -> _chessGameReducer: Triggers state change
+  _chessGameReducer -> _store: Updates store state
+  _components <- _store: Notifies components of updates
+
+  _chessGameClass -> _chessGameReducer: Defines logic for actions
+  _components._asciiBoard <- _chessGameClass
+}

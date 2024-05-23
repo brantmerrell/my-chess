@@ -1,3 +1,9 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 104
+  }
+}
 _reduxChessFetch: Redux Chess Puzzle Fetch {
   _components: Components {
     _selectPosition: SelectPosition {
@@ -9,11 +15,8 @@ _reduxChessFetch: Redux Chess Puzzle Fetch {
     _fetchChessComDailyPuzzleAction: fetchChessComDailyPuzzle()
   }
 
-  _fetchChessComDailyPuzzleThunk: fetchChessComDailyPuzzle {
-    /* Logic to fetch puzzle from ChessCom */
-  }
-  _genericThunk: Generic Thunk
-  _fetchChessComDailyPuzzleThunk -- _genericThunk
+  _Thunk: Thunk
+  _actions._fetchChessComDailyPuzzleAction -- _Thunk
 
   _genericReducer: Generic Reducer {
     _md: |md

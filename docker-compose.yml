@@ -9,6 +9,7 @@ services:
       - API_BASE_URL=http://connector:5000
   connector:
     build: ./connector
+    command: tail -f /dev/null
     ports:
       - "5001:8000" 
 

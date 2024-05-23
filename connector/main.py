@@ -1,5 +1,6 @@
 import chess
-from fastapi import FastAPI, Query
+import subprocess
+from fastapi import FastAPI, Query, Request, Response
 from chess_utils import get_nodes, get_edges
 from starlette.middleware.cors import CORSMiddleware
 
@@ -36,6 +37,34 @@ async def get_links(fen_string: str = Query(..., description="The FEN string rep
     edges = get_edges(board)
 
     return {"nodes": nodes, "edges": edges}
+
+@app.put("/graphdag")
+async def generate_graphdag(request: Request):
+    data = await request.json()
+    edges = data["edges"]
+    filtered_edges = []
+    edges_seen = set()
+    for edge in edges:
+        source = edge['source']
+        target = edge['target']
+        edge_tuple = (source, target)
+        inverse_edge_tuple = (target, source)
+        if inverse_edge_tuple not in edges_seen:
+            filtered_edges.append(edge)
+            edges_seen.add(edge_tuple)
+    formatted_edges = [f"{edge['source']}->{edge['target']}" for edge in filtered_edges]
+    input_for_diagon = "\n".join(formatted_edges)
+    command = ["diagon", "GraphDAG"]
+    process = subprocess.Popen(command,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               text=True)
+    stdout, stderr = process.communicate(input=input_for_diagon)
+    if process.returncode != 0:
+        return {"error": "Error executing command", "stderr": stderr}
+    else:
+        return {"ascii_art": stdout}
 
 if __name__ == "__main__":
     import uvicorn
