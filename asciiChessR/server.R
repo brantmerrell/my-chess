@@ -18,13 +18,18 @@ server <- function(input, output, session) {
   asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
   helperVisual <- reactiveVal(capture.output(helperSummary(chess)))
   links <- reactiveVal(getLinks(chess$fen()))
-  # Function to update all reactive values
   updateChessDependencies <- function() {
     asciiBoard(capture.output(mySummary(chess)))
     helperVisual(capture.output(helperSummary(chess)))
-    links(getLinks(chess$fen())) # Update links
+    links(getLinks(chess$fen()))
+    updateAvailableMoves()
   }
 
+  updateAvailableMoves <- function() {
+    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
+    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
+  }
+  updateAvailableMoves()
   observeEvent(input$selectedFEN, {
     updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
   })
@@ -33,18 +38,19 @@ server <- function(input, output, session) {
     fen_result <- tryCatch(
       {
         chess$set_fen(input$fen)
+        TRUE
       },
       error = function(e) {
         FALSE
       }
     )
-    if (class(fen_result) == "logical") {
+    if (!fen_result) {
       showNotification("Invalid FEN. Please try again.")
     } else {
       if (input$selectedFEN == "lichess daily puzzle") {
         chess <<- lichess_state
       }
-      updateChessDependencies() # Update all dependencies
+      updateChessDependencies()
     }
   })
 
@@ -61,13 +67,13 @@ server <- function(input, output, session) {
     if (!move_result) {
       showNotification("Invalid move. Please try again.")
     } else {
-      updateChessDependencies() # Update all dependencies
+      updateChessDependencies()
     }
   })
 
   observeEvent(input$undo, {
     chess$pop()
-    updateChessDependencies() # Update all dependencies
+    updateChessDependencies()
   })
 
   observeEvent(input$selectedMove, {
@@ -75,13 +81,13 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$move, {
+    # Placeholder for potential additional functionality
   })
 
-  observe({
-    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
-    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-  })
-
+#  observe({
+#    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
+#    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
+#  })
   output$board <- renderText({
     asciiBoard() %>%
       paste(collapse = "\n") %>%

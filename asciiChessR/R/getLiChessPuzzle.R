@@ -1,5 +1,4 @@
 library(httr)
-library(chess)
 library(magrittr)
 
 getLiChessPuzzle <- function(link = "https://lichess.org/api/puzzle/daily") {

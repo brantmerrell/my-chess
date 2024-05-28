@@ -23,8 +23,8 @@ mySummary <- function(chessObject, patterns = c("\\."), replacements = c(" ")) {
   boardLines %>% asciiPrint()
 
   cat(paste("\nTurn:", ifelse(chessObject$turn, "White", "Black"), "\n"))
-  history <- paste(c("History:", getMoveHistorySan(chessObject$move_stack)), collapse = " ")
-  cat(history, "\n")
+  #history <- paste(c("History:", getMoveHistorySan(chessObject$move_stack)), collapse = " ")
+  #cat(history, "\n")
 
   cat("\nOptions to move:\n")
   cat(getLegalMovesSan(fen) %>% sort())

@@ -1,15 +1,25 @@
-version: '3.8' 
+version: '3.7'
 
 services:
-  ascii-chess-ts:
-    build: ./ascii-chess-ts
-    ports:
-      - "8080:80"
-    environment:
-      - API_BASE_URL=http://connector:5000
   connector:
-    build: ./connector
-    command: tail -f /dev/null
+    build:
+      context: ./connector
     ports:
-      - "5001:8000" 
+      - "8000:8000"
+    networks:
+      - chessnet
+
+  asciichessr:
+    build:
+      context: ./asciiChessR
+    ports:
+      - "3838:3838"
+    depends_on:
+      connector:
+        condition: service_started
+    networks:
+      - chessnet
+
+networks:
+  chessnet:
 

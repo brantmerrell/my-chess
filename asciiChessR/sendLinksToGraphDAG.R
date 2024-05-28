@@ -1,10 +1,11 @@
 library(httr)
+source("config.R")
 
 sendLinksToGraphDAG <- function(links) {
   print("sendLinksToGraphDAG(links)")
-  base_url <- "http://127.0.0.1:8000"
+  #base_url <- "http://connector:8000"
   endpoint <- "/graphdag/"
-  url <- paste0(base_url, endpoint)
+  url <- paste0(api_url, endpoint)
 
   payload <- list(edges = links$edges)
 
