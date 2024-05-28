@@ -4,5 +4,4 @@ source("ui.R")
 source("server.R")
 
 
-shinyApp(ui, server, options=list(port=5679))
-
+shinyApp(ui, server, options = list(port = 5679))

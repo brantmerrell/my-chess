@@ -12,115 +12,101 @@ source("getLinks.R")
 source("sendLinksToGraphDAG.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
+  chess <- py_chess$Board()
+  lichess_state <- chess
 
-    chess <- py_chess$Board()
-    liChessState <- chess
+  asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
+  helperVisual <- reactiveVal(capture.output(helperSummary(chess)))
+  links <- reactiveVal(getLinks(chess$fen()))
+  # Function to update all reactive values
+  updateChessDependencies <- function() {
+    asciiBoard(capture.output(mySummary(chess)))
+    helperVisual(capture.output(helperSummary(chess)))
+    links(getLinks(chess$fen())) # Update links
+  }
 
-    asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
-    helperVisual <- reactiveVal(capture.output(helperSummary(chess)))
+  observeEvent(input$selectedFEN, {
+    updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
+  })
 
-    observeEvent(input$selectedFEN, {
-                     updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
-})
+  observeEvent(input$submitFEN, {
+    fen_result <- tryCatch(
+      {
+        chess$set_fen(input$fen)
+      },
+      error = function(e) {
+        FALSE
+      }
+    )
+    if (class(fen_result) == "logical") {
+      showNotification("Invalid FEN. Please try again.")
+    } else {
+      if (input$selectedFEN == "lichess daily puzzle") {
+        chess <<- lichess_state
+      }
+      updateChessDependencies() # Update all dependencies
+    }
+  })
 
-    observeEvent(input$submitFEN, {
-                     fen_result <- tryCatch({
-                         chess$set_fen(input$fen)
-                     }, error = function(e) {
-                         FALSE
-                     })
-                     if (class(fen_result) == "logical") {
-                         showNotification("Invalid FEN. Please try again.")
-                     } else {
-                         if (input$selectedFEN == "lichess daily puzzle") {
-                             chess <<- liChessState
-                         }
-                         asciiBoard(capture.output(mySummary(chess)))
-                         helperVisual(capture.output(helperSummary(chess)))
-                         availableMoves <- getLegalMovesSan(chess$fen()) %>% sort
-                         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-                     }
-})
+  observeEvent(input$submitMove, {
+    move_result <- tryCatch(
+      {
+        chess$push_san(input$move)
+        TRUE
+      },
+      error = function(e) {
+        FALSE
+      }
+    )
+    if (!move_result) {
+      showNotification("Invalid move. Please try again.")
+    } else {
+      updateChessDependencies() # Update all dependencies
+    }
+  })
 
-    observeEvent(input$submitMove, {
-                     move_result <- tryCatch({
-                         chess$push_san(input$move)
-                         TRUE
-                     }, error = function(e) {
-                         FALSE
-                     })
+  observeEvent(input$undo, {
+    chess$pop()
+    updateChessDependencies() # Update all dependencies
+  })
 
-                     if (!move_result) {
-                         showNotification("Invalid move. Please try again.")
-                     } else {
-                         asciiBoard(capture.output(mySummary(chess)))
-                         helperVisual(capture.output(helperSummary(chess)))
-                         availableMoves <- getLegalMovesSan(chess$fen()) %>% sort
-                         updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-                     }
-})
+  observeEvent(input$selectedMove, {
+    updateTextInput(session, "move", value = input$selectedMove)
+  })
 
-    observeEvent(input$undo, {
-                     chess$pop()
-                     asciiBoard(capture.output(mySummary(chess)))
-                     helperVisual(capture.output(helperSummary(chess)))
-                     updateTextInput(session, "move", value = input$selectedMove)
-                     availableMoves <- getLegalMovesSan(chess$fen()) %>% sort
-                     updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-})
+  observeEvent(input$move, {
+  })
 
-    observeEvent(input$selectedMove, {
-                     updateTextInput(session, "move", value = input$selectedMove)
-})
+  observe({
+    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
+    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
+  })
 
-    observeEvent(input$move, {
-})
+  output$board <- renderText({
+    asciiBoard() %>%
+      paste(collapse = "\n") %>%
+      gsub(
+        pattern = "\\.",
+        replacement = " "
+      )
+  })
 
-    observe({
-        availableMoves <- getLegalMovesSan(chess$fen()) %>% sort
-        updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-    })
-
-    output$board <- renderText({
-        asciiBoard() %>% 
-            paste(collapse = "\n") %>%
-            gsub(pattern = "\\.",
-                 replacement = " ")
-    })
-
-    output$revisualized <- renderText({
-        if (input$selectedVisual == "Diagon Links") {
-            links <- getLinks(chess$fen())
-            output$revisualized <- renderText({
-                # Send links to the graphdag endpoint
-                graphdag_response <- sendLinksToGraphDAG(links)
-
-                # Extract the X-ASCII-Art header if it exists
-                ascii_art <- headers(graphdag_response)$`x-ascii-art`
-
-                # Check if the ASCII art is available
-                if (!is.null(ascii_art)) {
-                    return(ascii_art)
-                } else {
-                    return("No ASCII art returned from the /graphdag endpoint.")
-                }
-            })
-
-        } else if (input$selectedVisual == "Link List") {
-            links <- getLinks(chess$fen())
-            output$revisualized <- renderText({
-                graph_text <-c() 
-                for (edge in links$edges) {
-                    graph_text <- c(graph_text, paste(edge$source, edge$target, sep = "->"))
-                }
-                graph_text
-            })
-        } else if (input$selectedVisual == "FEN map") {
-            helperVisual() %>%
-                paste(collapse = "\n")
-        } else {
-            "Select Helper Visual"
-        }
-    })
+  output$revisualized <- renderText({
+    if (input$selectedVisual == "Diagon Links") {
+      graphdag_response <- sendLinksToGraphDAG(links())
+      ascii_art <- paste(unlist(strsplit(graphdag_response[[1]], "\n")), collapse = "\n")
+      if (!is.null(ascii_art) && nzchar(ascii_art)) {
+        return(ascii_art)
+      } else {
+        return("No ASCII graph returned from the /graphdag endpoint.")
+      }
+    } else if (input$selectedVisual == "Link List") {
+      graph_text <- paste(sapply(links()$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
+      return(graph_text)
+    } else if (input$selectedVisual == "FEN map") {
+      return(paste(helperVisual(), collapse = "\n"))
+    } else {
+      return("Select Helper Visual")
+    }
+  })
 }
-
