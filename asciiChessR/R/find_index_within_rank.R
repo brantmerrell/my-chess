@@ -41,7 +41,7 @@ find_index_within_rank <- function(rank_string, square) {
 }
 
 # test cases
-print(paste(find_index_within_rank("8", "c1"), "expect 1"))
-print(paste(find_index_within_rank("8", "c8"), "expect 1"))
-print(paste(find_index_within_rank("PPPP4", "c8"), "expect 3"))
-print(paste(find_index_within_rank("2P5", "c4"), "expect 2"))
+#print(paste(find_index_within_rank("8", "c1"), "expect 1"))
+#print(paste(find_index_within_rank("8", "c8"), "expect 1"))
+#print(paste(find_index_within_rank("PPPP4", "c8"), "expect 3"))
+#print(paste(find_index_within_rank("2P5", "c4"), "expect 2"))

@@ -24,7 +24,7 @@ find_index_of_rank <- function(fen, square) {
 }
 
 # test cases
-print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c2"), "expect 26"))
-print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c4"), "expect 22"))
-print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1", "c4"), "expect 22")) # returns 24
-print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c7"), "expect 9"))
+#print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c2"), "expect 26"))
+#print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c4"), "expect 22"))
+#print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1", "c4"), "expect 22")) # returns 24
+#print(paste(find_index_of_rank("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "c7"), "expect 9"))

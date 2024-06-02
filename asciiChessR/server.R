@@ -2,9 +2,9 @@ library(httr)
 library(reticulate)
 library(magrittr)
 source("chess_utils.R")
-source("R/mySummary.R")
+source("R/renderAsciiSummary.R")
 source("R/globals.R")
-source("R/helperSummary.R")
+source("R/fenMap.R")
 source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
@@ -16,12 +16,12 @@ server <- function(input, output, session) {
   chess <- py_chess$Board()
   lichess_state <- chess
 
-  asciiBoard <- reactiveVal(capture.output(mySummary(chess)))
-  helperVisual <- reactiveVal(capture.output(helperSummary(chess)))
+  asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
+  helperVisual <- reactiveVal(capture.output(fenMap(chess)))
   links <- reactiveVal(getLinks(chess$fen()))
   updateChessDependencies <- function() {
-    asciiBoard(capture.output(mySummary(chess)))
-    helperVisual(capture.output(helperSummary(chess)))
+    asciiBoard(capture.output(renderAsciiSummary(chess)))
+    helperVisual(capture.output(fenMap(chess)))
     links(getLinks(chess$fen()))
     updateAvailableMoves()
   }

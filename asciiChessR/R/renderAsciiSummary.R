@@ -3,7 +3,7 @@ source("R/asciiPrint.R")
 source("R/asciiSub.R")
 source("chess_utils.R")
 
-mySummary <- function(chessObject, patterns = c("\\."), replacements = c(" ")) {
+renderAsciiSummary <- function(chessObject, patterns = c("\\."), replacements = c(" ")) {
   fen <- chessObject$fen()
   cat(paste("FEN:", fen, "\n"))
 
