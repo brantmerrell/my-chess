@@ -1,5 +1,6 @@
 library(shiny)
 source("R/fen_map.R")
+source("chess_utils.R")
 source("ui.R")
 source("server.R")
 

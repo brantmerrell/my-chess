@@ -1,9 +1,9 @@
 library(httr)
+library(jsonlite)
+library(igraph)
 source("config.R")
-
+source("R/remove_all_cycles.R")
 sendLinksToGraphDAG <- function(links) {
-  print("sendLinksToGraphDAG(links)")
-  #base_url <- "http://connector:8000"
   endpoint <- "/graphdag/"
   url <- paste0(api_url, endpoint)
 

@@ -23,6 +23,12 @@ Rscript -e 'library(shiny);runApp(port=5679)'
 ```
 Then visit `http://localhost:5979` to interact with the interface.  
 
+Code Style follows the default settings of the styler package. 
+
+```bash
+Rscript -e "library(styler); style_dir()"
+```
+
 ## Interface Overview
 
 The interface consists of four sections. From top to bottom, they are as follows:  

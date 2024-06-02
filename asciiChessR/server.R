@@ -1,17 +1,18 @@
 library(httr)
 library(reticulate)
 library(magrittr)
-source("getLegalMovesSan.R")
+source("chess_utils.R")
 source("R/mySummary.R")
 source("R/globals.R")
 source("R/helperSummary.R")
 source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
-source("getLinks.R")
-source("sendLinksToGraphDAG.R")
+source("R/getLinks.R")
+source("R/sendLinksToGraphDAG.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
+  options(shiny.error = browser)
   chess <- py_chess$Board()
   lichess_state <- chess
 
@@ -72,22 +73,23 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$undo, {
-    chess$pop()
-    updateChessDependencies()
+    if (length(chess$move_stack) > 0) {
+      chess$pop()
+      updateChessDependencies()
+    }
   })
 
   observeEvent(input$selectedMove, {
     updateTextInput(session, "move", value = input$selectedMove)
   })
 
-  observeEvent(input$move, {
-    # Placeholder for potential additional functionality
-  })
+  # observeEvent(input$move, {
+  # })
 
-#  observe({
-#    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
-#    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-#  })
+  #  observe({
+  #    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
+  #    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
+  #  })
   output$board <- renderText({
     asciiBoard() %>%
       paste(collapse = "\n") %>%
