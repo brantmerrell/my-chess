@@ -29,7 +29,7 @@ ui <- fluidPage(
         class = "my-split-layout"
       ),
       h3("Helper Visual"),
-      selectInput("selectedVisual", NULL, c("No Visual Selected", "FEN map", "Link List", "Diagon Links"), selectize = FALSE),
+      selectInput("selectedVisual", NULL, c("No Visual Selected", "FEN description", "FEN map", "Link List", "Diagon Links"), selectize = FALSE),
       verbatimTextOutput("revisualized"),
     )
   )

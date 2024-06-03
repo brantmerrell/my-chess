@@ -5,6 +5,7 @@ source("chess_utils.R")
 source("R/renderAsciiSummary.R")
 source("R/globals.R")
 source("R/fenMap.R")
+source("R/fen_description.R")
 source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
@@ -19,10 +20,15 @@ server <- function(input, output, session) {
   asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
   helperVisual <- reactiveVal(capture.output(fenMap(chess)))
   links <- reactiveVal(getLinks(chess$fen()))
+  fenDescription <- reactiveVal({
+    fen_description(chess$fen(), verbose_ranks = TRUE) %>%
+        as.yaml()
+  })
   updateChessDependencies <- function() {
     asciiBoard(capture.output(renderAsciiSummary(chess)))
     helperVisual(capture.output(fenMap(chess)))
     links(getLinks(chess$fen()))
+    fenDescription(fen_description(chess$fen(), verbose_ranks = TRUE) %>% as.yaml())
     updateAvailableMoves()
   }
 
@@ -83,13 +89,6 @@ server <- function(input, output, session) {
     updateTextInput(session, "move", value = input$selectedMove)
   })
 
-  # observeEvent(input$move, {
-  # })
-
-  #  observe({
-  #    availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
-  #    updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
-  #  })
   output$board <- renderText({
     asciiBoard() %>%
       paste(collapse = "\n") %>%
@@ -113,6 +112,8 @@ server <- function(input, output, session) {
       return(graph_text)
     } else if (input$selectedVisual == "FEN map") {
       return(paste(helperVisual(), collapse = "\n"))
+    } else if (input$selectedVisual == "FEN description") {
+      return(fenDescription())
     } else {
       return("Select Helper Visual")
     }
