@@ -10,8 +10,6 @@ sendLinksToGraphDAG <- function(links) {
   payload <- list(edges = links$edges)
 
   response <- PUT(url, body = payload, encode = "json")
-  print("response:")
-  print(response)
 
   if (http_status(response)$category == "Success") {
     return(content(response, "parsed"))
