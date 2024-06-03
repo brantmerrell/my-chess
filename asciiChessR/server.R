@@ -1,6 +1,7 @@
 library(httr)
 library(reticulate)
 library(magrittr)
+library(yaml)
 source("chess_utils.R")
 source("R/renderAsciiSummary.R")
 source("R/globals.R")
