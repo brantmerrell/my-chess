@@ -1,4 +1,6 @@
 import chess
+import networkx as nx
+from typing import List, Dict
 
 
 def get_nodes(board):
@@ -37,4 +39,25 @@ def get_edges(board):
                     "target": chess.square_name(square)
                 })
     return edges
+
+
+def build_acyclic_graph(edges: List[Dict[str, str]]) -> nx.DiGraph:
+    """
+    Build an acyclic directed graph by adding edges iteratively and skipping edges that would create a cycle.
+    accepts edge data as a list of dictionaries with 'source' and 'target' keys
+    returns an acyclic directed graph
+    """
+    # initialize empty directed graph
+    DG = nx.DiGraph()
+    # iterate through edge data
+    for edge in edges:
+        # add edge
+        DG.add_edge(edge['source'], edge['target'])
+        # check if the graph is acyclic
+        if not nx.is_directed_acyclic_graph(DG):
+            # if not, remove the edge
+            DG.remove_edge(edge['source'], edge['target'])
+    # return the graph
+    return DG
+
 

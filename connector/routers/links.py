@@ -1,6 +1,6 @@
 import chess
 from fastapi import APIRouter, Query
-from chess_utils import get_nodes, get_edges
+from utils import get_nodes, get_edges
 
 router = APIRouter()
 
