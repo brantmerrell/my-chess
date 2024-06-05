@@ -1,6 +1,8 @@
 import chess
 import networkx as nx
-from typing import List, Dict
+import matplotlib.pyplot as plt
+from typing import List, Dict, Union
+from matplotlib.figure import Figure
 
 
 def get_nodes(board):
@@ -21,7 +23,6 @@ def get_edges(board):
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
-            # Determine attackers and defenders for occupied squares only
             attackers = board.attackers(not piece.color, square)
             defenders = board.attackers(piece.color, square)
 
@@ -47,17 +48,38 @@ def build_acyclic_graph(edges: List[Dict[str, str]]) -> nx.DiGraph:
     accepts edge data as a list of dictionaries with 'source' and 'target' keys
     returns an acyclic directed graph
     """
-    # initialize empty directed graph
     DG = nx.DiGraph()
-    # iterate through edge data
     for edge in edges:
-        # add edge
         DG.add_edge(edge['source'], edge['target'])
-        # check if the graph is acyclic
         if not nx.is_directed_acyclic_graph(DG):
-            # if not, remove the edge
             DG.remove_edge(edge['source'], edge['target'])
-    # return the graph
     return DG
+
+
+def visualize_graph(
+    edges: List[Dict[str, str]], is_directed: bool = True, output: str = "str"
+) -> Union[str, Figure]:
+    """
+    Visualize a graph in text form
+    Accepts as arguments:
+    - edges as a list of dictionaries with 'source' and 'target' keys
+    - is_directed as a boolean indicating whether the graph is directed
+    - output as a string 'str' or 'Figure'
+    returns a string representation of the graph
+    """
+    if is_directed:
+        G = nx.DiGraph()
+    else:
+        G = nx.Graph()
+    for edge in edges:
+        G.add_edge(edge["source"], edge["target"])
+    if output == "str":
+        text_graph_lines = nx.readwrite.text.generate_network_text(G)
+        text_graph = "\n".join(text_graph_lines)
+        return text_graph
+    elif output == "Figure":
+        fig = plt.figure()
+        nx.draw(G, with_labels=True)
+        return plt
 
 

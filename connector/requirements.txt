@@ -1,6 +1,7 @@
 fastapi
-uvicorn[standard]  # Install Uvicorn for production
+uvicorn[standard]
 chess
 httpx
 pytest
 networkx
+matplotlib
