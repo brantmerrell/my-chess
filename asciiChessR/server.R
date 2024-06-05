@@ -23,7 +23,7 @@ server <- function(input, output, session) {
   links <- reactiveVal(getLinks(chess$fen()))
   fenDescription <- reactiveVal({
     fen_description(chess$fen(), verbose_ranks = TRUE) %>%
-        as.yaml()
+      as.yaml()
   })
   updateChessDependencies <- function() {
     asciiBoard(capture.output(renderAsciiSummary(chess)))

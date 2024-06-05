@@ -44,4 +44,3 @@ fen_description <- function(fen, verbose_ranks = FALSE) {
 
   return(description)
 }
-

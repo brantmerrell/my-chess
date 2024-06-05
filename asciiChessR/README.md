@@ -14,7 +14,7 @@ To run asciiChessR, R must be installed as well as the following R packages:
 
 One way to install these packages is to run the following command:  
 ```bash
-Rscript -e "install.packages(c('httr', 'shiny', 'rchess', 'magrittr', 'shinythemes'))"
+Rscript -e "install.packages(c('magrittr','shiny', 'remotes', 'reticulate', 'httr', 'shinythemes', 'igraph', 'yaml'))"
 ```
 
 After installing R and the appropriate packages, run the following command from the prototype's root to start the application:  
