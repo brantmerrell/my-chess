@@ -1,4 +1,5 @@
 library(httr)
+library(ggplot2)
 library(reticulate)
 library(magrittr)
 library(yaml)
@@ -107,33 +108,65 @@ server <- function(input, output, session) {
         replacement = " "
       )
   })
+  output$dynamicOutput <- renderUI({
+    if (input$selectedVisual %in% c("Table View", "Plot View")) {
+      if (input$selectedVisual == "Table View") {
+        dataTableOutput("tableView")
+      } else if (input$selectedVisual == "Plot View") {
+        plotOutput("plotView")
+      }
+    } else {
+      verbatimTextOutput("revisualized")
+    }
+  })
 
   output$revisualized <- renderText({
-    if (input$selectedVisual == "Diagon Links") {
-      links_data <- links()
-      if (identical(links_data, server_down_message)) {
-        return(paste(server_down_message, collapse = "\n"))
-      }
-      graphdag_response <- sendLinksToGraphDAG(links_data)
-      ascii_art <- paste(unlist(strsplit(graphdag_response[[1]], "\n")), collapse = "\n")
-      if (!is.null(ascii_art) && nzchar(ascii_art)) {
-        return(ascii_art)
-      } else {
-        return("No ASCII graph returned from the /graphdag endpoint.")
-      }
-    } else if (input$selectedVisual == "Link List") {
-      links_data <- links()
-      if (identical(links_data, server_down_message)) {
-        return(paste(server_down_message, collapse = "\n"))
-      }
-      graph_text <- paste(sapply(links_data$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
-      return(graph_text)
-    } else if (input$selectedVisual == "FEN map") {
-      return(paste(helperVisual(), collapse = "\n")) # Adjust this if it needs server access
-    } else if (input$selectedVisual == "FEN description") {
-      return(fenDescription()) # Adjust this if it needs server access
-    } else {
-      return("Select Helper Visual")
-    }
+    switch(input$selectedVisual,
+      "Diagon Links" = {
+        links_data <- links()
+        if (identical(links_data, server_down_message)) {
+          paste(server_down_message, collapse = "\n")
+        } else {
+          graphdag_response <- sendLinksToGraphDAG(links_data)
+          ascii_art <- paste(unlist(strsplit(graphdag_response[[1]], "\n")), collapse = "\n")
+          if (!is.null(ascii_art) && nzchar(ascii_art)) {
+            ascii_art
+          } else {
+            "No ASCII graph returned from the /graphdag endpoint."
+          }
+        }
+      },
+      "Link List" = {
+        links_data <- links()
+        if (identical(links_data, server_down_message)) {
+          paste(server_down_message, collapse = "\n")
+        } else {
+          graph_text <- paste(sapply(links_data$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
+          graph_text
+        }
+      },
+      "FEN map" = {
+        paste(helperVisual(), collapse = "\n")
+      },
+      "FEN description" = {
+        fenDescription()
+      },
+      "Select Helper Visual"
+    )
+  })
+
+  # Data table for Table View
+  output$tableView <- DT::renderDT({
+    data.frame(Number = 1:10, Letter = LETTERS[1:10])
+  })
+
+  # Plot for Plot View
+  output$plotView <- renderPlot({
+    data <- data.frame(x = 1:10, y = rnorm(10))
+    ggplot(data, aes(x = x, y = y)) +
+      geom_point() +
+      geom_line() +
+      theme_minimal() +
+      labs(title = "Sample Plot", x = "Index", y = "Random Value")
   })
 }
