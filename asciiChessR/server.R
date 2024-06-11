@@ -20,7 +20,16 @@ server <- function(input, output, session) {
 
   asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
   helperVisual <- reactiveVal(capture.output(fenMap(chess)))
-  links <- reactiveVal(getLinks(chess$fen()))
+  server_down_message <- readLines("server-down.txt", warn = FALSE)
+  links <- reactiveVal({
+    fen_string <- chess$fen()
+    link_data <- getLinks(chess$fen())
+    if (is.null(link_data)) {
+      server_down_message
+    } else {
+      link_data
+    }
+  })
   fenDescription <- reactiveVal({
     fen_description(chess$fen(), verbose_ranks = TRUE) %>%
       as.yaml()
@@ -101,7 +110,11 @@ server <- function(input, output, session) {
 
   output$revisualized <- renderText({
     if (input$selectedVisual == "Diagon Links") {
-      graphdag_response <- sendLinksToGraphDAG(links())
+      links_data <- links()
+      if (identical(links_data, server_down_message)) {
+        return(paste(server_down_message, collapse = "\n"))
+      }
+      graphdag_response <- sendLinksToGraphDAG(links_data)
       ascii_art <- paste(unlist(strsplit(graphdag_response[[1]], "\n")), collapse = "\n")
       if (!is.null(ascii_art) && nzchar(ascii_art)) {
         return(ascii_art)
@@ -109,12 +122,16 @@ server <- function(input, output, session) {
         return("No ASCII graph returned from the /graphdag endpoint.")
       }
     } else if (input$selectedVisual == "Link List") {
-      graph_text <- paste(sapply(links()$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
+      links_data <- links()
+      if (identical(links_data, server_down_message)) {
+        return(paste(server_down_message, collapse = "\n"))
+      }
+      graph_text <- paste(sapply(links_data$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
       return(graph_text)
     } else if (input$selectedVisual == "FEN map") {
-      return(paste(helperVisual(), collapse = "\n"))
+      return(paste(helperVisual(), collapse = "\n")) # Adjust this if it needs server access
     } else if (input$selectedVisual == "FEN description") {
-      return(fenDescription())
+      return(fenDescription()) # Adjust this if it needs server access
     } else {
       return("Select Helper Visual")
     }
