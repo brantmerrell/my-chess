@@ -1,5 +1,4 @@
-version: '3.7'
-
+version: '3.0'
 services:
   connector:
     build:
@@ -8,18 +7,17 @@ services:
       - "8000:8000"
     networks:
       - chessnet
-
+                                   
   asciichessr:
     build:
       context: ./asciiChessR
     ports:
       - "3838:3838"
     depends_on:
-      connector:
-        condition: service_started
+      - connector
     networks:
       - chessnet
-
+                                   
 networks:
   chessnet:
 
