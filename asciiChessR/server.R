@@ -14,7 +14,7 @@ source("R/getLinks.R")
 source("R/sendLinksToGraphDAG.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
-  options(shiny.error = browser)
+  #options(shiny.error = browser)
   chess <- py_chess$Board()
   lichess_state <- chess
 
@@ -23,7 +23,7 @@ server <- function(input, output, session) {
   server_down_message <- readLines("server-down.txt", warn = FALSE)
   links <- reactiveVal({
     fen_string <- chess$fen()
-    link_data <- getLinks(chess$fen())
+    link_data <- getLinks(fen_string)
     if (is.null(link_data)) {
       server_down_message
     } else {
@@ -125,13 +125,14 @@ server <- function(input, output, session) {
       links_data <- links()
       if (identical(links_data, server_down_message)) {
         return(paste(server_down_message, collapse = "\n"))
+      } else {
+        graph_text <- paste(sapply(links_data$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
+        return(graph_text)
       }
-      graph_text <- paste(sapply(links_data$edges, function(edge) paste(edge$source, edge$target, sep = "->")), collapse = "\n")
-      return(graph_text)
     } else if (input$selectedVisual == "FEN map") {
-      return(paste(helperVisual(), collapse = "\n")) # Adjust this if it needs server access
+      return(paste(helperVisual(), collapse = "\n"))
     } else if (input$selectedVisual == "FEN description") {
-      return(fenDescription()) # Adjust this if it needs server access
+      return(fenDescription())
     } else {
       return("Select Helper Visual")
     }
