@@ -2,6 +2,14 @@ library(httr)
 library(reticulate)
 library(magrittr)
 library(yaml)
+
+virtualenv <- "python_environment"
+virtualenv_create(virtualenv)
+system(paste(
+  virtualenv_python(virtualenv), "-m pip install -r requirements.txt"
+))
+use_virtualenv(virtualenv)
+
 source("chess_utils.R")
 source("R/renderAsciiSummary.R")
 source("R/globals.R")

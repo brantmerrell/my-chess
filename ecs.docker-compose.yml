@@ -10,3 +10,6 @@ services:
     ports:
       - "3838:3838"
 
+x-aws-vpc: "vpc-fae8de82"  
+x-aws-subnets: ["subnet-29cb6763", "subnet-d24ecdaa"]  
+x-aws-securitygroup: ["sg-bb4e128b"]  
