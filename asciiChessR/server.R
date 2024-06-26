@@ -3,6 +3,7 @@ library(ggplot2)
 library(reticulate)
 library(magrittr)
 library(yaml)
+library(igraph)
 source("chess_utils.R")
 source("R/renderAsciiSummary.R")
 source("R/globals.R")
@@ -15,7 +16,7 @@ source("R/getLinks.R")
 source("R/sendLinksToGraphDAG.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
-  options(shiny.error = browser)
+  # options(shiny.error = browser)
   chess <- py_chess$Board()
   lichess_state <- chess
 
@@ -162,11 +163,24 @@ server <- function(input, output, session) {
 
   # Plot for Plot View
   output$plotView <- renderPlot({
-    data <- data.frame(x = 1:10, y = rnorm(10))
-    ggplot(data, aes(x = x, y = y)) +
-      geom_point() +
-      geom_line() +
-      theme_minimal() +
-      labs(title = "Sample Plot", x = "Index", y = "Random Value")
+    # Assuming links_data is in the same format as the JSON example provided
+    links_data <- links()
+
+    if (identical(links_data, server_down_message)) {
+      # Handle the case where the server is down or data is not available
+      return()
+    }
+    links_data <- jsonlite::fromJSON(links_data)
+
+
+    # Create an igraph object from the links data
+    g <- graph_from_data_frame(d = links_data$edges, directed = TRUE)
+
+    # Optional: Set node and edge attributes (e.g., color, shape) based on your preferences
+    V(g)$color <- "blue"
+    E(g)$color <- "black"
+
+    # Plot the graph
+    plot(g, layout = layout_with_sugiyama, edge.arrow.size = 0.5)
   })
 }
