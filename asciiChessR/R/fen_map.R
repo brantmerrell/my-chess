@@ -1,4 +1,7 @@
+library(magrittr)
+library(stringr)
 source("R/globals.R")
+source("R/char_transpose.R")
 
 fen_map <- function(FEN, connections, chess_symbol = TRUE, validate = FALSE) {
   get_position <- function(file, rank) {
@@ -63,6 +66,9 @@ fen_map <- function(FEN, connections, chess_symbol = TRUE, validate = FALSE) {
       result_row <- substr(result_row, 1, insert_pos - 1)
       result_row <- paste0(result_row, "└")
       result_row <- paste0(result_row, substr(result[y], insert_pos + 1, nchar(result[y])))
+      result_row <- str_replace_all(result_row, "(?<=└) +(?=[^ ])", function(match) {
+        gsub(" ", "─", match)
+      })
       result[y] <- result_row
     } else if (type == "threat") {
       x <- max(from_index, to_index)
@@ -73,15 +79,23 @@ fen_map <- function(FEN, connections, chess_symbol = TRUE, validate = FALSE) {
 
       result_row <- result[y]
       insert_pos <- x + 6
-      if (length(intersect(c(from_pos, to_pos), c("h7", "h6"))) == 3) {
-        browser()
-      }
       result_row <- substr(result_row, 1, insert_pos - 1)
       result_row <- paste0(result_row, "┐")
       result_row <- paste0(result_row, substr(result[y], insert_pos + 1, nchar(result[y])))
+      result_row <- str_replace_all(result_row, "(?<=[^ ]) +(?=┐)", function(match) {
+        gsub(" ", "─", match)
+      })
       result[y] <- result_row
     }
   }
+  result <- char_transpose(result)
+  result <- str_replace_all(result, "(?<=[♟♞♝♜♛♚♙♘♗♖♕♔]).+(?=└)", function(match) {
+    gsub("[ ─]", "│", match)
+  })
+  result <- str_replace_all(result, "(?<=┐).+(?=[♟♞♝♜♛♚♙♘♗♖♕♔])", function(match) {
+    gsub("[ ─]", "│", match)
+  })
+  result <- char_transpose(result)
   result <- c(
     paste0("FEN : ", FEN),
     result,

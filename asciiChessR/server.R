@@ -4,6 +4,7 @@ library(reticulate)
 library(magrittr)
 library(yaml)
 library(igraph)
+library(DT)
 source("chess_utils.R")
 source("R/renderAsciiSummary.R")
 source("R/globals.R")
@@ -27,15 +28,21 @@ server <- function(input, output, session) {
 
 
   asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
-  helperVisual <- reactiveVal(capture.output(fenMap(chess, connections)))
+  helperVisual <- reactiveVal({
+    links_data <- jsonlite::fromJSON(getLinks(chess$fen()))
+    connections <- links_data$edges
+    capture.output(fenMap(chess, connections))
+  })
   server_down_message <- readLines("server-down.txt", warn = FALSE)
   links <- reactiveVal({
     fen_string <- chess$fen()
-    link_data <- getLinks(chess$fen())
-    if (is.null(link_data)) {
+    links_data <- getLinks(chess$fen())
+    links_data <- jsonlite::fromJSON(links_data)
+    if (is.null(links_data)) {
       server_down_message
     } else {
-      link_data
+      connections <<- links_data$edges
+      links_data
     }
   })
   fenDescription <- reactiveVal({
@@ -44,8 +51,10 @@ server <- function(input, output, session) {
   })
   updateChessDependencies <- function() {
     asciiBoard(capture.output(renderAsciiSummary(chess)))
-    helperVisual(capture.output(fenMap(chess)))
     links(getLinks(chess$fen()))
+    links_data <- jsonlite::fromJSON(links())
+    connections <<- links_data$edges
+    helperVisual(capture.output(fenMap(chess, connections)))
     fenDescription(fen_description(chess$fen(), verbose_ranks = TRUE) %>% as.yaml())
     updateAvailableMoves()
   }
@@ -123,11 +132,11 @@ server <- function(input, output, session) {
         plotOutput("plotView")
       }
     } else {
-      verbatimTextOutput("revisualized")
+      verbatimTextOutput("textHelper")
     }
   })
 
-  output$revisualized <- renderText({
+  output$textHelper <- renderText({
     switch(input$selectedVisual,
       "Diagon Links" = {
         links_data <- links()
@@ -166,7 +175,7 @@ server <- function(input, output, session) {
 
   # Data table for Table View
   output$tableView <- DT::renderDT({
-    data.frame(Number = 1:10, Letter = LETTERS[1:10])
+    data.frame(Number = 1:12, Letter = LETTERS[1:12])
   })
 
   # Plot for Plot View

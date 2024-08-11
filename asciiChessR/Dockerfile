@@ -32,7 +32,10 @@ RUN python3.8 -m venv /opt/venv
 RUN /opt/venv/bin/pip install python-chess
 
 RUN R -e "install.packages(\
-c('magrittr','shiny', 'remotes', 'reticulate', 'httr', 'shinythemes', 'igraph', 'yaml'), \
+c('magrittr','shiny', 'remotes', 'reticulate', 'httr', 'shinythemes', 'igraph', 'yaml', 'stringr', 'ggplot2'), \
+repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(\
+c('DT'), \
 repos='https://cloud.r-project.org/')"
 RUN R -e "reticulate::use_virtualenv('/opt/venv', required = TRUE)"
 

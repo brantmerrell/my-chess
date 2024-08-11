@@ -12,8 +12,14 @@ RUN apt-get update && apt-get install -y \
     libboost-dev \
     default-jre
 
-RUN git clone https://github.com/ArthurSonzogni/Diagon.git && \
-    cd Diagon && \
+# Clone the repository
+RUN git clone https://github.com/ArthurSonzogni/Diagon.git
+
+# Add the missing include directive
+RUN sed -i '2i#include <memory>' Diagon/src/translator/graph_planar/GraphPlanarEmpty.cpp
+
+# Build the project
+RUN cd Diagon && \
     mkdir build && \
     cd build && \
     cmake .. && \
@@ -27,4 +33,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN g++ --version
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
