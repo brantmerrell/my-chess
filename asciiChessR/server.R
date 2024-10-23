@@ -13,31 +13,27 @@ source("R/fen_description.R")
 source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
-source("R/getLinks.R")
 source("R/sendLinksToGraphDAG.R")
 py_chess <- import("chess")
 server <- function(input, output, session) {
-  # options(shiny.error = browser)
   chess <- py_chess$Board()
   lichess_state <- chess
-  links <- getLinks(chess$fen())
-  links_data <- jsonlite::fromJSON(links)
+  links <- do.call(rbind.data.frame, lapply(getEdges(chess), as.data.frame))
 
   # Define connections
-  connections <- links_data$edges
+  connections <- links
 
 
   asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
   helperVisual <- reactiveVal({
-    links_data <- jsonlite::fromJSON(getLinks(chess$fen()))
-    connections <- links_data$edges
+    links_data <- getEdges(chess)
+    connections <- do.call(rbind.data.frame, lapply(links_data, as.data.frame))
     capture.output(fenMap(chess, connections))
   })
   server_down_message <- readLines("server-down.txt", warn = FALSE)
   links <- reactiveVal({
     fen_string <- chess$fen()
-    links_data <- getLinks(chess$fen())
-    links_data <- jsonlite::fromJSON(links_data)
+    links_data$edges <- do.call(rbind.data.frame, lapply(getEdges(chess), as.data.frame))
     if (is.null(links_data)) {
       server_down_message
     } else {
@@ -51,8 +47,8 @@ server <- function(input, output, session) {
   })
   updateChessDependencies <- function() {
     asciiBoard(capture.output(renderAsciiSummary(chess)))
-    links(getLinks(chess$fen()))
-    links_data <- jsonlite::fromJSON(links())
+    links_list <- getEdges(chess)
+    links_data$edges <- do.call(rbind.data.frame, lapply(links_list, as.data.frame))
     connections <<- links_data$edges
     helperVisual(capture.output(fenMap(chess, connections)))
     fenDescription(fen_description(chess$fen(), verbose_ranks = TRUE) %>% as.yaml())
@@ -143,7 +139,6 @@ server <- function(input, output, session) {
         if (identical(links_data, server_down_message)) {
           paste(server_down_message, collapse = "\n")
         } else {
-          links_data <- jsonlite::fromJSON(links_data)
           graphdag_response <- sendLinksToGraphDAG(links_data)
           ascii_art <- paste(unlist(strsplit(graphdag_response[[1]], "\n")), collapse = "\n")
           if (!is.null(ascii_art) && nzchar(ascii_art)) {
@@ -158,7 +153,6 @@ server <- function(input, output, session) {
         if (identical(links_data, server_down_message)) {
           paste(server_down_message, collapse = "\n")
         } else {
-          links_data <- jsonlite::fromJSON(links_data)
           graph_text <- paste(paste(links_data$edges$source, links_data$edges$target, sep = "->"), collapse = "\n")
           graph_text
         }
@@ -187,8 +181,6 @@ server <- function(input, output, session) {
       # Handle the case where the server is down or data is not available
       return()
     }
-    links_data <- jsonlite::fromJSON(links_data)
-
     # Create an igraph object from the links data
     g <- graph_from_data_frame(d = links_data$edges, directed = TRUE)
 

@@ -36,7 +36,7 @@ ui <- fluidPage(
         ),
         selectize = FALSE
       ),
-      uiOutput("dynamicOutput") 
+      uiOutput("dynamicOutput")
     )
   )
 )
