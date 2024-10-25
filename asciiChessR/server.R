@@ -14,44 +14,35 @@ source("R/populateFEN.R")
 source("R/asciiPrint.R")
 source("R/asciiSub.R")
 source("R/sendLinksToGraphDAG.R")
-py_chess <- import("chess")
+source("R/move_history_tracker.R")
+
 server <- function(input, output, session) {
+  py_chess <- import("chess")
   chess <- py_chess$Board()
   lichess_state <- chess
-  links <- do.call(rbind.data.frame, lapply(getEdges(chess), as.data.frame))
 
-  # Define connections
-  connections <- links
+  track_move_history(chess)
+  moveHistory <- reactiveVal(NULL)
+  asciiBoard <- reactiveVal()
+  helperVisual <- reactiveVal()
+  links <- reactiveVal()
+  fenDescription <- reactiveVal()
 
-
-  asciiBoard <- reactiveVal(capture.output(renderAsciiSummary(chess)))
-  helperVisual <- reactiveVal({
-    links_data <- getEdges(chess)
-    connections <- do.call(rbind.data.frame, lapply(links_data, as.data.frame))
-    capture.output(fenMap(chess, connections))
-  })
   server_down_message <- readLines("server-down.txt", warn = FALSE)
-  links <- reactiveVal({
-    fen_string <- chess$fen()
-    links_data$edges <- do.call(rbind.data.frame, lapply(getEdges(chess), as.data.frame))
-    if (is.null(links_data)) {
-      server_down_message
-    } else {
-      connections <<- links_data$edges
-      links_data
-    }
-  })
-  fenDescription <- reactiveVal({
-    fen_description(chess$fen(), verbose_ranks = TRUE) %>%
-      as.yaml()
-  })
+
+  links_data <- list()
+  connections <- NULL
+
   updateChessDependencies <- function() {
     asciiBoard(capture.output(renderAsciiSummary(chess)))
+
     links_list <- getEdges(chess)
     links_data$edges <- do.call(rbind.data.frame, lapply(links_list, as.data.frame))
     connections <<- links_data$edges
+
     helperVisual(capture.output(fenMap(chess, connections)))
     fenDescription(fen_description(chess$fen(), verbose_ranks = TRUE) %>% as.yaml())
+
     updateAvailableMoves()
   }
 
@@ -59,7 +50,10 @@ server <- function(input, output, session) {
     availableMoves <- getLegalMovesSan(chess$fen()) %>% sort()
     updateSelectInput(session, "selectedMove", choices = c("", availableMoves))
   }
+
   updateAvailableMoves()
+  updateChessDependencies()
+
   observeEvent(input$selectedFEN, {
     updateTextInput(session, "fen", value = populateFEN(input$selectedFEN))
   })
@@ -68,12 +62,14 @@ server <- function(input, output, session) {
     fen_result <- tryCatch(
       {
         chess$set_fen(input$fen)
+        reset_move_history(input$fen) # Pass the new FEN here
         TRUE
       },
       error = function(e) {
         FALSE
       }
     )
+
     if (!fen_result) {
       showNotification("Invalid FEN. Please try again.")
     } else {
@@ -88,12 +84,15 @@ server <- function(input, output, session) {
     move_result <- tryCatch(
       {
         chess$push_san(input$move)
+        current_history <- track_move_history(chess, input$move)
+        moveHistory(current_history)
         TRUE
       },
       error = function(e) {
         FALSE
       }
     )
+
     if (!move_result) {
       showNotification("Invalid move. Please try again.")
     } else {
@@ -104,6 +103,8 @@ server <- function(input, output, session) {
   observeEvent(input$undo, {
     if (length(chess$move_stack) > 0) {
       chess$pop()
+      current_history <- undo_move_history()
+      moveHistory(current_history)
       updateChessDependencies()
     }
   })
@@ -115,11 +116,9 @@ server <- function(input, output, session) {
   output$board <- renderText({
     asciiBoard() %>%
       paste(collapse = "\n") %>%
-      gsub(
-        pattern = "\\.",
-        replacement = " "
-      )
+      gsub(pattern = "\\.", replacement = " ")
   })
+
   output$dynamicOutput <- renderUI({
     if (input$selectedVisual %in% c("Table View", "Plot View")) {
       if (input$selectedVisual == "Table View") {
@@ -163,32 +162,52 @@ server <- function(input, output, session) {
       "FEN description" = {
         fenDescription()
       },
+      "Move History" = {
+        move_history_df <- track_move_history()
+        if (!is.null(move_history_df)) {
+          capture.output(print(move_history_df)) %>% paste(collapse = "\n")
+        } else {
+          "No moves recorded yet."
+        }
+      },
       "Select Helper Visual"
     )
   })
 
-  # Data table for Table View
   output$tableView <- DT::renderDT({
-    data.frame(Number = 1:12, Letter = LETTERS[1:12])
+    # Get current history, initializing if needed
+    history <- track_move_history(chess)
+
+    # Always render the table, as history should now have at least the initial position
+    DT::datatable(
+      history,
+      options = list(
+        pageLength = 10,
+        order = list(list(0, "desc")),
+        scrollX = TRUE
+      ),
+      rownames = FALSE
+    )
   })
 
-  # Plot for Plot View
   output$plotView <- renderPlot({
-    # Assuming links_data is in the same format as the JSON example provided
     links_data <- links()
 
     if (identical(links_data, server_down_message)) {
-      # Handle the case where the server is down or data is not available
       return()
     }
-    # Create an igraph object from the links data
+
     g <- graph_from_data_frame(d = links_data$edges, directed = TRUE)
 
-    # Optional: Set node and edge attributes (e.g., color, shape) based on your preferences
     V(g)$color <- "blue"
-    E(g)$color <- "black"
+    E(g)$color <- ifelse(E(g)$type == "threat", "red", "green")
+    E(g)$arrow.size <- 0.5
 
-    # Plot the graph
-    plot(g, layout = layout_with_sugiyama, edge.arrow.size = 0.5)
+    plot(g,
+      layout = layout_with_sugiyama,
+      edge.arrow.size = 0.5,
+      main = "Chess Position Graph",
+      sub = paste("Turn:", ifelse(chess$turn, "White", "Black"))
+    )
   })
 }
