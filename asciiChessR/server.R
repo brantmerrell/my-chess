@@ -40,8 +40,13 @@ server <- function(input, output, session) {
     links_data$edges <- do.call(rbind.data.frame, lapply(links_list, as.data.frame))
     connections <<- links_data$edges
 
+    links(links_data)
+
     helperVisual(capture.output(fenMap(chess, connections)))
     fenDescription(fen_description(chess$fen(), verbose_ranks = TRUE) %>% as.yaml())
+
+    current_history <- track_move_history(chess)
+    moveHistory(current_history)
 
     updateAvailableMoves()
   }
@@ -62,7 +67,7 @@ server <- function(input, output, session) {
     fen_result <- tryCatch(
       {
         chess$set_fen(input$fen)
-        reset_move_history(input$fen) # Pass the new FEN here
+        reset_move_history(input$fen)
         TRUE
       },
       error = function(e) {
@@ -120,8 +125,8 @@ server <- function(input, output, session) {
   })
 
   output$dynamicOutput <- renderUI({
-    if (input$selectedVisual %in% c("Table View", "Plot View")) {
-      if (input$selectedVisual == "Table View") {
+    if (input$selectedVisual %in% c("History Table", "Plot View")) {
+      if (input$selectedVisual == "History Table") {
         dataTableOutput("tableView")
       } else if (input$selectedVisual == "Plot View") {
         plotOutput("plotView")
@@ -175,37 +180,43 @@ server <- function(input, output, session) {
   })
 
   output$tableView <- DT::renderDT({
-    # Get current history, initializing if needed
-    history <- track_move_history(chess)
+    history <- moveHistory()
 
-    # Always render the table, as history should now have at least the initial position
-    DT::datatable(
-      history,
-      options = list(
-        pageLength = 10,
-        order = list(list(0, "desc")),
-        scrollX = TRUE
-      ),
-      rownames = FALSE
-    )
+    if (!is.null(history)) {
+      DT::datatable(
+        history,
+        options = list(
+          pageLength = 10,
+          order = list(list(0, "desc")),
+          scrollX = TRUE
+        ),
+        rownames = FALSE
+      )
+    }
   })
 
   output$plotView <- renderPlot({
     links_data <- links()
 
-    if (identical(links_data, server_down_message)) {
-      return()
+    if (identical(links_data, server_down_message) || is.null(links_data) || nrow(links_data$edges) == 0) {
+      return(NULL)
     }
+
+    edge_colors <- ifelse(links_data$edges$type == "threat", "red", "green")
 
     g <- graph_from_data_frame(d = links_data$edges, directed = TRUE)
 
-    V(g)$color <- "blue"
-    E(g)$color <- ifelse(E(g)$type == "threat", "red", "green")
+    V(g)$color <- rep("lightblue", vcount(g))
+
+    E(g)$color <- edge_colors
     E(g)$arrow.size <- 0.5
 
     plot(g,
-      layout = layout_with_sugiyama,
+      layout = layout_with_sugiyama(g),
       edge.arrow.size = 0.5,
+      vertex.label.color = "black",
+      vertex.label.cex = 0.8,
+      vertex.size = 25,
       main = "Chess Position Graph",
       sub = paste("Turn:", ifelse(chess$turn, "White", "Black"))
     )

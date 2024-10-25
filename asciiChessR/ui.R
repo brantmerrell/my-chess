@@ -32,7 +32,7 @@ ui <- fluidPage(
       selectInput("selectedVisual", NULL,
         c(
           "No Visual Selected", "FEN description", "FEN map", "Link List",
-          "Diagon Links", "Table View", "Plot View"
+          "Diagon Links", "History Table", "Plot View"
         ),
         selectize = FALSE
       ),
