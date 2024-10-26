@@ -4,7 +4,6 @@ require 'net/http'
 require 'json'
 require 'stringio'
 
-
 enable :sessions
 
 helpers do
@@ -23,7 +22,6 @@ helpers do
     uri = URI('https://lichess.org/api/puzzle/daily')
     response = Net::HTTP.get_response(uri)
     return PGN::FEN.start.to_s unless response.is_a?(Net::HTTPSuccess)
-
 
     begin
       content = JSON.parse(response.body)
@@ -49,6 +47,10 @@ helpers do
     content = JSON.parse(response.body)
     content['fen'] rescue PGN::FEN.start.to_s
   end
+
+  def replace_underscores_with_spaces(board)
+    board.gsub('_', ' ')
+  end
 end
 
 get '/' do
@@ -58,6 +60,7 @@ get '/' do
   session[:moves] ||= []
   session[:ndx_ply] ||= 0
   session[:current_board] ||= PGN::FEN.new(session[:fenState]).to_position.board.inspect
+  session[:current_board] = replace_underscores_with_spaces(session[:current_board])
 
   erb :index
 end
@@ -68,6 +71,11 @@ post '/select_fen' do
   session[:last_selected_fen_source] = source
   session[:fenState] = fetch_fen_from_source(source)
   puts "fenState: #{session[:fenState]}"
+  session[:moves] = []
+  session[:ndx_ply] = 0
+  session[:current_board] = PGN::FEN.new(session[:fenState]).to_position.board.inspect
+  session[:current_board] = replace_underscores_with_spaces(session[:current_board])
+
   redirect to('/')
 end
 
@@ -78,6 +86,8 @@ post '/submit_fen' do
   session[:moves] = []
   session[:ndx_ply] = 0
   session[:current_board] = PGN::FEN.new(session[:fenState]).to_position.board.inspect
+  session[:current_board] = replace_underscores_with_spaces(session[:current_board])
+
   redirect to('/')
 end
 
@@ -88,6 +98,8 @@ post '/submit_move' do
   game = PGN::Game.new(session[:moves])
   session[:ndx_ply] = game.positions.length - 1
   session[:current_board] = game.positions[session[:ndx_ply]].board.inspect
+  session[:current_board] = replace_underscores_with_spaces(session[:current_board])
+
   redirect to('/')
 end
 
@@ -98,6 +110,7 @@ post '/navigate' do
   session[:ndx_ply] = session[:moves].length if session[:ndx_ply] > session[:moves].length
   game = PGN::Game.new(session[:moves])
   session[:current_board] = game.positions[session[:ndx_ply]].board.inspect
+  session[:current_board] = replace_underscores_with_spaces(session[:current_board])
+
   redirect to('/')
 end
-
