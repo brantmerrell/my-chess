@@ -194,7 +194,6 @@ server <- function(input, output, session) {
       )
     }
   })
-
   output$plotView <- renderPlot({
     links_data <- links()
 
@@ -202,17 +201,18 @@ server <- function(input, output, session) {
       return(NULL)
     }
 
-    edge_colors <- ifelse(links_data$edges$type == "threat", "red", "green")
+    edge_df <- links_data$edges[, c("source", "target", "type")]
 
-    g <- graph_from_data_frame(d = links_data$edges, directed = TRUE)
+    edge_colors <- ifelse(edge_df$type == "threat", "red", "green")
+
+    g <- graph_from_data_frame(d = edge_df, directed = TRUE)
 
     V(g)$color <- rep("lightblue", vcount(g))
 
     E(g)$color <- edge_colors
     E(g)$arrow.size <- 0.5
-
     plot(g,
-      layout = layout_with_sugiyama(g),
+      layout = layout_on_grid(g), # layout_as_star layout_in_circle layout_nicely layout_on_grid layout_on_sphere layout_randomly layout_with_fr layout.auto layout.grid.3d layout.svd
       edge.arrow.size = 0.5,
       vertex.label.color = "black",
       vertex.label.cex = 0.8,
