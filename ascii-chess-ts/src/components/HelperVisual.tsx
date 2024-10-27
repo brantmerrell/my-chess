@@ -41,12 +41,12 @@ const HelperVisual = () => {
         const g = svg.append("g").attr("transform", "translate(50,20)");
 
         const simulation = d3
-            .forceSimulation(links.nodes)
+            .forceSimulation<LinkNode>(links.nodes)
             .force(
                 "link",
                 d3
-                    .forceLink(links.edges)
-                    .id((d: any) => d.square)
+                    .forceLink<LinkNode, LinkEdge>(links.edges)
+                    .id((d) => d.square)
                     .distance(100)
             )
             .force("charge", d3.forceManyBody().strength(-200))
@@ -57,7 +57,7 @@ const HelperVisual = () => {
 
         const link = g
             .append("g")
-            .selectAll("line")
+            .selectAll<SVGLineElement, LinkEdge>("line")
             .data(links.edges)
             .join("line")
             .attr("class", "link")
@@ -68,7 +68,7 @@ const HelperVisual = () => {
 
         const node = g
             .append("g")
-            .selectAll("g")
+            .selectAll<SVGGElement, LinkNode>("g")
             .data(links.nodes)
             .join("g")
             .attr("class", "node");
@@ -77,25 +77,51 @@ const HelperVisual = () => {
             .attr("r", 15)
             .attr("fill", (d) => (d.color === "white" ? "#dddddd" : "#333333"))
             .attr("stroke", "#666")
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .style("cursor", "grab");
 
         node.append("text")
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
             .attr("fill", (d) => (d.color === "white" ? "#000" : "#fff"))
-            .text((d) => d.piece_type);
+            .text((d) => d.piece_type)
+            .style("pointer-events", "none");
+
+        const drag = d3
+            .drag<SVGGElement, LinkNode>()
+            .on("start", (event: d3.D3DragEvent<SVGGElement, LinkNode, unknown>, d) => {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = event.x;
+                d.fy = event.y;
+                d3.select(event.sourceEvent.currentTarget.parentNode)
+                    .select("circle")
+                    .style("cursor", "grabbing");
+            })
+            .on("drag", (event: d3.D3DragEvent<SVGGElement, LinkNode, unknown>, d) => {
+                d.fx = event.x;
+                d.fy = event.y;
+            })
+            .on("end", (event: d3.D3DragEvent<SVGGElement, LinkNode, unknown>, d) => {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+                d3.select(event.sourceEvent.currentTarget.parentNode)
+                    .select("circle")
+                    .style("cursor", "grab");
+            });
+
+        node.call(drag);
 
         simulation.on("tick", () => {
-            link.attr("x1", (d) => (d.source as any).x)
-                .attr("y1", (d) => (d.source as any).y)
-                .attr("x2", (d) => (d.target as any).x)
-                .attr("y2", (d) => (d.target as any).y);
+            link
+                .attr("x1", (d) => (d.source as LinkNode).x ?? 0)
+                .attr("y1", (d) => (d.source as LinkNode).y ?? 0)
+                .attr("x2", (d) => (d.target as LinkNode).x ?? 0)
+                .attr("y2", (d) => (d.target as LinkNode).y ?? 0);
 
-            node.attr(
-                "transform",
-                (d) => `translate(${(d as any).x},${(d as any).y})`
-            );
+            node.attr("transform", (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
         });
+
     }, [links, selectedVisual]);
 
     return (
@@ -141,3 +167,4 @@ const HelperVisual = () => {
 };
 
 export default HelperVisual;
+
