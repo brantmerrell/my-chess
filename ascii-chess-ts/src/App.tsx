@@ -2,7 +2,7 @@ import "./App.css";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
 import AsciiBoard from "./components/AsciiBoard";
-import LinksDisplay from "./components/LinksDisplay";
+import HelperVisual from "./components/HelperVisual";
 
 function App() {
     return (
@@ -11,10 +11,10 @@ function App() {
                 <div>
                     <h1 className="title">Ascii Chessboard</h1>
                 </div>
-<div className="chess-container">
-    <AsciiBoard />
-    <LinksDisplay />
-</div>
+                <div className="chess-container">
+                    <AsciiBoard />
+                    <HelperVisual />
+                </div>
                 <div></div>
             </div>
         </Provider>
