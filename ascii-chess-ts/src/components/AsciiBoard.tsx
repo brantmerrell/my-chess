@@ -28,14 +28,15 @@ const AsciiBoard: React.FC = () => {
     const [board, setBoard] = useState(chessGame.asciiView());
     const [moves, setMoves] = useState<string[]>([]);
     const [selectedMove, setSelectedMove] = useState("");
+    const [undoMessage, setUndoMessage] = useState("");
     useEffect(() => {
         setBoard(chessGame.asciiView());
         updateMoves();
     }, [chessGame]);
     useEffect(() => {
-        const chessGame = new ChessGame(chessGameState.fen); 
-        setBoard(chessGame.asciiView()); 
-        setMoves(chessGameState.moves); 
+        const chessGame = new ChessGame(chessGameState.fen);
+        setBoard(chessGame.asciiView());
+        setMoves(chessGameState.moves);
     }, [chessGameState]);
     useEffect(() => {
         switch (selectedSetup) {
@@ -73,9 +74,15 @@ const AsciiBoard: React.FC = () => {
     }, [chessGameState.moves]);
 
     const submitUndoMove = () => {
+        if (chessGameState.history.length === 0) {
+            setUndoMessage("No history to undo");
+            setTimeout(() => setUndoMessage(""), 3000);
+            return;
+        }
         dispatch(undoMove());
         setBoard(chessGameState.fen);
         updateMoves();
+        setUndoMessage("");
     };
 
     return (
@@ -129,6 +136,14 @@ const AsciiBoard: React.FC = () => {
                     <button id="undo" onClick={submitUndoMove}>
                         Undo Move
                     </button>
+                    {undoMessage && (
+                        <div
+                            className="undo-message"
+                            style={{ color: "red", marginTop: "10px" }}
+                        >
+                            {undoMessage}
+                        </div>
+                    )}
                 </div>
             </pre>
         </div>
