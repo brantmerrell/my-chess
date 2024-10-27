@@ -18,3 +18,20 @@ export interface LinksResponse {
   nodes: LinkNode[];
   edges: LinkEdge[];
 }
+
+export interface ProcessedEdge {
+    source: string;
+    target: string;
+    type: string;
+}
+
+export interface EdgeSource {
+    square: string;
+}
+
+export interface EdgeData {
+    source: string | EdgeSource;
+    target: string | EdgeSource;
+    type: string;
+}
+
