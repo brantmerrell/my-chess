@@ -10,7 +10,6 @@ import SelectPosition from "./SelectPosition";
 
 const AsciiBoard: React.FC = () => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
-
     const dispatch = useDispatch();
 
     const [chessGame] = useState(() => new ChessGame(initialFen));
@@ -29,6 +28,9 @@ const AsciiBoard: React.FC = () => {
     const [moves, setMoves] = useState<string[]>([]);
     const [selectedMove, setSelectedMove] = useState("");
     const [undoMessage, setUndoMessage] = useState("");
+    useEffect(() => {
+        dispatch(loadFen(initialFen));
+    }, [dispatch]);
     useEffect(() => {
         setBoard(chessGame.asciiView());
         updateMoves();

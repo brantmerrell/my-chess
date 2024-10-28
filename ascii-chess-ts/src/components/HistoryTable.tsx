@@ -18,7 +18,7 @@ const HistoryTable = () => {
             setEntries([
                 {
                     ply: 0,
-                    san: "Initial position",
+                    san: "-",
                     uci: "-",
                     fen: fen,
                 },
@@ -29,7 +29,7 @@ const HistoryTable = () => {
                 {
                     ply: entries.length,
                     san: history[entries.length - 1],
-                    uci: "UCI",
+                    uci: "-",
                     fen: fen,
                 },
             ]);
