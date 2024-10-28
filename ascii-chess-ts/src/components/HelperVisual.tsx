@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import HistoryTable from './HistoryTable';
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import {
@@ -255,6 +256,7 @@ const HelperVisual: React.FC = () => {
                     </option>
                     <option value="Graph View">Graph View</option>
                     <option value="Arc View">Arc View</option>
+    <option value="History Table">History Table</option>
                 </select>
             </div>
 
@@ -276,6 +278,7 @@ const HelperVisual: React.FC = () => {
                         />
                     </div>
                 )}
+    {selectedVisual === "History Table" && <HistoryTable />}
                 {selectedVisual === "No Visual Selected" && (
                     <div className="text-center py-8 text-gray-400">
                         Select a visualization type from the dropdown above
