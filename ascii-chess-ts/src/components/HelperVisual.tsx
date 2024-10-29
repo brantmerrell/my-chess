@@ -9,7 +9,27 @@ import {
     EdgeData,
 } from "../models/LinksResponse";
 import { fetchLinks } from "../services/connector";
+import { ChessGame } from "../chess/chessGame";
 import * as d3 from "d3";
+import {
+    Chart as ChartJS,
+    LineElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    Tooltip,
+    Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+    LineElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    Tooltip,
+    Legend
+);
 
 const HelperVisual: React.FC = () => {
     const [selectedVisual, setSelectedVisual] =
@@ -17,7 +37,19 @@ const HelperVisual: React.FC = () => {
     const [linksData, setLinksData] = useState<LinksResponse | null>(null);
     const [processedEdges, setProcessedEdges] = useState<ProcessedEdge[]>([]);
     const svgRef = useRef<SVGSVGElement>(null);
+
     const chessGameState = useSelector((state: RootState) => state.chessGame);
+    const fenHistory = useSelector((state: RootState) => {
+        const game = new ChessGame();
+        const fens = [game.toFen()];
+
+        state.chessGame.history.forEach((move) => {
+            game.makeMove(move);
+            fens.push(game.toFen());
+        });
+
+        return fens;
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -232,6 +264,24 @@ const HelperVisual: React.FC = () => {
         });
     };
 
+    const plotFENCharacterCount = () => {
+        const labels = fenHistory.map((_, index) => `Move ${index}`);
+        const data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: "FEN String Length Over Time",
+                    data: fenHistory.map((fen) => fen.length),
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    fill: false,
+                },
+            ],
+        };
+
+        return <Line data={data} />;
+    };
+
     useEffect(() => {
         if (selectedVisual === "Graph View") {
             renderForceGraph();
@@ -257,25 +307,33 @@ const HelperVisual: React.FC = () => {
                     <option value="Graph View">Graph View</option>
                     <option value="Arc View">Arc View</option>
                     <option value="History Table">History Table</option>
+                    <option value="FEN Character Count">
+                        FEN Character Count
+                    </option>
                 </select>
             </div>
 
             <div className="bg-gray-900 p-4 rounded-lg">
                 {(selectedVisual === "Graph View" ||
-                    selectedVisual === "Arc View") && (
+                    selectedVisual === "Arc View" ||
+                    selectedVisual === "FEN Character Count") && (
                     <div className="w-full">
-                        <svg
-                            ref={svgRef}
-                            className="w-full bg-gray-800"
-                            style={{
-                                minHeight:
-                                    selectedVisual === "Arc View"
-                                        ? "400px"
-                                        : "300px",
-                                maxWidth: "100%",
-                                height: "auto",
-                            }}
-                        />
+                        {selectedVisual === "FEN Character Count" ? (
+                            plotFENCharacterCount()
+                        ) : (
+                            <svg
+                                ref={svgRef}
+                                className="w-full bg-gray-800"
+                                style={{
+                                    minHeight:
+                                        selectedVisual === "Arc View"
+                                            ? "400px"
+                                            : "300px",
+                                    maxWidth: "100%",
+                                    height: "auto",
+                                }}
+                            />
+                        )}
                     </div>
                 )}
                 {selectedVisual === "History Table" && <HistoryTable />}
