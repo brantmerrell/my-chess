@@ -184,9 +184,9 @@ const HelperVisual: React.FC = () => {
         svg.selectAll("*").remove();
 
         const width = 800;
-        const height = 400;
+        const height = 50;
         const margin = { top: 20, right: 30, bottom: 40, left: 30 };
-        const maxArcHeight = 120;
+        const maxArcHeight = 150;
 
         svg.attr("width", width)
             .attr("height", height)
