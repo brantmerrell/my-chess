@@ -194,7 +194,17 @@ const HelperVisual: React.FC = () => {
 
         const squares = Array.from(
             new Set(linksData.nodes.map((n) => n.square))
-        ).sort();
+        ).sort((a, b) => {
+            const rankA = parseInt(a[1]);
+            const rankB = parseInt(b[1]);
+            const fileA = a[0];
+            const fileB = b[0];
+            if (rankA !== rankB) {
+                return rankB - rankA;
+            } else {
+                return fileA.charCodeAt(0) - fileB.charCodeAt(0);
+            }
+        });
 
         const x = d3
             .scalePoint<string>()
