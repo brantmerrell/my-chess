@@ -9,7 +9,7 @@ export class LiChessPuzzleViewModel {
     }
 
     get puzzle(): LiChessPuzzleModel {
-        const game = new ChessGame(); // Start with empty (standard) chess board
+        const game = new ChessGame();
         const pgnMoves = this.liChessPuzzleResponse.game.pgn
             .split(/\s+/)
             .slice(0);
@@ -19,7 +19,7 @@ export class LiChessPuzzleViewModel {
             movesApplied++;
 
             if (movesApplied >= this.liChessPuzzleResponse.puzzle.initialPly) {
-                break; // Stop applying moves once we reach the puzzle start position
+                break;
             }
         }
 

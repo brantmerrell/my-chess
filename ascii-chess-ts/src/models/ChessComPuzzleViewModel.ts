@@ -7,7 +7,6 @@ export class ChessComPuzzleViewModel {
         this.chessComPuzzleResponse = chessComPuzzleResponse;
     }
     get puzzle(): ChessComPuzzleModel {
-        // Split response pgn by space
         const pgnArr = this.chessComPuzzleResponse.pgn.split(" ");
 
         return {
@@ -19,8 +18,8 @@ export class ChessComPuzzleViewModel {
             initialPuzzleFEN: this.chessComPuzzleResponse.fen,
             fetchStatus: {
                 loading: false,
-                error: null
-            }
+                error: null,
+            },
         };
     }
 }

@@ -14,3 +14,15 @@ getMoveHistorySan <- function(move_history) {
   moves <- get_move_history_san(move_history)
   moves
 }
+
+getEdges <- function(board) {
+  source_python("chess_utils.py")
+  edges <- get_edges(board)
+  edges
+}
+
+getNodes <- function(board) {
+  source_python("chess_utils.py")
+  nodes <- get_nodes(board)
+  nodes
+}

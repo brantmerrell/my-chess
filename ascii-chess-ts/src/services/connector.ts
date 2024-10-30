@@ -3,7 +3,7 @@ import axios from 'axios';
 let apiBaseUrl: string;
 if (window.location.hostname === 'localhost') {
     console.log('Running on localhost');
-    apiBaseUrl = 'http://localhost:5001';
+    apiBaseUrl = 'http://localhost:8000';
 } else {
     console.log('Running on docker-compose');
     apiBaseUrl = 'http://connector:5001';

@@ -1,14 +1,15 @@
-export interface LinkNode {
+export interface LinkNode extends d3.SimulationNodeDatum {
   square: string;
   piece_type: string;
   color: string;
   x?: number;
   y?: number;
-  fy?: number;
+  fx?: number | null;
+  fy?: number | null;
 }
 
 export interface LinkEdge extends d3.SimulationLinkDatum<LinkNode> {
-  type: string; 
+  type: string;
   source: LinkNode;
   target: LinkNode;
 }
@@ -16,5 +17,21 @@ export interface LinkEdge extends d3.SimulationLinkDatum<LinkNode> {
 export interface LinksResponse {
   nodes: LinkNode[];
   edges: LinkEdge[];
+}
+
+export interface ProcessedEdge {
+    source: string;
+    target: string;
+    type: string;
+}
+
+export interface EdgeSource {
+    square: string;
+}
+
+export interface EdgeData {
+    source: string | EdgeSource;
+    target: string | EdgeSource;
+    type: string;
 }
 

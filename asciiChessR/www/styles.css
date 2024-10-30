@@ -16,7 +16,17 @@ body pre.shiny-text-output#board {
   border-radius: 5px;
   white-space: pre-wrap;
 }
-body pre.shiny-text-output#revisualized {
+body pre.shiny-text-output#textHelper {
+  width: 700px;
+  background-color: lightblue;
+  border-radius: 5px;
+}
+body #tableView {
+  width: 700px;
+  background-color: lightblue;
+  border-radius: 5px;
+}
+body #plotView {
   width: 700px;
   background-color: lightblue;
   border-radius: 5px;

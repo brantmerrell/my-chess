@@ -2,9 +2,11 @@
   text-align: left;
 }
 .App .chess-container {
-  display: grid;
-  flex-direction: row;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .App-logo {

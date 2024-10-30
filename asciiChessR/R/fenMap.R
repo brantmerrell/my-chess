@@ -1,5 +1,5 @@
-fenMap <- function(chess_data) {
-  x <- fen_map(chess_data$fen())
+fenMap <- function(chess_data, connections) {
+  x <- fen_map(chess_data$fen(), connections)
   for (l in x) {
     cat(l, "\n")
   }
