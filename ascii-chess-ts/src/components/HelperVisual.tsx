@@ -40,7 +40,7 @@ const HelperVisual: React.FC = () => {
 
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const fenHistory = useSelector((state: RootState) => {
-        const game = new ChessGame();
+        const game = new ChessGame(state.chessGame.positions[0].fen);
         const fens = [game.toFen()];
 
         state.chessGame.history.forEach((move) => {
