@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, loadFen, makeMove, undoMove } from "../app/store";
 import { initialFen } from "../constants/env";
@@ -12,7 +12,6 @@ const AsciiBoard: React.FC = () => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
 
-    const [chessGame] = useState(() => new ChessGame(initialFen));
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
         (state) => state.chessComPuzzle
     );
@@ -24,56 +23,47 @@ const AsciiBoard: React.FC = () => {
     );
 
     const [fen, setFen] = useState(initialFen);
-    const [board, setBoard] = useState(chessGame.asciiView());
-    const [moves, setMoves] = useState<string[]>([]);
     const [selectedMove, setSelectedMove] = useState("");
     const [undoMessage, setUndoMessage] = useState("");
     useEffect(() => {
         dispatch(loadFen(initialFen));
     }, [dispatch]);
     useEffect(() => {
-        setBoard(chessGame.asciiView());
-        updateMoves();
-    }, [chessGame]);
-    useEffect(() => {
-        const chessGame = new ChessGame(chessGameState.fen);
-        setBoard(chessGame.asciiView());
-        setMoves(chessGameState.moves);
-    }, [chessGameState]);
-    useEffect(() => {
+        let newFen = initialFen;
         switch (selectedSetup) {
-            case SetupOptions.STANDARD:
-                setFen(initialFen);
-                break;
             case SetupOptions.LICHESS_DAILY_PUZZLE:
-                if (liChessPuzzle !== null) {
-                    setFen(liChessPuzzle.initialPuzzleFEN);
+                if (liChessPuzzle?.initialPuzzleFEN) {
+                    newFen = liChessPuzzle.initialPuzzleFEN;
                 }
                 break;
             case SetupOptions.CHESS_COM_DAILY_PUZZLE:
-                if (chessComPuzzle !== null) {
-                    setFen(chessComPuzzle.initialPuzzleFEN);
+                if (chessComPuzzle?.initialPuzzleFEN) {
+                    newFen = chessComPuzzle.initialPuzzleFEN;
                 }
                 break;
-            default:
-                setFen(initialFen);
         }
+        setFen(newFen);
     }, [selectedSetup, liChessPuzzle, chessComPuzzle]);
+
+    const getCurrentBoard = () => {
+        const game = new ChessGame(chessGameState.fen);
+        return game.asciiView();
+    };
 
     const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFen(event.target.value);
     };
+
     const submitFen = () => {
         dispatch(loadFen(fen));
     };
-    const submitMove = () => {
-        dispatch(makeMove(selectedMove));
-        setSelectedMove("");
-    };
 
-    const updateMoves = useCallback(() => {
-        setMoves(chessGameState.moves);
-    }, [chessGameState.moves]);
+    const submitMove = () => {
+        if (selectedMove) {
+            dispatch(makeMove(selectedMove));
+            setSelectedMove("");
+        }
+    };
 
     const submitUndoMove = () => {
         if (chessGameState.history.length === 0) {
@@ -82,9 +72,6 @@ const AsciiBoard: React.FC = () => {
             return;
         }
         dispatch(undoMove());
-        setBoard(chessGameState.fen);
-        updateMoves();
-        setUndoMessage("");
     };
 
     return (
@@ -105,7 +92,7 @@ const AsciiBoard: React.FC = () => {
                     </pre>
                 </pre>
                 <pre className="ascii-layout">
-                    <pre id="board">{board}</pre>
+                    <pre id="board">{getCurrentBoard()}</pre>
                 </pre>
                 <div className="moves-layout">
                     <div className="moves-forward">
@@ -117,7 +104,7 @@ const AsciiBoard: React.FC = () => {
                             }
                         >
                             <option value="">Moves</option>
-                            {moves.map((move, index) => (
+                            {chessGameState.moves.map((move, index) => (
                                 <option key={index} value={move}>
                                     {move}
                                 </option>

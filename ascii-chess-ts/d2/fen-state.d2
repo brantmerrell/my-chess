@@ -1,0 +1,71 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 302
+  }
+}
+
+ReduxStore: {
+  shape: rectangle
+  label: "Redux Store"
+  ChessGameState: "FEN, moves\nhistory, positions"
+}
+
+AsciiBoard: {
+  components: |md
+    * Local FEN State
+    * ChessGame Instance
+    * Move Input
+  |
+}
+
+SelectPosition: {
+  SetupChoices: {
+    puzzles: |md
+    * LiChess
+    * Chess.com
+    |
+  }
+  SetupChoices.puzzles -> ExternalFetchers
+  SetupChoices.Standard -> InitialFEN
+  ExternalFetchers: |md
+    * Fetch Lichess
+    * Fetch ChessCom
+  |
+}
+
+Actions: {
+  handlers: |md
+    * Load FEN: Set new position
+    * Make Move: Apply move & update FEN
+    * Undo Move: Revert to previous FEN
+  |
+}
+
+HelperVisual: {
+  VisualDeps: {
+    deps: |md
+      * FEN History
+      * Board State
+      * Links
+    |
+  }
+}
+
+SelectPosition.SetupChoices -> Actions: "dispatch(setSelectedSetup)"
+SelectPosition.ExternalFetchers -> Actions: "dispatch(loadFen)"
+AsciiBoard -> Actions: "dispatch actions"
+Actions -> ReduxStore: "Update state"
+ReduxStore -> AsciiBoard: "Subscribe to changes"
+ReduxStore -> HelperVisual: "Current FEN state"
+
+notes: {
+  style.stroke-dash: 5
+  explanations: |md
+    * **Redux Store**: Maintains centralized FEN state and move history
+    * **Action Flow**: Actions handle state transitions for loading positions, making moves, and undoing moves
+  |
+}
+
+ReduxStore.style.fill: "#e1e8ed"
+notes.style.fill: "#fffdf0"

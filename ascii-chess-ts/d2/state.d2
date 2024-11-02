@@ -1,0 +1,143 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+direction: right
+redux_store: {
+  label: "Redux Store"
+  style.fill: "#e3f2fd"
+  style.stroke: "#2196f3"
+  
+  chess_game_state: {
+    label: "chessGameState\n{fen, moves, history, positions}"
+  }
+  chess_com: "chessComPuzzle"
+  lichess: "liChessPuzzle"
+  setup: "selectedSetup"
+
+  reducers: {
+    label: "Reducers"
+    style.fill: "#bbdefb"
+    style.stroke: "#1976d2"
+
+    chess_game: {
+      label: "chessGameSlice"
+      loadFen: |md
+      ## loadFen reducer
+      * Updates fen
+      * Resets moves/history
+      * Initializes positions
+      |
+      makeMove: |md
+      ## makeMove reducer
+      * Updates fen/moves
+      * Adds to history
+      * Updates positions
+      |
+      undoMove: |md
+      ## undoMove reducer
+      * Pops last move
+      * Restores previous position
+      |
+    }
+    puzzle: {
+      label: "puzzleSlices"
+      lichess: |md
+      ## liChessPuzzleSlice
+      * Handles API responses
+      * Updates puzzle state
+      |
+      chesscom: |md
+      ## chessComPuzzleSlice
+      * Handles API responses
+      * Updates puzzle state
+      |
+    }
+    setup: {
+      label: "setupReducer\n- Updates selected setup"
+    }
+  }
+}
+
+local_state: {
+  label: "Local Component State"
+  style.fill: "#f3e5f5"
+  style.stroke: "#9c27b0"
+  
+  ascii_board: {
+    label: "AsciiBoard Component"
+    style.fill: "#f8bbd0"
+    style.stroke: "#e91e63"
+    
+    local_fen: "fen"
+    selected_move: "selectedMove"
+    undo_message: "undoMessage"
+    dispatch: "dispatch\n[useAppDispatch]"
+    local_setup: "selectedSetup"
+  }
+}
+
+hooks: {
+  label: "State Selection"
+  style.fill: "#e8f5e9"
+  style.stroke: "#4caf50"
+  
+  game_selector: "Game State Selection\n[chessGameState]"
+  puzzle_selector: "Puzzle Selection\n[chessComPuzzle]"
+  lichess_selector: "LiChess Selection\n[liChessPuzzle]"
+}
+
+actions: {
+  label: "Actions"
+  style.fill: "#fff3e0"
+  style.stroke: "#ff9800"
+  
+  submit_fen: "Submit FEN"
+  submit_move: "Submit Move"
+  submit_undo: "Undo Move"
+  dispatch_load_fen: "dispatch(loadFen)"
+  dispatch_make_move: "dispatch(makeMove)"
+  dispatch_undo_move: "dispatch(undoMove)"
+}
+
+effects: {
+  label: "State Updates"
+  style.fill: "#fbe9e7"
+  style.stroke: "#ff5722"
+  
+  init_load: "Initial Load\n[dispatch]"
+  setup_update: "Setup Update\n[selectedSetup, liChessPuzzle,\nchessComPuzzle]"
+}
+
+getCurrentBoard: "getCurrentBoard()\ncreates temporary ChessGame"
+
+redux_store.chess_game_state --> hooks.game_selector: useSelector
+redux_store.chess_com --> hooks.puzzle_selector: useSelector
+redux_store.lichess --> hooks.lichess_selector: useSelector
+redux_store.setup --> local_state.ascii_board.local_setup: useSelector
+hooks.game_selector --> getCurrentBoard
+hooks.puzzle_selector --> effects.setup_update
+hooks.lichess_selector --> effects.setup_update
+local_state.ascii_board.local_setup --> effects.setup_update
+actions.submit_fen --> local_state.ascii_board.local_fen
+actions.submit_fen --> actions.dispatch_load_fen
+actions.submit_move --> local_state.ascii_board.selected_move
+actions.submit_move --> actions.dispatch_make_move
+actions.submit_undo --> actions.dispatch_undo_move
+actions.submit_undo --> local_state.ascii_board.undo_message
+actions.dispatch_load_fen --> local_state.ascii_board.dispatch: useDispatch
+actions.dispatch_make_move --> local_state.ascii_board.dispatch: useDispatch
+actions.dispatch_undo_move --> local_state.ascii_board.dispatch: useDispatch
+local_state.ascii_board.dispatch --> redux_store.reducers
+
+redux_store.reducers.chess_game.loadFen --> redux_store.chess_game_state: Updates State
+redux_store.reducers.chess_game.makeMove --> redux_store.chess_game_state: Updates State
+redux_store.reducers.chess_game.undoMove --> redux_store.chess_game_state: Updates State
+redux_store.reducers.puzzle.lichess --> redux_store.lichess: Updates State
+redux_store.reducers.puzzle.chesscom --> redux_store.chess_com: Updates State
+redux_store.reducers.setup --> redux_store.setup: Updates State
+
+effects.init_load --> actions.dispatch_load_fen: useEffect
+effects.setup_update --> local_state.ascii_board.local_fen: useEffect

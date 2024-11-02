@@ -75,13 +75,13 @@ export const chessGameSlice = createSlice({
             }
         },
         undoMove(state) {
-            if (state.history.length > 0) {
-                const newGame = new ChessGame(state.fen);
-                newGame.undo();
-                state.fen = newGame.toFen();
-                state.moves = newGame.getMoves();
+            if (state.history.length > 0 && state.positions.length > 1) {
                 state.history.pop();
                 state.positions.pop();
+                const previousPosition = state.positions[state.positions.length - 1];
+                state.fen = previousPosition.fen;
+                const newGame = new ChessGame(previousPosition.fen);
+                state.moves = newGame.getMoves();
             }
         },
     },
