@@ -11,7 +11,6 @@ import SelectPosition from "./SelectPosition";
 const AsciiBoard: React.FC = () => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
-
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
         (state) => state.chessComPuzzle
     );
@@ -25,9 +24,11 @@ const AsciiBoard: React.FC = () => {
     const [fen, setFen] = useState(initialFen);
     const [selectedMove, setSelectedMove] = useState("");
     const [undoMessage, setUndoMessage] = useState("");
+
     useEffect(() => {
         dispatch(loadFen(initialFen));
     }, [dispatch]);
+
     useEffect(() => {
         let newFen = initialFen;
         switch (selectedSetup) {
@@ -50,18 +51,22 @@ const AsciiBoard: React.FC = () => {
         return game.asciiView();
     };
 
-    const handleFenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFen(event.target.value);
-    };
-
     const submitFen = () => {
-        dispatch(loadFen(fen));
+        try {
+            new ChessGame(fen);
+            dispatch(loadFen(fen));
+        } catch (error) {
+            console.error("Invalid FEN position");
+        }
     };
 
-    const submitMove = () => {
-        if (selectedMove) {
-            dispatch(makeMove(selectedMove));
+    const submitMove = (move: string) => {
+        if (!move.trim()) return;
+        try {
+            dispatch(makeMove(move));
             setSelectedMove("");
+        } catch (error) {
+            console.error("Invalid move");
         }
     };
 
@@ -84,24 +89,24 @@ const AsciiBoard: React.FC = () => {
                             id="edit-string"
                             type="text"
                             value={fen}
-                            onChange={handleFenChange}
+                            onChange={(e) => setFen(e.target.value)}
                         />
                         <button id="submitFen" onClick={submitFen}>
                             Submit FEN
                         </button>
                     </pre>
                 </pre>
+
                 <pre className="ascii-layout">
                     <pre id="board">{getCurrentBoard()}</pre>
                 </pre>
+
                 <div className="moves-layout">
                     <div className="moves-forward">
                         <select
                             id="selectedMove"
                             value={selectedMove}
-                            onChange={(event) =>
-                                setSelectedMove(event.target.value)
-                            }
+                            onChange={(e) => setSelectedMove(e.target.value)}
                         >
                             <option value="">Moves</option>
                             {chessGameState.moves.map((move, index) => (
@@ -110,18 +115,27 @@ const AsciiBoard: React.FC = () => {
                                 </option>
                             ))}
                         </select>
+
                         <input
                             id="move"
                             type="text"
                             value={selectedMove}
-                            onChange={(event) =>
-                                setSelectedMove(event.target.value)
-                            }
+                            onChange={(e) => setSelectedMove(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    submitMove(selectedMove);
+                                }
+                            }}
                         />
-                        <button id="submitMove" onClick={submitMove}>
+
+                        <button
+                            id="submitMove"
+                            onClick={() => submitMove(selectedMove)}
+                        >
                             Submit Move
                         </button>
                     </div>
+
                     <button id="undo" onClick={submitUndoMove}>
                         Undo Move
                     </button>
