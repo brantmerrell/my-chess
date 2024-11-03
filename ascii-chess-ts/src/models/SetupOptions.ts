@@ -1,4 +1,3 @@
-// Define the enum
 export enum SetupOptions {
   STANDARD = 'standard',
   LICHESS_DAILY_PUZZLE = 'lichess-daily-puzzle',

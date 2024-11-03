@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ChessGame } from "../../chess/chessGame";
+import { Chess, Move } from "chess.js";
 
 export interface ChessGameState {
     fen: string;
@@ -32,9 +33,9 @@ export const chessGameSlice = createSlice({
     reducers: {
         loadFen(state, action) {
             try {
-                const newGame = new ChessGame(action.payload);
+                const newGame = new Chess(action.payload);
                 state.fen = action.payload;
-                state.moves = newGame.getMoves();
+                state.moves = newGame.moves();
                 state.history = [];
                 state.positions = [
                     {
@@ -50,24 +51,30 @@ export const chessGameSlice = createSlice({
         },
         makeMove(state, action) {
             try {
-                const newGame = new ChessGame(state.fen);
-                newGame.makeMove(action.payload);
-                const newFen = newGame.toFen();
+                const newGame = new Chess(state.fen);
+                const move = newGame.move(action.payload);
+                
+                if (!move) {
+                    throw new Error("Invalid move");
+                }
 
+                const newFen = newGame.fen();
                 const [, activeColor, , , , fullmoveStr] = state.fen.split(" ");
                 const moveNumber = parseInt(fullmoveStr);
-                const formattedSan =
-                    activeColor === "w"
-                        ? `${moveNumber}.${action.payload}`
-                        : `${moveNumber}...${action.payload}`;
+
+                const formattedSan = activeColor === "w" 
+                    ? `${moveNumber}.${action.payload}`
+                    : `${moveNumber}...${action.payload}`;
+
+                const uciMove = `${move.from}${move.to}${move.promotion || ''}`;
 
                 state.fen = newFen;
-                state.moves = newGame.getMoves();
+                state.moves = newGame.moves();
                 state.history.push(action.payload);
                 state.positions.push({
                     ply: state.positions.length,
                     san: formattedSan,
-                    uci: "-",
+                    uci: uciMove,
                     fen: newFen,
                 });
             } catch (error) {
@@ -80,8 +87,8 @@ export const chessGameSlice = createSlice({
                 state.positions.pop();
                 const previousPosition = state.positions[state.positions.length - 1];
                 state.fen = previousPosition.fen;
-                const newGame = new ChessGame(previousPosition.fen);
-                state.moves = newGame.getMoves();
+                const newGame = new Chess(previousPosition.fen);
+                state.moves = newGame.moves();
             }
         },
     },

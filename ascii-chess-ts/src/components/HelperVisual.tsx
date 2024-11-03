@@ -11,6 +11,7 @@ import {
 import { fetchLinks } from "../services/connector";
 import { ChessGame } from "../chess/chessGame";
 import * as d3 from "d3";
+import ChordDiagram from "./ChordDiagram";
 import {
     Chart as ChartJS,
     LineElement,
@@ -316,6 +317,7 @@ const HelperVisual: React.FC = () => {
                     </option>
                     <option value="Graph View">Graph View</option>
                     <option value="Arc View">Arc View</option>
+                    <option value="Chord View">Chord View</option>
                     <option value="History Table">History Table</option>
                     <option value="FEN Character Count">
                         FEN Character Count
@@ -326,10 +328,16 @@ const HelperVisual: React.FC = () => {
             <div className="bg-gray-900 p-4 rounded-lg">
                 {(selectedVisual === "Graph View" ||
                     selectedVisual === "Arc View" ||
+                    selectedVisual === "Chord View" ||
                     selectedVisual === "FEN Character Count") && (
                     <div className="w-full">
                         {selectedVisual === "FEN Character Count" ? (
                             plotFENCharacterCount()
+                        ) : selectedVisual === "Chord View" ? (
+                            <ChordDiagram
+                                nodes={linksData?.nodes || []}
+                                edges={processedEdges}
+                            />
                         ) : (
                             <svg
                                 ref={svgRef}
