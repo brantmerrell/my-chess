@@ -1,4 +1,3 @@
-import defaultChessComPuzzle from "../../data/chessComPuzzle.json";
 export const getChessComDailyPuzzle = async () => {
     try {
         const response = await fetch("https://api.chess.com/pub/puzzle");

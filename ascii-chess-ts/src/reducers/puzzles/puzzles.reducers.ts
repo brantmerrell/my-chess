@@ -29,6 +29,12 @@ const liChessPuzzleInitialState: LiChessPuzzleModel = {
     solution: [],
     themes: [],
     initialPuzzleFEN: "",
+    setupHistory: [{
+        ply: 0,
+        san: "-",
+        uci: "-",
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    }],
     fetchStatus: {
         loading: false,
         error: null,
@@ -46,8 +52,8 @@ export const liChessPuzzleSlice = createSlice({
                 state.fetchStatus.error = null;
             })
             .addCase(fetchLiChessDailyPuzzle.fulfilled, (state, action) => {
-                const { puzzle } = new LiChessPuzzleViewModel(action.payload);
-                return puzzle;
+                const puzzleData = new LiChessPuzzleViewModel(action.payload).puzzle;
+                return puzzleData;
             })
             .addCase(fetchLiChessDailyPuzzle.rejected, (state, action) => {
                 state.fetchStatus.loading = false;

@@ -1,9 +1,12 @@
-import { SET_SELECTED_SETUP } from './setups.actions';
-import { AnyAction } from 'redux';
+import { SET_SELECTED_SETUP } from "./setups.actions";
+import { AnyAction } from "redux";
 
-const initialState = ''; 
+const initialState = "";
 
-export const selectedSetupReducer = (state = initialState, action: AnyAction) => {
+export const selectedSetupReducer = (
+    state = initialState,
+    action: AnyAction
+) => {
     switch (action.type) {
         case SET_SELECTED_SETUP:
             const newState = action.payload;

@@ -24,9 +24,10 @@ const AsciiBoard: React.FC = () => {
     const [fen, setFen] = useState(initialFen);
     const [selectedMove, setSelectedMove] = useState("");
     const [undoMessage, setUndoMessage] = useState("");
+    const [moveError, setMoveError] = useState("");
 
     useEffect(() => {
-        dispatch(loadFen(initialFen));
+        dispatch(loadFen({ fen: initialFen }));
     }, [dispatch]);
 
     useEffect(() => {
@@ -53,8 +54,14 @@ const AsciiBoard: React.FC = () => {
 
     const submitFen = () => {
         try {
-            new ChessGame(fen);
-            dispatch(loadFen(fen));
+            if (selectedSetup === SetupOptions.LICHESS_DAILY_PUZZLE && liChessPuzzle?.setupHistory) {
+                dispatch(loadFen({ 
+                    fen: fen,
+                    setupHistory: liChessPuzzle.setupHistory
+                }));
+            } else {
+                dispatch(loadFen({ fen: fen }));
+            }
         } catch (error) {
             console.error("Invalid FEN position");
         }
@@ -65,8 +72,10 @@ const AsciiBoard: React.FC = () => {
         try {
             dispatch(makeMove(move));
             setSelectedMove("");
+            setMoveError("");
         } catch (error) {
-            console.error("Invalid move");
+            console.error("Invalid move:", move, error);
+            setMoveError(`Invalid move: ${move}`);
         }
     };
 
@@ -147,6 +156,14 @@ const AsciiBoard: React.FC = () => {
                             style={{ color: "red", marginTop: "10px" }}
                         >
                             {undoMessage}
+                        </div>
+                    )}
+                    {moveError && (
+                        <div
+                            className="move-error"
+                            style={{ color: "red", marginTop: "10px" }}
+                        >
+                            {moveError}
                         </div>
                     )}
                 </div>
