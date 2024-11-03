@@ -90,6 +90,7 @@ const AsciiBoard: React.FC = () => {
                             type="text"
                             value={fen}
                             onChange={(e) => setFen(e.target.value)}
+                            aria-label="FEN Input"
                         />
                         <button id="submitFen" onClick={submitFen}>
                             Submit FEN
@@ -126,6 +127,7 @@ const AsciiBoard: React.FC = () => {
                                     submitMove(selectedMove);
                                 }
                             }}
+                            aria-label="Move Input"
                         />
 
                         <button
