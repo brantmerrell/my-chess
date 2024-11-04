@@ -1,40 +1,38 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ChessGame } from "../../chess/chessGame";
+import { Position } from "../../types/chess";
 
 export interface ChessGameState {
     fen: string;
     moves: string[];
     history: string[];
-    positions: {
-        ply: number;
-        san: string;
-        uci: string;
-        fen: string;
-    }[];
+    positions: Position[];
 }
 
 interface LoadFenPayload {
     fen: string;
-    setupHistory?: {
-        ply: number;
-        san: string;
-        uci: string;
-        fen: string;
-    }[];
+    setupHistory?: Position[];
 }
 
 const initialGameState: ChessGameState = {
     fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     moves: [],
     history: [],
-    positions: [
-        {
-            ply: 0,
-            san: "-",
-            uci: "-",
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        },
-    ],
+    positions: [{
+        ply: 0,
+        san: "-",
+        uci: "-",
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    }]
+};
+
+const createGameFromState = (state: ChessGameState): ChessGame => {
+    const game = new ChessGame(state.positions[0].fen);
+    state.positions.slice(1).forEach(pos => {
+        const moveText = pos.san.replace(/^\d+\.\.?\.?/, '').trim();
+        game.makeMove(moveText);
+    });
+    return game;
 };
 
 export const chessGameSlice = createSlice({
@@ -43,21 +41,21 @@ export const chessGameSlice = createSlice({
     reducers: {
         loadFen(state, action: PayloadAction<LoadFenPayload>) {
             try {
-                const newGame = new ChessGame();
+                const game = new ChessGame();
                 
                 if (action.payload.setupHistory) {
                     state.positions = action.payload.setupHistory;
                     state.fen = action.payload.fen;
                     state.history = action.payload.setupHistory
-                        .filter(pos => pos.san !== "-")
-                        .map(pos => pos.san.replace(/^\d+\.\.?\.?/, '').trim());
+                        .filter((pos: Position) => pos.san !== "-")
+                        .map((pos: Position) => pos.san.replace(/^\d+\.\.?\.?/, '').trim());
                     
-                    state.positions.slice(1).forEach(pos => {
+                    state.positions.slice(1).forEach((pos: Position) => {
                         const moveText = pos.san.replace(/^\d+\.\.?\.?/, '').trim();
-                        newGame.makeMove(moveText);
+                        game.makeMove(moveText);
                     });
                 } else {
-                    newGame.loadFen(action.payload.fen);
+                    game.loadFen(action.payload.fen);
                     state.fen = action.payload.fen;
                     state.history = [];
                     state.positions = [{
@@ -68,21 +66,18 @@ export const chessGameSlice = createSlice({
                     }];
                 }
                 
-                state.moves = newGame.getMoves();
+                state.moves = game.getMoves();
             } catch (error) {
                 console.error("Invalid FEN string or move history", error);
+                throw error;
             }
         },
         makeMove(state, action) {
             try {
-                const newGame = new ChessGame();
+                const game = createGameFromState(state);
+                game.makeMove(action.payload);
                 
-                state.positions.slice(1).forEach(pos => {
-                    const moveText = pos.san.replace(/^\d+\.\.?\.?/, '').trim();
-                    newGame.makeMove(moveText);
-                });
-                newGame.makeMove(action.payload);
-                const newFen = newGame.toFen();
+                const newFen = game.toFen();
                 const [, activeColor, , , , fullmoveStr] = state.fen.split(" ");
                 const moveNumber = parseInt(fullmoveStr);
                 const formattedSan =
@@ -91,12 +86,12 @@ export const chessGameSlice = createSlice({
                         : `${moveNumber}...${action.payload}`;
 
                 state.fen = newFen;
-                state.moves = newGame.getMoves();
+                state.moves = game.getMoves();
                 state.history.push(action.payload);
                 state.positions.push({
                     ply: state.positions.length,
                     san: formattedSan,
-                    uci: newGame.getLastUCI(),
+                    uci: game.getLastUCI(),
                     fen: newFen,
                 });
             } catch (error) {
@@ -106,16 +101,13 @@ export const chessGameSlice = createSlice({
         },
         undoMove(state) {
             if (state.history.length > 0 && state.positions.length > 1) {
-                const newGame = new ChessGame();
                 state.history.pop();
                 state.positions.pop();
-                state.positions.slice(1).forEach(pos => {
-                    const moveText = pos.san.replace(/^\d+\.\.?\.?/, '').trim();
-                    newGame.makeMove(moveText);
-                });
                 const previousPosition = state.positions[state.positions.length - 1];
                 state.fen = previousPosition.fen;
-                state.moves = newGame.getMoves();
+                
+                const game = createGameFromState(state);
+                state.moves = game.getMoves();
             }
         },
     },

@@ -62,8 +62,10 @@ const AsciiBoard: React.FC = () => {
             } else {
                 dispatch(loadFen({ fen: fen }));
             }
+            setMoveError("");  
         } catch (error) {
             console.error("Invalid FEN position");
+            setMoveError("Invalid FEN position");
         }
     };
 
@@ -74,7 +76,7 @@ const AsciiBoard: React.FC = () => {
             setSelectedMove("");
             setMoveError("");
         } catch (error) {
-            console.error("Invalid move:", move, error);
+            console.error("Invalid move:", move);
             setMoveError(`Invalid move: ${move}`);
         }
     };
