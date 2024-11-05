@@ -10,7 +10,7 @@ import { PieceDisplayMode } from "../types/chess";
 import SelectPosition from "./SelectPosition";
 
 const AsciiBoard: React.FC = () => {
-    const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
+    const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("letters");
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
@@ -115,9 +115,11 @@ const AsciiBoard: React.FC = () => {
                         </button>
                     </pre>
                 </pre>
+
                 <pre className="ascii-layout">
                     <pre id="board">{getCurrentBoard()}</pre>
                 </pre>
+
                 <div className="moves-layout">
                     <div className="moves-forward">
                         <select
@@ -173,16 +175,25 @@ const AsciiBoard: React.FC = () => {
                 </div>
                 <div className="display-options">
                     <button
-                        className="display-toggle"
-                        onClick={() =>
-                            setDisplayMode((prev) =>
-                                prev === "letters" ? "symbols" : "letters"
-                            )
-                        }
+                        className={`display-toggle ${displayMode === "letters" ? "active" : ""}`}
+                        onClick={() => setDisplayMode("letters")}
+                        disabled={displayMode === "letters"}
                     >
-                        {displayMode === "symbols"
-                            ? "Show Letters"
-                            : "Show Symbols"}
+                        Show Letters
+                    </button>
+                    <button
+                        className={`display-toggle ${displayMode === "symbols" ? "active" : ""}`}
+                        onClick={() => setDisplayMode("symbols")}
+                        disabled={displayMode === "symbols"}
+                    >
+                        Show Symbols
+                    </button>
+                    <button
+                        className={`display-toggle ${displayMode === "masked" ? "active" : ""}`}
+                        onClick={() => setDisplayMode("masked")}
+                        disabled={displayMode === "masked"}
+                    >
+                        Mask Board
                     </button>
                 </div>
             </pre>

@@ -44,6 +44,10 @@ export class ChessGame {
     private convertPieces(ascii: string): string {
         if (this.displayMode === 'letters') return ascii;
 
+        if (this.displayMode === 'masked') {
+            return ascii.replace(/[KQRBNPkqrbnp]/g, '*');
+        }
+
         return ascii.split('').map(char => {
             if (char in PIECE_SYMBOLS) {
                 return PIECE_SYMBOLS[char as keyof typeof PIECE_SYMBOLS];
@@ -101,3 +105,4 @@ function wrapString(str: string, maxLen: number) {
         return "";
     }
 }
+
