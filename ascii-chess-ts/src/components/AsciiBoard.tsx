@@ -6,9 +6,11 @@ import { ChessComPuzzleModel } from "../models/ChessComPuzzleModel";
 import { LiChessPuzzleModel } from "../models/LiChessPuzzleModel";
 import { SetupOptions } from "../models/SetupOptions";
 import { ChessGame } from "../chess/chessGame";
+import { PieceDisplayMode } from "../types/chess";
 import SelectPosition from "./SelectPosition";
 
 const AsciiBoard: React.FC = () => {
+    const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
@@ -48,21 +50,26 @@ const AsciiBoard: React.FC = () => {
     }, [selectedSetup, liChessPuzzle, chessComPuzzle]);
 
     const getCurrentBoard = () => {
-        const game = new ChessGame(chessGameState.fen);
+        const game = new ChessGame(chessGameState.fen, displayMode);
         return game.asciiView();
     };
 
     const submitFen = () => {
         try {
-            if (selectedSetup === SetupOptions.LICHESS_DAILY_PUZZLE && liChessPuzzle?.setupHistory) {
-                dispatch(loadFen({ 
-                    fen: fen,
-                    setupHistory: liChessPuzzle.setupHistory
-                }));
+            if (
+                selectedSetup === SetupOptions.LICHESS_DAILY_PUZZLE &&
+                liChessPuzzle?.setupHistory
+            ) {
+                dispatch(
+                    loadFen({
+                        fen: fen,
+                        setupHistory: liChessPuzzle.setupHistory,
+                    })
+                );
             } else {
                 dispatch(loadFen({ fen: fen }));
             }
-            setMoveError("");  
+            setMoveError("");
         } catch (error) {
             console.error("Invalid FEN position");
             setMoveError("Invalid FEN position");
@@ -108,11 +115,9 @@ const AsciiBoard: React.FC = () => {
                         </button>
                     </pre>
                 </pre>
-
                 <pre className="ascii-layout">
                     <pre id="board">{getCurrentBoard()}</pre>
                 </pre>
-
                 <div className="moves-layout">
                     <div className="moves-forward">
                         <select
@@ -127,7 +132,6 @@ const AsciiBoard: React.FC = () => {
                                 </option>
                             ))}
                         </select>
-
                         <input
                             id="move"
                             type="text"
@@ -140,7 +144,6 @@ const AsciiBoard: React.FC = () => {
                             }}
                             aria-label="Move Input"
                         />
-
                         <button
                             id="submitMove"
                             onClick={() => submitMove(selectedMove)}
@@ -148,7 +151,6 @@ const AsciiBoard: React.FC = () => {
                             Submit Move
                         </button>
                     </div>
-
                     <button id="undo" onClick={submitUndoMove}>
                         Undo Move
                     </button>
@@ -168,6 +170,20 @@ const AsciiBoard: React.FC = () => {
                             {moveError}
                         </div>
                     )}
+                </div>
+                <div className="display-options">
+                    <button
+                        className="display-toggle"
+                        onClick={() =>
+                            setDisplayMode((prev) =>
+                                prev === "letters" ? "symbols" : "letters"
+                            )
+                        }
+                    >
+                        {displayMode === "symbols"
+                            ? "Show Letters"
+                            : "Show Symbols"}
+                    </button>
                 </div>
             </pre>
         </div>

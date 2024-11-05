@@ -1,16 +1,22 @@
 import { Chess } from "chess.js";
+import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 
 export class ChessGame {
     private game: Chess;
+    private displayMode: PieceDisplayMode;
 
-    constructor(fen?: string) {
+    constructor(fen?: string, displayMode: PieceDisplayMode = 'letters') {
         if (fen === undefined) {
             this.game = new Chess();
         } else {
             this.game = new Chess(fen);
         }
+        this.displayMode = displayMode;
     }
 
+    public setDisplayMode(mode: PieceDisplayMode) {
+        this.displayMode = mode;
+    }
     public makeMove(move: string) {
         const result = this.game.move(move);
         if (result === null) {
@@ -35,6 +41,16 @@ export class ChessGame {
         return this.game.moves();
     }
 
+    private convertPieces(ascii: string): string {
+        if (this.displayMode === 'letters') return ascii;
+
+        return ascii.split('').map(char => {
+            if (char in PIECE_SYMBOLS) {
+                return PIECE_SYMBOLS[char as keyof typeof PIECE_SYMBOLS];
+            }
+            return char;
+        }).join('');
+    }
     public history() {
         return this.game.history();
     }
@@ -46,27 +62,18 @@ export class ChessGame {
         return lastMove.from + lastMove.to + (lastMove.promotion || '');
     }
 
-    public ascii() {
-        return this.game.ascii();
+    public ascii(): string {
+        const ascii = this.game.ascii();
+        return this.convertPieces(ascii);
     }
 
-    public asciiView() {
-        const asciiLines = this.game.ascii().split("\n");
-        const boardLines = asciiSub("\\.", " ", [...asciiLines]);
-        const maskedLines = asciiSub("[a-zA-Z]", "✱", [...boardLines]);
-
-        const concatenatedBoard = boardLines
-            .map((line, index) => {
-                const paddedLine = line.padEnd(maskedLines[index].length, " ");
-                return `${paddedLine} ${maskedLines[index]}`;
-            })
-            .join("\n");
-
+    public asciiView(): string {
+        const asciiLines = this.ascii().split("\n");
+        const boardLines = asciiSub("\\.", " ", [...asciiLines]).join("\n");
         const fen = `FEN:\n${wrapString(this.game.fen(), 60)}\n`;
-        const history = `History:\n${wrapString(this.game.history().join(" "), 60)}`;
         const moves = `Options to move:\n${wrapString(this.getMoves().join(" "), 60)}`;
 
-        return `${fen}\nBoard:\n${concatenatedBoard}\n\n${history}\n\n${moves}`;
+        return `${fen}\nBoard:\n${boardLines}\n\n${moves}`;
     }
 }
 
