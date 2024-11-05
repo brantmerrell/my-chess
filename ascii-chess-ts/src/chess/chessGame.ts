@@ -5,7 +5,7 @@ export class ChessGame {
     private game: Chess;
     private displayMode: PieceDisplayMode;
 
-    constructor(fen?: string, displayMode: PieceDisplayMode = 'letters') {
+    constructor(fen?: string, displayMode: PieceDisplayMode = "letters") {
         if (fen === undefined) {
             this.game = new Chess();
         } else {
@@ -42,18 +42,28 @@ export class ChessGame {
     }
 
     private convertPieces(ascii: string): string {
-        if (this.displayMode === 'letters') return ascii;
-
-        if (this.displayMode === 'masked') {
-            return ascii.replace(/[KQRBNPkqrbnp]/g, '*');
-        }
-
-        return ascii.split('').map(char => {
-            if (char in PIECE_SYMBOLS) {
-                return PIECE_SYMBOLS[char as keyof typeof PIECE_SYMBOLS];
-            }
-            return char;
-        }).join('');
+        if (this.displayMode === "letters") return ascii;
+        const lines = ascii.split("\n");
+        return lines
+            .map((line, index) => {
+                if (index >= 1 && index <= 8) {
+                    return line
+                        .split("")
+                        .map((char) => {
+                            if (char in PIECE_SYMBOLS) {
+                                return this.displayMode === "masked"
+                                    ? "*"
+                                    : PIECE_SYMBOLS[
+                                          char as keyof typeof PIECE_SYMBOLS
+                                      ];
+                            }
+                            return char;
+                        })
+                        .join("");
+                }
+                return line;
+            })
+            .join("\n");
     }
     public history() {
         return this.game.history();
@@ -63,7 +73,7 @@ export class ChessGame {
         const moves = this.game.history({ verbose: true });
         if (moves.length === 0) return "-";
         const lastMove = moves[moves.length - 1];
-        return lastMove.from + lastMove.to + (lastMove.promotion || '');
+        return lastMove.from + lastMove.to + (lastMove.promotion || "");
     }
 
     public ascii(): string {
@@ -105,4 +115,3 @@ function wrapString(str: string, maxLen: number) {
         return "";
     }
 }
-
