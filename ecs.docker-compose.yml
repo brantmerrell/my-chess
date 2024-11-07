@@ -5,11 +5,11 @@ services:
     ports:
       - "8000:8000"
                                    
-  asciichessr:
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessr:latest
+  asciichessts:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest
     ports:
-      - "3838:3838"
+      - "3838:80"
 
-x-aws-vpc: "vpc-fae8de82"  
-x-aws-subnets: ["subnet-29cb6763", "subnet-d24ecdaa"]  
-x-aws-securitygroup: ["sg-bb4e128b"]  
+x-aws-vpc: "${AWS_VPC_ID}"
+x-aws-subnets: ["${AWS_SUBNET_ID_1}", "${AWS_SUBNET_ID_2}"]
+x-aws-securitygroup: ["${AWS_SECURITY_GROUP_ID}"]

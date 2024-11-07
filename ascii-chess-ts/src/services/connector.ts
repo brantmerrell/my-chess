@@ -4,7 +4,7 @@ let apiBaseUrl: string;
 if (window.location.hostname === 'localhost') {
     apiBaseUrl = 'http://localhost:8000';
 } else {
-    apiBaseUrl = 'http://connector:5001';
+    apiBaseUrl = 'http://35.160.26.192:8000';
 }
 
 

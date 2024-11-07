@@ -8,11 +8,11 @@ services:
     networks:
       - chessnet
                                    
-  asciichessr:
+  asciichessts:
     build:
-      context: ./asciiChessR
+      context: ./ascii-chess-ts
     ports:
-      - "3838:3838"
+     - "3838:80"
     depends_on:
       - connector
     networks:
