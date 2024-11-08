@@ -1,0 +1,165 @@
+{
+  "nodes": [
+    {
+      "square": "a1",
+      "piece_type": "R",
+      "color": "white"
+    },
+    {
+      "square": "b1",
+      "piece_type": "N",
+      "color": "white"
+    },
+    {
+      "square": "c1",
+      "piece_type": "B",
+      "color": "white"
+    },
+    {
+      "square": "d1",
+      "piece_type": "Q",
+      "color": "white"
+    },
+    {
+      "square": "e1",
+      "piece_type": "K",
+      "color": "white"
+    },
+    {
+      "square": "f1",
+      "piece_type": "B",
+      "color": "white"
+    },
+    {
+      "square": "g1",
+      "piece_type": "N",
+      "color": "white"
+    },
+    {
+      "square": "h1",
+      "piece_type": "R",
+      "color": "white"
+    },
+    {
+      "square": "a2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "b2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "c2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "d2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "e2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "f2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "g2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "h2",
+      "piece_type": "P",
+      "color": "white"
+    },
+    {
+      "square": "a7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "b7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "c7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "d7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "e7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "f7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "g7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "h7",
+      "piece_type": "p",
+      "color": "black"
+    },
+    {
+      "square": "a8",
+      "piece_type": "r",
+      "color": "black"
+    },
+    {
+      "square": "b8",
+      "piece_type": "n",
+      "color": "black"
+    },
+    {
+      "square": "c8",
+      "piece_type": "b",
+      "color": "black"
+    },
+    {
+      "square": "d8",
+      "piece_type": "q",
+      "color": "black"
+    },
+    {
+      "square": "e8",
+      "piece_type": "k",
+      "color": "black"
+    },
+    {
+      "square": "f8",
+      "piece_type": "b",
+      "color": "black"
+    },
+    {
+      "square": "g8",
+      "piece_type": "n",
+      "color": "black"
+    },
+    {
+      "square": "h8",
+      "piece_type": "r",
+      "color": "black"
+    }
+  ],
+  "edges": []
+}

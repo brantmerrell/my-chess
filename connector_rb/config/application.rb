@@ -9,7 +9,11 @@ module ConnectorRb
     config.load_defaults 7.1
 
     config.autoload_paths += %W(
+      #{config.root}/lib
+    )
     config.autoload_lib(ignore: %w(assets tasks))
 
   end
 end
+
+

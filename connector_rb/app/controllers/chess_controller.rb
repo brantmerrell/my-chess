@@ -32,7 +32,7 @@ class ChessController < ApplicationController
     begin
       edges = params[:edges]
       acyclic_graph = build_acyclic_graph(edges)
-      formatted_edges = acyclic_graph.edges.map { |u, v, _| "
+      formatted_edges = acyclic_graph.edges.map { |u, v, _| "#{u}->#{v}" }
       ascii_art = generate_graph_ascii(formatted_edges)
       render json: { ascii_art: ascii_art }
     rescue StandardError => e
@@ -101,14 +101,16 @@ class ChessController < ApplicationController
 
     Tempfile.create(['graph', '.dot']) do |f|
       f.puts "digraph G {"
-      edges.each { |edge| f.puts "
+      edges.each { |edge| f.puts "  #{edge};" }
       f.puts "}"
       f.flush
 
-      output = `dot -Tascii
+      output = `dot -Tascii #{f.path}`.strip
       return output.present? ? output : edges.join("\n")
     end
   rescue StandardError => e
     edges.join("\n")
   end
 end
+
+

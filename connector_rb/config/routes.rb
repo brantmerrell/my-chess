@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  get 'adjacencies/:fen_string', to: 'chess
-  get 'links/:fen_string', to: 'chess
-  put 'graphdag', to: 'chess
+  get '/links', to: 'chess#links', format: false
+  get '/adjacencies', to: 'chess#adjacencies', format: false
+  put '/graphdag', to: 'chess#graphdag', format: false
+  get '/*path/', to: redirect { |params, req| req.path.chomp('/') }, format: false
 end
+
+

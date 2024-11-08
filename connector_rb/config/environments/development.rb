@@ -16,7 +16,7 @@ Rails.application.configure do
 
     config.cache_store = :memory_store
     config.public_file_server.headers = {
-      "Cache-Control" => "public, max-age=
+      "Cache-Control" => "public, max-age=#{2.days.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -49,3 +49,4 @@ Rails.application.configure do
 
   config.action_controller.raise_on_missing_callback_actions = true
 end
+
