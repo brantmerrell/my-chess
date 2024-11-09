@@ -2,16 +2,23 @@ class ChessController < ApplicationController
   def adjacencies
     begin
       board = ChessUtils::Board.new(params[:fen_string])
-      adjacencies = {}
-      ChessUtils::SQUARES.each do |square|
-        piece = board.piece_at(square)
-        if piece
-          attacks = board.attacks_mask(square)
-          attacked_squares = ChessUtils.scan_reversed(attacks)
-          adjacencies[ChessUtils::SQUARE_NAMES[square]] = attacked_squares.map { |sq| ChessUtils::SQUARE_NAMES[sq] }
+      nodes = get_nodes(board)  
+      edges = []
+
+      nodes.each do |node|
+        square_index = ChessUtils::SQUARE_NAMES.index(node[:square])
+        adjacent_squares = adjacent_pieces(board, square_index)
+
+        adjacent_squares.each do |adj_square|
+          edges << {
+            type: "adjacent",
+            source: node[:square],
+            target: ChessUtils::SQUARE_NAMES[adj_square]
+          }
         end
       end
-      render json: adjacencies
+
+      render json: { nodes: nodes, edges: edges }
     rescue StandardError => e
       render json: { error: e.message }, status: :bad_request
     end
@@ -41,6 +48,20 @@ class ChessController < ApplicationController
   end
 
   private
+
+  def adjacent_pieces(board, square)
+    file, rank = square % 8, square / 8
+    adjacent_squares = []
+    [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]].each do |df, dr|
+      new_file = file + df
+      new_rank = rank + dr
+      if new_file.between?(0, 7) && new_rank.between?(0, 7)
+        new_square = new_rank * 8 + new_file
+        adjacent_squares << new_square if board.piece_at(new_square)
+      end
+    end
+    adjacent_squares
+  end
 
   def get_nodes(board)
     nodes = []
