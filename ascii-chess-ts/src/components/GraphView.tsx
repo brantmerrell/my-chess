@@ -7,6 +7,25 @@ interface GraphViewProps {
     processedEdges: ProcessedEdge[];
 }
 
+const squareToCoords = (square: string): [number, number] => {
+    const file = square.charCodeAt(0) - "a".charCodeAt(0);
+    const rank = 8 - parseInt(square[1]);
+    return [file, rank];
+};
+
+const gridToScreen = (
+    coords: [number, number],
+    width: number,
+    height: number
+): [number, number] => {
+    const margin = 50;
+    const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+    return [
+        margin + coords[0] * gridSize + gridSize / 2,
+        margin + coords[1] * gridSize + gridSize / 2,
+    ];
+};
+
 const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
     const svgRef = useRef<SVGSVGElement>(null);
 
@@ -22,7 +41,7 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
             .attr("height", height)
             .attr("viewBox", `0 0 ${width} ${height}`);
 
-        const g = svg.append("g").attr("transform", "translate(50,20)");
+        const g = svg.append("g");
 
         type SimulationNode = LinkNode & d3.SimulationNodeDatum;
         type SimulationLink = {
@@ -31,7 +50,18 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
             type: string;
         };
 
-        const nodes = linksData.nodes as SimulationNode[];
+        const nodes = linksData.nodes.map((node) => {
+            const gridCoords = squareToCoords(node.square);
+            const [x, y] = gridToScreen(gridCoords, width, height);
+            return {
+                ...node,
+                x,
+                y,
+                fx: x,
+                fy: y,
+            };
+        }) as SimulationNode[];
+
         const links = processedEdges.map((edge) => ({
             source: nodes.find((n) => n.square === edge.source)!,
             target: nodes.find((n) => n.square === edge.target)!,
@@ -46,12 +76,27 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
                     .forceLink<SimulationNode, SimulationLink>(links)
                     .id((d) => d.square)
                     .distance(50)
+                    .strength(0)
             )
-            .force("charge", d3.forceManyBody().strength(-10))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(25))
-            .force("x", d3.forceX(width / 2).strength(0.1))
-            .force("y", d3.forceY(height / 2).strength(0.1));
+            .force("charge", d3.forceManyBody().strength(0))
+            .force("collision", d3.forceCollide().radius(25).strength(1));
+
+        svg.append("defs")
+            .selectAll("marker")
+            .data(["arrowheadRed", "arrowheadGreen"])
+            .join("marker")
+            .attr("id", (d) => d)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 20)
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("fill", (d) =>
+                d === "arrowheadRed" ? "darkred" : "darkgreen"
+            )
+            .attr("d", "M0,-5L10,0L0,5");
 
         const link = g
             .append("g")
@@ -61,7 +106,12 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
             .attr("stroke", (d) =>
                 d.type === "threat" ? "darkred" : "darkgreen"
             )
-            .attr("stroke-width", 5);
+            .attr("stroke-width", 2)
+            .attr("marker-end", (d) =>
+                d.type === "threat"
+                    ? "url(#arrowheadRed)"
+                    : "url(#arrowheadGreen)"
+            );
 
         const node = g
             .append("g")
@@ -83,8 +133,10 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
                     })
                     .on("end", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0);
-                        d.fx = null;
-                        d.fy = null;
+                        const gridCoords = squareToCoords(d.square);
+                        const [x, y] = gridToScreen(gridCoords, width, height);
+                        d.fx = x;
+                        d.fy = y;
                     })
             );
 
@@ -100,17 +152,31 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
             .attr("fill", (d) => (d.color === "white" ? "#000" : "#fff"))
             .text((d) => d.piece_type);
 
-        simulation.on("tick", () => {
-            link.attr("x1", (d) => d.source.x ?? 0)
-                .attr("y1", (d) => d.source.y ?? 0)
-                .attr("x2", (d) => d.target.x ?? 0)
-                .attr("y2", (d) => d.target.y ?? 0);
+        node.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", "2em")
+            .attr("fill", "#ffd700")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")
+            .text((d) => d.square);
 
-            node.attr("transform", (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
+        simulation.on("tick", () => {
+            link.attr("x1", (d) => d.source.x!)
+                .attr("y1", (d) => d.source.y!)
+                .attr("x2", (d) => d.target.x!)
+                .attr("y2", (d) => d.target.y!);
+
+            node.attr("transform", (d) => `translate(${d.x},${d.y})`);
         });
     }, [linksData, processedEdges]);
 
-    return <svg ref={svgRef} className="w-full bg-gray-800" />;
+    return (
+        <svg
+            ref={svgRef}
+            className="w-full bg-gray-800"
+            style={{ minHeight: "600px" }}
+        />
+    );
 };
 
 export default GraphView;
