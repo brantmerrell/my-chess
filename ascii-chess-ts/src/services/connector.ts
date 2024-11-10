@@ -4,9 +4,8 @@ let apiBaseUrl: string;
 if (window.location.hostname === 'localhost') {
     apiBaseUrl = 'http://localhost:8000';
 } else {
-    apiBaseUrl = 'http://35.160.26.192:8000';
+    apiBaseUrl = ``;
 }
-
 
 export const fetchLinks = async (inputString: string) => {
   try {
