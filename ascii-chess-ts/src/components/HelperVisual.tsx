@@ -5,14 +5,18 @@ import { RootState } from "../app/store";
 import { fetchLinks } from "../services/connector";
 import { LinksResponse, ProcessedEdge, EdgeData } from "../types/visualization";
 import { ChessGame } from "../chess/chessGame";
+import { PieceDisplayMode } from "../types/chess";
 import GraphView from "./GraphView";
 import ArcView from "./ArcView";
 import ChordDiagram from "./ChordDiagram";
 import FENCharacterCount from "./FENCharacterCount";
 
-const HelperVisual: React.FC = () => {
-    const [selectedVisual, setSelectedVisual] =
-        useState<string>("No Visual Selected");
+interface HelperVisualProps {
+    displayMode: PieceDisplayMode;
+}
+
+const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
+    const [selectedVisual, setSelectedVisual] = useState<string>("No Visual Selected");
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const fenHistory = useSelector((state: RootState) => {
         const game = new ChessGame(state.chessGame.positions[0].fen);
@@ -85,6 +89,7 @@ const HelperVisual: React.FC = () => {
                     <GraphView
                         linksData={linksData}
                         processedEdges={processedEdges}
+                        displayMode={displayMode}
                     />
                 )}
                 {selectedVisual === "Arc View" && (
@@ -113,3 +118,4 @@ const HelperVisual: React.FC = () => {
 };
 
 export default HelperVisual;
+

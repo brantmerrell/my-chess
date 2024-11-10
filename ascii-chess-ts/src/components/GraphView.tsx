@@ -1,33 +1,52 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
+import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 
 interface GraphViewProps {
     linksData: LinksResponse | null;
     processedEdges: ProcessedEdge[];
+    displayMode: PieceDisplayMode;
 }
 
-const squareToCoords = (square: string): [number, number] => {
-    const file = square.charCodeAt(0) - "a".charCodeAt(0);
-    const rank = 8 - parseInt(square[1]);
-    return [file, rank];
-};
-
-const gridToScreen = (
-    coords: [number, number],
-    width: number,
-    height: number
-): [number, number] => {
-    const margin = 50;
-    const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
-    return [
-        margin + coords[0] * gridSize + gridSize / 2,
-        margin + coords[1] * gridSize + gridSize / 2,
-    ];
-};
-
-const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
+const GraphView: React.FC<GraphViewProps> = ({
+    linksData,
+    processedEdges,
+    displayMode,
+}) => {
     const svgRef = useRef<SVGSVGElement>(null);
+
+    const getNodeStyle = (color: string) => {
+        if (displayMode === "letters") {
+            return {
+                background: color === "white" ? "#ffffff" : "#000000",
+                textColor: color === "white" ? "#000000" : "#ffffff",
+            };
+        } else if (displayMode === "symbols") {
+            return {
+                background: "gray",
+                textColor: color === "white" ? "red" : "blue",
+            };
+        } else  {
+            return {
+                background: color === "white" ? "darkgray" : "darkgray",
+                textColor: color === "white" ? "white" : "black",
+            };
+        }
+    };
+
+    const getPieceDisplay = (piece: string): string => {
+        switch (displayMode) {
+            case "symbols":
+                return (
+                    PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece
+                );
+            case "masked":
+                return "*";
+            default:
+                return piece;
+        }
+    };
 
     useEffect(() => {
         if (!linksData || !processedEdges || !svgRef.current) return;
@@ -142,15 +161,15 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
 
         node.append("circle")
             .attr("r", 15)
-            .attr("fill", (d) => (d.color === "white" ? "#dddddd" : "#333333"))
+            .attr("fill", (d) => getNodeStyle(d.color).background)
             .attr("stroke", "#666")
             .attr("stroke-width", 2);
 
         node.append("text")
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
-            .attr("fill", (d) => (d.color === "white" ? "#000" : "#fff"))
-            .text((d) => d.piece_type);
+            .attr("fill", (d) => getNodeStyle(d.color).textColor)
+            .text((d) => getPieceDisplay(d.piece_type));
 
         node.append("text")
             .attr("text-anchor", "middle")
@@ -168,7 +187,7 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
 
             node.attr("transform", (d) => `translate(${d.x},${d.y})`);
         });
-    }, [linksData, processedEdges]);
+    }, [linksData, processedEdges, displayMode]);
 
     return (
         <svg
@@ -177,6 +196,25 @@ const GraphView: React.FC<GraphViewProps> = ({ linksData, processedEdges }) => {
             style={{ minHeight: "600px" }}
         />
     );
+};
+
+const squareToCoords = (square: string): [number, number] => {
+    const file = square.charCodeAt(0) - "a".charCodeAt(0);
+    const rank = 8 - parseInt(square[1]);
+    return [file, rank];
+};
+
+const gridToScreen = (
+    coords: [number, number],
+    width: number,
+    height: number
+): [number, number] => {
+    const margin = 50;
+    const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+    return [
+        margin + coords[0] * gridSize + gridSize / 2,
+        margin + coords[1] * gridSize + gridSize / 2,
+    ];
 };
 
 export default GraphView;

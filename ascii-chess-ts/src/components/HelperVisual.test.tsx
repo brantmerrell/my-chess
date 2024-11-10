@@ -16,10 +16,14 @@ describe("HelperVisual Component", () => {
         });
     });
 
+    const defaultProps = {
+        displayMode: 'letters' as const
+    };
+
     test("renders HelperVisual component", () => {
         render(
             <Provider store={store}>
-                <HelperVisual />
+                <HelperVisual {...defaultProps} />
             </Provider>
         );
 
@@ -29,7 +33,7 @@ describe("HelperVisual Component", () => {
     test("changes selected visual on option change", () => {
         render(
             <Provider store={store}>
-                <HelperVisual />
+                <HelperVisual {...defaultProps} />
             </Provider>
         );
 
@@ -42,7 +46,7 @@ describe("HelperVisual Component", () => {
     test("renders Chord Diagram when Chord View is selected", () => {
         render(
             <Provider store={store}>
-                <HelperVisual />
+                <HelperVisual {...defaultProps} />
             </Provider>
         );
 
@@ -55,7 +59,7 @@ describe("HelperVisual Component", () => {
     test("renders History Table when History Table is selected", () => {
         render(
             <Provider store={store}>
-                <HelperVisual />
+                <HelperVisual {...defaultProps} />
             </Provider>
         );
 
@@ -68,7 +72,7 @@ describe("HelperVisual Component", () => {
     test("renders FEN Character Count when FEN Character Count is selected", () => {
         render(
             <Provider store={store}>
-                <HelperVisual />
+                <HelperVisual {...defaultProps} />
             </Provider>
         );
 
@@ -78,4 +82,5 @@ describe("HelperVisual Component", () => {
         expect(screen.getByText("Move 0")).toBeInTheDocument();
     });
 });
+
 

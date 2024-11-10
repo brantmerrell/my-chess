@@ -9,8 +9,12 @@ import { ChessGame } from "../chess/chessGame";
 import { PieceDisplayMode } from "../types/chess";
 import SelectPosition from "./SelectPosition";
 
-const AsciiBoard: React.FC = () => {
-    const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("letters");
+interface AsciiBoardProps {
+    displayMode: PieceDisplayMode;
+    setDisplayMode: (mode: PieceDisplayMode) => void;
+}
+
+const AsciiBoard: React.FC<AsciiBoardProps> = ({ displayMode, setDisplayMode }) => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
@@ -202,3 +206,4 @@ const AsciiBoard: React.FC = () => {
 };
 
 export default AsciiBoard;
+
