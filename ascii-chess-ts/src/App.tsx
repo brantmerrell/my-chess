@@ -16,13 +16,11 @@ function App() {
                     <h1 className="title">Ascii Chessboard</h1>
                 </div>
                 <div className="chess-container">
-                    <AsciiBoard 
-                        displayMode={displayMode} 
-                        setDisplayMode={setDisplayMode} 
+                    <AsciiBoard
+                        displayMode={displayMode}
+                        setDisplayMode={setDisplayMode}
                     />
-                    <HelperVisual 
-                        displayMode={displayMode} 
-                    />
+                    <HelperVisual displayMode={displayMode} />
                 </div>
                 <div></div>
             </div>
@@ -31,5 +29,3 @@ function App() {
 }
 
 export default App;
-
-

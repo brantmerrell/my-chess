@@ -16,7 +16,8 @@ interface HelperVisualProps {
 }
 
 const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
-    const [selectedVisual, setSelectedVisual] = useState<string>("No Visual Selected");
+    const [selectedVisual, setSelectedVisual] =
+        useState<string>("No Visual Selected");
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const fenHistory = useSelector((state: RootState) => {
         const game = new ChessGame(state.chessGame.positions[0].fen);
@@ -118,4 +119,3 @@ const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
 };
 
 export default HelperVisual;
-

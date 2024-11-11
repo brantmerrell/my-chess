@@ -4,8 +4,8 @@ import { store } from "../app/store";
 import HelperVisual from "../components/HelperVisual";
 import * as connectorModule from "../services/connector";
 
-jest.mock('axios', () => ({
-  get: jest.fn(() => Promise.resolve({ data: { nodes: [], edges: [] } }))
+jest.mock("axios", () => ({
+    get: jest.fn(() => Promise.resolve({ data: { nodes: [], edges: [] } })),
 }));
 
 describe("HelperVisual Component", () => {
@@ -17,7 +17,7 @@ describe("HelperVisual Component", () => {
     });
 
     const defaultProps = {
-        displayMode: 'letters' as const
+        displayMode: "letters" as const,
     };
 
     test("renders HelperVisual component", () => {
@@ -77,10 +77,10 @@ describe("HelperVisual Component", () => {
         );
 
         const selectElement = screen.getByText("No Visual Selected");
-        fireEvent.change(selectElement, { target: { value: "FEN Character Count" } });
+        fireEvent.change(selectElement, {
+            target: { value: "FEN Character Count" },
+        });
 
         expect(screen.getByText("Move 0")).toBeInTheDocument();
     });
 });
-
-

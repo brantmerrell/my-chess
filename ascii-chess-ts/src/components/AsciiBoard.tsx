@@ -8,13 +8,20 @@ import { SetupOptions } from "../models/SetupOptions";
 import { ChessGame } from "../chess/chessGame";
 import { PieceDisplayMode } from "../types/chess";
 import SelectPosition from "./SelectPosition";
+import FenInput from "./FenInput";
+import BoardDisplay from "./BoardDisplay";
+import MoveControls from "./MoveControls";
+import DisplayModeToggle from "./DisplayModeToggle";
 
 interface AsciiBoardProps {
     displayMode: PieceDisplayMode;
     setDisplayMode: (mode: PieceDisplayMode) => void;
 }
 
-const AsciiBoard: React.FC<AsciiBoardProps> = ({ displayMode, setDisplayMode }) => {
+const AsciiBoard: React.FC<AsciiBoardProps> = ({
+    displayMode,
+    setDisplayMode,
+}) => {
     const chessGameState = useSelector((state: RootState) => state.chessGame);
     const dispatch = useDispatch();
     const chessComPuzzle = useSelector<RootState, ChessComPuzzleModel | null>(
@@ -104,106 +111,29 @@ const AsciiBoard: React.FC<AsciiBoardProps> = ({ displayMode, setDisplayMode }) 
     return (
         <div>
             <pre className="chess-table">
-                <pre className="fen-layout">
-                    <SelectPosition />
-                    <pre id="horiz">
-                        <input
-                            id="edit-string"
-                            type="text"
-                            value={fen}
-                            onChange={(e) => setFen(e.target.value)}
-                            aria-label="FEN Input"
-                        />
-                        <button id="submitFen" onClick={submitFen}>
-                            Submit FEN
-                        </button>
-                    </pre>
-                </pre>
-
-                <pre className="ascii-layout">
-                    <pre id="board">{getCurrentBoard()}</pre>
-                </pre>
-
-                <div className="moves-layout">
-                    <div className="moves-forward">
-                        <select
-                            id="selectedMove"
-                            value={selectedMove}
-                            onChange={(e) => setSelectedMove(e.target.value)}
-                        >
-                            <option value="">Moves</option>
-                            {chessGameState.moves.map((move, index) => (
-                                <option key={index} value={move}>
-                                    {move}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            id="move"
-                            type="text"
-                            value={selectedMove}
-                            onChange={(e) => setSelectedMove(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    submitMove(selectedMove);
-                                }
-                            }}
-                            aria-label="Move Input"
-                        />
-                        <button
-                            id="submitMove"
-                            onClick={() => submitMove(selectedMove)}
-                        >
-                            Submit Move
-                        </button>
-                    </div>
-                    <button id="undo" onClick={submitUndoMove}>
-                        Undo Move
-                    </button>
-                    {undoMessage && (
-                        <div
-                            className="undo-message"
-                            style={{ color: "red", marginTop: "10px" }}
-                        >
-                            {undoMessage}
-                        </div>
-                    )}
-                    {moveError && (
-                        <div
-                            className="move-error"
-                            style={{ color: "red", marginTop: "10px" }}
-                        >
-                            {moveError}
-                        </div>
-                    )}
-                </div>
-                <div className="display-options">
-                    <button
-                        className={`display-toggle ${displayMode === "letters" ? "active" : ""}`}
-                        onClick={() => setDisplayMode("letters")}
-                        disabled={displayMode === "letters"}
-                    >
-                        Show Letters
-                    </button>
-                    <button
-                        className={`display-toggle ${displayMode === "symbols" ? "active" : ""}`}
-                        onClick={() => setDisplayMode("symbols")}
-                        disabled={displayMode === "symbols"}
-                    >
-                        Show Symbols
-                    </button>
-                    <button
-                        className={`display-toggle ${displayMode === "masked" ? "active" : ""}`}
-                        onClick={() => setDisplayMode("masked")}
-                        disabled={displayMode === "masked"}
-                    >
-                        Mask Board
-                    </button>
-                </div>
+                <SelectPosition />
+                <FenInput
+                    fen={fen}
+                    onFenChange={setFen}
+                    onSubmitFen={submitFen}
+                />
+                <BoardDisplay board={getCurrentBoard()} />
+                <MoveControls
+                    selectedMove={selectedMove}
+                    availableMoves={chessGameState.moves}
+                    onMoveChange={setSelectedMove}
+                    onMoveSubmit={() => submitMove(selectedMove)}
+                    onUndoMove={submitUndoMove}
+                    undoMessage={undoMessage}
+                    moveError={moveError}
+                />
+                <DisplayModeToggle
+                    displayMode={displayMode}
+                    onDisplayModeChange={setDisplayMode}
+                />
             </pre>
         </div>
     );
 };
 
 export default AsciiBoard;
-

@@ -71,7 +71,9 @@ describe("AsciiBoard Component", () => {
             </Provider>
         );
 
-        const moveInput = screen.getByLabelText("Move Input") as HTMLInputElement;
+        const moveInput = screen.getByLabelText(
+            "Move Input"
+        ) as HTMLInputElement;
         const submitMoveButton = screen.getByText("Submit Move");
 
         fireEvent.change(moveInput, { target: { value: "e4" } });
@@ -124,6 +126,3 @@ describe("AsciiBoard Component", () => {
         jest.clearAllMocks();
     });
 });
-
-
-

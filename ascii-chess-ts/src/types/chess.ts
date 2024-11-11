@@ -5,9 +5,19 @@ export interface Position {
     fen: string;
 }
 
-export type PieceDisplayMode = 'letters' | 'symbols' | 'masked';
+export type PieceDisplayMode = "letters" | "symbols" | "masked";
 
 export const PIECE_SYMBOLS = {
-    K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
-    k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎'
+    K: "♔",
+    Q: "♕",
+    R: "♖",
+    B: "♗",
+    N: "♘",
+    P: "♙",
+    k: "♚",
+    q: "♛",
+    r: "♜",
+    b: "♝",
+    n: "♞",
+    p: "♟︎",
 };

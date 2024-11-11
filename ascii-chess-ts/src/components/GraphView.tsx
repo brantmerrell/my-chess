@@ -24,13 +24,13 @@ const GraphView: React.FC<GraphViewProps> = ({
             };
         } else if (displayMode === "symbols") {
             return {
-                background: "gray",
-                textColor: color === "white" ? "red" : "blue",
+                background: color === "white" ? "#ffffff" : "#000000",
+                textColor: color === "white" ? "#000000" : "#ffffff",
             };
-        } else  {
+        } else {
             return {
-                background: color === "white" ? "darkgray" : "darkgray",
-                textColor: color === "white" ? "white" : "black",
+                background: color === "white" ? "#ffffff" : "#000000",
+                textColor: color === "white" ? "#000000" : "#ffffff",
             };
         }
     };
