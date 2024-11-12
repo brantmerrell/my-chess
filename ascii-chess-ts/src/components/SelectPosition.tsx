@@ -30,7 +30,7 @@ const SelectPosition: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className="fen-layout">
             <select
                 className="start-fen"
                 value={selectedSetup}
