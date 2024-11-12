@@ -32,6 +32,7 @@ const SelectPosition: React.FC = () => {
     return (
         <div className="fen-layout">
             <select
+                aria-label="Position Selection"
                 className="start-fen"
                 value={selectedSetup}
                 onChange={handleOptionChange}

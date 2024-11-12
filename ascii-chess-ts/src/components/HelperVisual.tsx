@@ -65,6 +65,7 @@ const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
             <h3 className="text-xl mb-4">Helper Visual</h3>
             <div className="helper-select-container">
                 <select
+                    aria-label="Helper Visual Selection"
                     value={selectedVisual}
                     onChange={(e) => setSelectedVisual(e.target.value)}
                     className="helper-select mb-4 p-2 rounded text-white"
