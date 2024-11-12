@@ -143,8 +143,8 @@ const GraphView: React.FC<GraphViewProps> = ({
                     .on("start", (event, d) => {
                         if (!event.active)
                             simulation.alphaTarget(0.3).restart();
-                        d.fx = event.x;
-                        d.fy = event.y;
+                        d.fx = d.x;
+                        d.fy = d.y;
                     })
                     .on("drag", (event, d) => {
                         d.fx = event.x;
@@ -152,10 +152,8 @@ const GraphView: React.FC<GraphViewProps> = ({
                     })
                     .on("end", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0);
-                        const gridCoords = squareToCoords(d.square);
-                        const [x, y] = gridToScreen(gridCoords, width, height);
-                        d.fx = x;
-                        d.fy = y;
+                        delete d.fx;
+                        delete d.fy;
                     })
             );
 
