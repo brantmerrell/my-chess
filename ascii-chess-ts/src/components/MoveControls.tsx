@@ -1,34 +1,32 @@
 import React from "react";
+import { PieceDisplayMode } from "../types/chess";
+import { useMoveHistory } from "../hooks/useMoveHistory";
 
 interface MoveControlsProps {
-    selectedMove: string;
-    availableMoves: string[];
-    onMoveChange: (move: string) => void;
-    onMoveSubmit: () => void;
-    onUndoMove: () => void;
-    undoMessage: string;
-    moveError: string;
+    displayMode: PieceDisplayMode;
 }
 
-const MoveControls: React.FC<MoveControlsProps> = ({
-    selectedMove,
-    availableMoves,
-    onMoveChange,
-    onMoveSubmit,
-    onUndoMove,
-    undoMessage,
-    moveError,
-}) => {
+const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
+    const {
+        moves,
+        selectedMove,
+        errorMessage,
+        undoMessage,
+        setSelectedMove,
+        makeSelectedMove,
+        undoLastMove,
+    } = useMoveHistory(displayMode);
+
     return (
         <div className="moves-layout">
             <div className="moves-forward">
                 <select
                     id="selectedMove"
                     value={selectedMove}
-                    onChange={(e) => onMoveChange(e.target.value)}
+                    onChange={(e) => setSelectedMove(e.target.value)}
                 >
                     <option value="">Moves</option>
-                    {availableMoves.map((move, index) => (
+                    {moves.map((move, index) => (
                         <option key={index} value={move}>
                             {move}
                         </option>
@@ -38,19 +36,22 @@ const MoveControls: React.FC<MoveControlsProps> = ({
                     id="move"
                     type="text"
                     value={selectedMove}
-                    onChange={(e) => onMoveChange(e.target.value)}
+                    onChange={(e) => setSelectedMove(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            onMoveSubmit();
+                            makeSelectedMove(selectedMove);
                         }
                     }}
                     aria-label="Move Input"
                 />
-                <button id="submitMove" onClick={onMoveSubmit}>
+                <button
+                    id="submitMove"
+                    onClick={() => makeSelectedMove(selectedMove)}
+                >
                     Submit Move
                 </button>
             </div>
-            <button id="undo" onClick={onUndoMove}>
+            <button id="undo" onClick={undoLastMove}>
                 Undo Move
             </button>
             {undoMessage && (
@@ -61,12 +62,12 @@ const MoveControls: React.FC<MoveControlsProps> = ({
                     {undoMessage}
                 </div>
             )}
-            {moveError && (
+            {errorMessage && (
                 <div
                     className="move-error"
                     style={{ color: "red", marginTop: "10px" }}
                 >
-                    {moveError}
+                    {errorMessage}
                 </div>
             )}
         </div>

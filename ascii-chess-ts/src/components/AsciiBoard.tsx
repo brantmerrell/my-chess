@@ -1,8 +1,7 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
 import { PieceDisplayMode } from "../types/chess";
 import { useChessGame } from "../hooks/useChessGame";
+import { ChessGame } from "../chess/chessGame";
 import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
 import BoardDisplay from "./BoardDisplay";
@@ -21,15 +20,14 @@ const AsciiBoard: React.FC<AsciiBoardProps> = ({
     const {
         fen,
         setFen,
-        selectedMove,
-        setSelectedMove,
-        undoMessage,
-        moveError,
-        getCurrentBoard,
+        currentPosition,
         submitFen,
-        submitMove,
-        submitUndoMove,
     } = useChessGame(displayMode);
+
+    const getCurrentBoard = () => {
+        const game = new ChessGame(currentPosition, displayMode);
+        return game.asciiView();
+    };
 
     return (
         <div>
@@ -41,16 +39,8 @@ const AsciiBoard: React.FC<AsciiBoardProps> = ({
                     onSubmitFen={submitFen}
                 />
                 <BoardDisplay board={getCurrentBoard()} />
-                <MoveControls
-                    selectedMove={selectedMove}
-                    availableMoves={useSelector(
-                        (state: RootState) => state.chessGame.moves
-                    )}
-                    onMoveChange={setSelectedMove}
-                    onMoveSubmit={() => submitMove(selectedMove)}
-                    onUndoMove={submitUndoMove}
-                    undoMessage={undoMessage}
-                    moveError={moveError}
+                <MoveControls 
+                    displayMode={displayMode}
                 />
                 <DisplayModeToggle
                     displayMode={displayMode}
@@ -62,3 +52,5 @@ const AsciiBoard: React.FC<AsciiBoardProps> = ({
 };
 
 export default AsciiBoard;
+
+

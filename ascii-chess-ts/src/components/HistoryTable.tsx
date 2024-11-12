@@ -1,10 +1,14 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
+import React from "react";
+import { PieceDisplayMode } from "../types/chess";
+import { useMoveHistory } from "../hooks/useMoveHistory";
+import { Position } from "../types/chess";
 
-const HistoryTable = () => {
-    const positions = useSelector(
-        (state: RootState) => state.chessGame.positions
-    );
+interface HistoryTableProps {
+    displayMode: PieceDisplayMode;
+}
+
+const HistoryTable: React.FC<HistoryTableProps> = ({ displayMode }) => {
+    const { positions } = useMoveHistory(displayMode);
 
     return (
         <div className="w-full overflow-x-auto">
@@ -26,7 +30,7 @@ const HistoryTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {positions.map((entry) => (
+                    {positions.map((entry: Position) => (
                         <tr key={entry.ply} className="hover:bg-gray-700">
                             <td className="p-2 border-b border-gray-700">
                                 {entry.ply}

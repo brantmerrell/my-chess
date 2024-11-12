@@ -66,26 +66,20 @@ const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
             <div className="helper-select-container">
                 <select
                     value={selectedVisual}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                        setSelectedVisual(e.target.value)
-                    }
+                    onChange={(e) => setSelectedVisual(e.target.value)}
                     className="helper-select mb-4 p-2 rounded text-white"
                 >
-                    <option value="No Visual Selected">
-                        No Visual Selected
-                    </option>
+                    <option value="No Visual Selected">No Visual Selected</option>
                     <option value="Graph View">Graph View</option>
                     <option value="Arc View">Arc View</option>
                     <option value="Chord View">Chord View</option>
                     <option value="History Table">History Table</option>
-                    <option value="FEN Character Count">
-                        FEN Character Count
-                    </option>
+                    <option value="FEN Character Count">FEN Character Count</option>
                 </select>
             </div>
 
             <div className="bg-gray-900 p-4 rounded-lg">
-                {selectedVisual === "History Table" && <HistoryTable />}
+                {selectedVisual === "History Table" && <HistoryTable displayMode={displayMode} />}
                 {selectedVisual === "Graph View" && (
                     <GraphView
                         linksData={linksData}
@@ -119,3 +113,4 @@ const HelperVisual: React.FC<HelperVisualProps> = ({ displayMode }) => {
 };
 
 export default HelperVisual;
+
