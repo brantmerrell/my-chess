@@ -1,86 +1,70 @@
-# ASCII Chess
+# ASCII Chess Visualization
 
-Ascii Chess and its prototypes explore the considerations of software design and user experience for a chess app to revisualize the chess board. This includes revisualizations such as:  
+This application seeks to depict chess positions through ASCII art.
 
- - Clearing the board of distractions and clutter
-     * Replacing squares with whitespace
-     * Replacing pieces with letters
-     * Replacing pieces with asterisks
-     * Replacing positional depictions with FEN strings
- - Adding visuals to assist in seeing patterns
-     * Demonstrating the relationship between diagonals and linear equations
-     * Depicting the possible destinations of a knight given N moves
-     * Connecting pieces to organize the board into chunks
-     * Extending FEN strings into maps with connecting edges
-     * Viewing moves by highlighting changes in FEN strings
+Live versions:
+- React Application: [chess.jbm.eco](https://chess.jbm.eco)
+- R Shiny Prototype: [josh-b-merrell.shinyapps.io/my-chess](https://josh-b-merrell.shinyapps.io/my-chess/)
 
-This is as much about the revisualization of all topics as about the revisualization of chess. However, chess provides a clear method for testing the value of visualizations. Blindfold Chess in particular can indicate whether a visualization is useful.  
+## Overview
 
-The visuals under design are listed in Visuals.md.  
+The project consists of an R Shiny prototype that evolved into a React application, with a Python FastAPI backend for shared functionality.
 
-This repository contains various prototypes of the ASCII Chess application. This enables comparison and contrast across different programming languages, frameworks, and libraries. It is not expected that the next level of maturity by the ASCII Chess project will limit itself to a single programming language as is the case with the prototypes.  
+## Components
 
-The following table provides the prototypes, their languages, web frameworks, and chess libraries:  
-```text
-┌─────────────┬────────┬─────────────┬─────────────┐
-│Prototype    │Language│Web Framework│Chess Library│
-├─────────────┼────────┼─────────────┼─────────────┤
-│asciChessR   │R       │Shiny        │rchess       │
-├─────────────┼────────┼─────────────┼─────────────┤
-│asci-chess-ts│JS/TS   │React        │chess.js     │
-├─────────────┼────────┼─────────────┼─────────────┤
-│asci_chess_rb│Ruby    │Sinatra      │PGN          │
-├─────────────┼────────┼─────────────┼─────────────┤
-│AsciiChessCS │C#      │Blazor       │Gera.Chess   │
-└─────────────┴────────┴─────────────┴─────────────┘
+- ascii-chess-ts: React TypeScript frontend
+- connector: Python FastAPI backend
+- prototype-shiny: Original R Shiny implementation
+
+### Tech Stack
+
+**Frontend (React)**
+- React with TypeScript
+- Redux for state management
+- D3.js for visualizations
+- Chess.com and Lichess daily puzzle endpoints
+
+**Backend (Python)**
+- FastAPI
+- Hosted on AWS ECS
+
+**Prototype (R)**
+- Shiny for reactive web framework
+- Chess position visualization utilities
+
+## Local Development
+
+1. Clone the repository
+2. Copy `.env.example` to `.env` and configure environment variables
+3. Start the backend services:
+```bash
+docker-compose -f local.docker-compose.yml up
 ```
 
-The comparison of features across chess libraries is tracked as follows:  
-```text
-┌────────────────┬──────┬────────┬───────┬───────────┐
-│Feature         │rchess│chess.js│PGN(rb)│Chess(.NET)│
-├────────────────┼──────┼────────┼───────┼───────────┤
-│Board to FEN    │✓     │✓       │✕      │✓          │
-├────────────────┼──────┼────────┼───────┼───────────┤
-│Multi-Move      │✕     │✕       │✓      │✕          │
-├────────────────┼──────┼────────┼───────┼───────────┤
-│Legal moves list│✓     │✓       │✕      │✓          │
-├────────────────┼──────┼────────┼───────┼───────────┤
-│Undo move       │✓     │✓       │✕      │✕          │
-└────────────────┴──────┴────────┴───────┴───────────┘
+4. For frontend development:
+```bash
+cd ascii-chess-ts
+npm install
+npm start
 ```
-The comparison of features across prototypes is tracked in the following table:  
+The frontend is configured to connect to the local backend when running in development mode.
 
-```text
-┌─────────────────────────────┬───────────┬──────────────┬──────────────┬────────────┐
-│Feature                      │asciiChessR│ascii-chess-ts│ascii_chess_rb│AsciiChessCS│
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Select Daily Lichess Puzzle  │✓          │✕             │✓             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Select Daily chess.com Puzzle│✓          │✕             │✕             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Edit FEN                     │✓          │✓             │✓             │✓           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Submit FEN                   │✓          │✓             │✓             │✓           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Current FEN state            │✓          │✕             │✕             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Ascii Board                  │✓          │✓             │✓             │✓           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Move History                 │✓          │✕             │✕             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Select Move                  │✓          │✓             │✕             │✓           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Edit Move                    │✓          │✓             │✓             │✓           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Undo Move                    │✓          │✓             │✓             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Redo Move                    │✕          │✕             │✓             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│Helper Visual Dropdown       │✓          │✕             │✕             │✕           │
-├─────────────────────────────┼───────────┼──────────────┼──────────────┼────────────┤
-│FEN Map                      │✓          │✕             │✕             │✕           │
-└─────────────────────────────┴───────────┴──────────────┴──────────────┴────────────┘
-```
-Each prototype includes its own README.md explaining how to launch the application.  
+## Deployment
 
+This project is deployed on AWS using ECS. For deployment details and AWS configuration, see:
+- `aws.md` in each application directory
+- `collect_aws_state.py` for AWS resource management
+- `ecs.docker-compose.yml` and `ecs-params.yml` for container orchestration
+
+## Additional Documentation
+
+For app-specific information, see:
+- `/ascii-chess-ts/README.md` 
+- `/connector/README.md`
+- `/prototype-shiny/README.md`
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request with a clear description of changes
