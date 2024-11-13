@@ -1,5 +1,0 @@
-httr
-magrittr
-rchess
-shiny
-shinythemes
