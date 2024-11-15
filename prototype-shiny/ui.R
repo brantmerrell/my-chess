@@ -1,4 +1,5 @@
 library(shinythemes)
+library(shinycssloaders)
 source("R/globals.R")
 ui <- fluidPage(
   theme = shinytheme("superhero"),
@@ -16,7 +17,7 @@ ui <- fluidPage(
         ),
         class = "my-split-layout"
       ),
-      verbatimTextOutput("board"),
+      withSpinner(verbatimTextOutput("board")),
       splitLayout(
         cellWidths = c("130px", "130px", "130px", "130px"),
         cellArgs = list(

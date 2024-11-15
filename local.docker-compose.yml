@@ -17,7 +17,18 @@ services:
       - connector
     networks:
       - chessnet
+
+  prototype-shiny:
+    build:
+      context: ./prototype-shiny
+    ports:
+      - "3839:3838"
+    depends_on:
+      - connector
+    environment:
+      - SHINY_ENVIRONMENT=production
+    networks:
+      - chessnet
                                    
 networks:
   chessnet:
-
