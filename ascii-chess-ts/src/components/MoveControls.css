@@ -1,0 +1,126 @@
+.moves-layout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.moves-forward {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+/* Move Selection Dropdown */
+#selectedMove {
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 5px;
+    border: 1px solid #4a5568;
+    background-color: white;
+    font-family: monospace;
+    font-size: 14px;
+    cursor: pointer;
+    /* Custom dropdown arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+    width: 100px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+#selectedMove:focus {
+    outline: none;
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 1px #2b6cb0;
+}
+
+/* Move Input */
+#move {
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 5px;
+    border: 1px solid #4a5568;
+    background-color: white;
+    font-family: monospace;
+    font-size: 14px;
+    width: 100px;
+}
+
+#move:focus {
+    outline: none;
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 1px #2b6cb0;
+}
+
+/* Submit Move Button */
+#submitMove {
+    height: 38px;
+    padding: 0 15px;
+    color: white;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#submitMove:hover {
+    background-color: #006400;
+}
+
+#submitMove:active {
+    background-color: #004d00;
+}
+
+/* Undo Button */
+#undo {
+    height: 38px;
+    padding: 0 15px;
+    color: white;
+    font-size: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#undo:hover {
+    background-color: #8b0000;
+}
+
+#undo:active {
+    background-color: #660000;
+}
+
+/* Error Messages */
+.move-error,
+.undo-message {
+    color: #e53e3e;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .moves-layout {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .moves-forward {
+        flex-wrap: wrap;
+    }
+
+    #selectedMove,
+    #move,
+    #submitMove,
+    #undo {
+        width: 100%;
+    }
+}
+

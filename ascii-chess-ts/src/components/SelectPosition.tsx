@@ -8,7 +8,6 @@ import {
     fetchLiChessDailyPuzzle,
 } from "../reducers/puzzles/puzzles.actions";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
-
 import "./SelectPosition.css";
 
 const SelectPosition: React.FC = () => {
@@ -30,10 +29,10 @@ const SelectPosition: React.FC = () => {
     };
 
     return (
-        <div className="fen-layout">
+        <div className="position-layout">
             <select
                 aria-label="Position Selection"
-                className="start-fen"
+                className="position-select"
                 value={selectedSetup}
                 onChange={handleOptionChange}
             >
@@ -52,3 +51,4 @@ const SelectPosition: React.FC = () => {
 };
 
 export default SelectPosition;
+

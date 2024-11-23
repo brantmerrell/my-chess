@@ -1,4 +1,5 @@
 import React from "react";
+import "./FenInput.css";
 
 interface FenInputProps {
     fen: string;
@@ -12,20 +13,25 @@ const FenInput: React.FC<FenInputProps> = ({
     onSubmitFen,
 }) => {
     return (
-        <pre className="fen-layout">
-            <pre id="horiz">
+        <div className="fen-layout">
+            <div className="fen-controls">
                 <input
                     id="edit-string"
+                    className="fen-edit"
                     type="text"
                     value={fen}
                     onChange={(e) => onFenChange(e.target.value)}
                     aria-label="FEN Input"
                 />
-                <button id="submitFen" onClick={onSubmitFen}>
+                <button
+                    id="submitFen"
+                    onClick={onSubmitFen}
+                    className="btn btn-secondary"
+                >
                     Submit FEN
                 </button>
-            </pre>
-        </pre>
+            </div>
+        </div>
     );
 };
 

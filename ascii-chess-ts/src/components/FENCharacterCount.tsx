@@ -40,7 +40,42 @@ const FENCharacterCount: React.FC<FENCharacterCountProps> = ({
         ],
     };
 
-    return <Line data={data} />;
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: {
+                    color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                    color: "white",
+                }
+            },
+            y: {
+                grid: {
+                    color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                    color: "white",
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: "white",
+                }
+            }
+        }
+    };
+
+    return (
+        <div className="w-full" style={{ width: "600px", height: "400px" }}>
+            <Line data={data} options={options} />
+        </div>
+    );
 };
 
 export default FENCharacterCount;
+

@@ -112,7 +112,7 @@ describe("AsciiBoard Component", () => {
         fireEvent.click(symbolsButton);
         expect(mockSetDisplayMode).toHaveBeenCalledWith("symbols");
 
-        const maskedButton = screen.getByText("Mask Board");
+        const maskedButton = screen.getByText("Mask Pieces");
         fireEvent.click(maskedButton);
         expect(mockSetDisplayMode).toHaveBeenCalledWith("masked");
 
@@ -121,7 +121,6 @@ describe("AsciiBoard Component", () => {
         expect(mockSetDisplayMode).toHaveBeenCalledWith("letters");
     });
 
-    // Reset mock function after each test
     afterEach(() => {
         jest.clearAllMocks();
     });

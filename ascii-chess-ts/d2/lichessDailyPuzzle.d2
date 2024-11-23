@@ -1,0 +1,244 @@
+direction: up
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 302
+  }
+}
+
+_src: src/ {
+  style.stroke: "#94a3b8"
+
+  _app: app/ {
+    style.stroke: "#94a3b8"
+    
+    _store: store.ts {
+      style.stroke: "#64748b"
+      
+      _root_reducer: rootReducer {
+        style.stroke: "#475569"
+        _lichess_puzzle: liChessPuzzleSlice.reducer {
+          style.stroke: "#475569"
+        }
+      }
+      _store: store {
+        style.stroke: "#475569"
+      }
+      _root_state: RootState {
+        style.stroke: "#475569"
+      }
+      _root_reducer -> _store: configureStore {
+        style.stroke: "#2563eb"
+        style.font-color: "#2563eb"
+      }
+      _store -> _root_state: getState {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+    }
+  }
+
+  _hooks: hooks/ {
+    style.stroke: "#94a3b8"
+    
+    _use_chess_game: useChessGame.ts {
+      style.stroke: "#64748b"
+      
+      _setup_options: SetupOptions {
+        style.stroke: "#475569"
+      }
+      _root_state: RootState {
+        style.stroke: "#475569"
+      }
+      _lichess_puzzle_model: LiChessPuzzleModel {
+        style.stroke: "#475569"
+      }
+      _lichess_puzzle: liChessPuzzle {
+        style.stroke: "#475569"
+      }
+      _selected_setup: selectedSetup {
+        style.stroke: "#475569"
+      }
+      _root_state -- _lichess_puzzle: useSelector {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _root_state -- _selected_setup: useSelector {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _lichess_puzzle_model -- _lichess_puzzle: useSelector {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+    }
+  }
+
+  _models: models/ {
+    style.stroke: "#94a3b8"
+    
+    _setup_options: SetupOptions {
+      style.stroke: "#64748b"
+      _lichess_daily_puzzle: lichess daily puzzle {
+        style.stroke: "#475569"
+      }
+    }
+    _lichess_puzzle_model: LiChessPuzzleModel {
+      style.stroke: "#64748b"
+    }
+    _lichess_puzzle_view_model: LiChessPuzzleViewModel {
+      style.stroke: "#64748b"
+    }
+  }
+
+  _reducers: reducers/ {
+    style.stroke: "#94a3b8"
+    
+    _puzzles: puzzles/ {
+      style.stroke: "#64748b"
+      
+      _actions: puzzles.actions.ts {
+        style.stroke: "#475569"
+        _fetchLiChessDailyPuzzle: fetchLiChessDailyPuzzle {
+          style.stroke: "#475569"
+        }
+      }
+      _reducers: puzzles.reducers.ts {
+        style.stroke: "#475569"
+        _lichess_puzzle_slice: liChessPuzzleSlice {
+          style.stroke: "#475569"
+          _fetchLiChessDailyPuzzle: fetchLiChessDailyPuzzle {
+            style.stroke: "#475569"
+          }
+        }
+        _lichess_puzzle_model: LiChessPuzzleModel {
+          style.stroke: "#475569"
+        }
+        _lichess_puzzle_view_model: LiChessPuzzleViewModel {
+          style.stroke: "#475569"
+        }
+        _lichess_puzzle_view_model -- _lichess_puzzle_slice {
+          style.stroke: "#7c3aed"
+          style.font-color: "#7c3aed"
+        }
+        _lichess_puzzle_model -- _lichess_puzzle_slice {
+          style.stroke: "#7c3aed"
+          style.font-color: "#7c3aed"
+        }
+      }
+      _actions._fetchLiChessDailyPuzzle -> _reducers._lichess_puzzle_slice: import {
+        style.stroke: "#2563eb"
+        style.font-color: "#2563eb"
+      }
+    }
+    
+    _setups: setups/ {
+      style.stroke: "#64748b"
+      
+      _actions: setups.actions.ts {
+        style.stroke: "#475569"
+        _set_selected_setup: setSelectedSetup {
+          style.stroke: "#475569"
+        }
+      }
+    }
+  }
+
+  _components: components/ {
+    style.stroke: "#94a3b8"
+    
+    _select_position: SelectPosition.tsx {
+      style.stroke: "#64748b"
+      
+      _conditions: Conditions {
+        shape: text
+        style.stroke: "#475569"
+      }
+      _set_selected_setup: setSelectedSetup {
+        style.stroke: "#475569"
+      }
+      _handle_option_change: handleOptionChange {
+        style.stroke: "#475569"
+      }
+      _fetchLiChessDailyPuzzle: fetchLiChessDailyPuzzle {
+        style.stroke: "#475569"
+      }
+      _select: Position Selection {
+        style.stroke: "#475569"
+      }
+      _fetchLiChessDailyPuzzle <- _conditions: 4 {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _conditions <- _handle_option_change: 3 {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _set_selected_setup <- _handle_option_change: 2 {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _handle_option_change <- _select: 1 {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+      _setup_options: SetupOptions {
+        style.stroke: "#475569"
+        _lichess_daily_puzzle: lichess daily puzzle {
+          shape: text
+          style.stroke: "#475569"
+        }
+      }
+      _setup_options._lichess_daily_puzzle -- _conditions {
+        style.stroke: "#7c3aed"
+        style.font-color: "#7c3aed"
+      }
+    }
+  }
+
+  # Cross-component connections
+  _reducers._setups._actions._set_selected_setup -> _components._select_position._set_selected_setup: import {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _reducers._puzzles._actions._fetchLiChessDailyPuzzle -> _components._select_position._fetchLiChessDailyPuzzle: import {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _models._setup_options -> _components._select_position._setup_options: import {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _models._setup_options -> _hooks._use_chess_game._setup_options: import {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _reducers._puzzles._reducers._lichess_puzzle_slice._fetchLiChessDailyPuzzle -> _app._store._root_reducer._lichess_puzzle {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _app._store._root_state -> _hooks._use_chess_game._root_state {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _models._lichess_puzzle_model -> _hooks._use_chess_game._lichess_puzzle_model {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _models._lichess_puzzle_model -> _reducers._puzzles._reducers._lichess_puzzle_model {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _models._lichess_puzzle_view_model -> _reducers._puzzles._reducers._lichess_puzzle_view_model {
+    style.stroke: "#2563eb"
+    style.font-color: "#2563eb"
+  }
+  _hooks._use_chess_game._selected_setup <-> _app._store._root_state: update {
+    style.stroke: "#16a34a"
+    style.font-color: "#16a34a"
+  }
+  _hooks._use_chess_game._lichess_puzzle <-> _app._store._root_state: update {
+    style.stroke: "#16a34a"
+    style.font-color: "#16a34a"
+  }
+}

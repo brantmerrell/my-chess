@@ -1,4 +1,5 @@
 import React from "react";
+import './BoardDisplay.css';
 
 interface BoardDisplayProps {
     board: string;
@@ -6,10 +7,11 @@ interface BoardDisplayProps {
 
 const BoardDisplay: React.FC<BoardDisplayProps> = ({ board }) => {
     return (
-        <pre className="ascii-layout">
-            <pre id="board">{board}</pre>
-        </pre>
+        <div className="board-display">
+            <pre className="ascii-board">{board}</pre>
+        </div>
     );
 };
 
 export default BoardDisplay;
+

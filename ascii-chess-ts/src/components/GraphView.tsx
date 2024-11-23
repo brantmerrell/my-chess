@@ -54,7 +54,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
-        const width = 800;
+        const width = 600;
         const height = 600;
         svg.attr("width", width)
             .attr("height", height)

@@ -1,6 +1,7 @@
 import React from "react";
 import { PieceDisplayMode } from "../types/chess";
 import { useMoveHistory } from "../hooks/useMoveHistory";
+import "./MoveControls.css";
 
 interface MoveControlsProps {
     displayMode: PieceDisplayMode;
@@ -24,6 +25,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                     id="selectedMove"
                     value={selectedMove}
                     onChange={(e) => setSelectedMove(e.target.value)}
+                    aria-label="Move Selection"
                 >
                     <option value="">Moves</option>
                     {moves.map((move, index) => (
@@ -47,11 +49,12 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                 <button
                     id="submitMove"
                     onClick={() => makeSelectedMove(selectedMove)}
+                    className="btn btn-success"
                 >
                     Submit Move
                 </button>
             </div>
-            <button id="undo" onClick={undoLastMove}>
+            <button id="undo" onClick={undoLastMove} className="btn btn-danger">
                 Undo Move
             </button>
             {undoMessage && (

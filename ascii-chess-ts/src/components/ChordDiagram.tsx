@@ -50,37 +50,6 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
         const chord = d3.chord().padAngle(0.05).sortSubgroups(d3.descending);
         const chords = chord(matrix);
 
-        const pieceColorScale = d3
-            .scaleOrdinal<string, string>()
-            .domain([
-                "p",
-                "n",
-                "b",
-                "r",
-                "q",
-                "k",
-                "P",
-                "N",
-                "B",
-                "R",
-                "Q",
-                "K",
-            ])
-            .range([
-                "#769656",
-                "#86a666",
-                "#97b677",
-                "#a8c688",
-                "#b9d699",
-                "#caE6aa",
-                "#eeeed2",
-                "#dfdfb2",
-                "#cfcf92",
-                "#bfbf72",
-                "#afaf52",
-                "#9f9f32",
-            ]);
-
         const arcGenerator = d3
             .arc<d3.ChordGroup>()
             .innerRadius(innerRadius)
@@ -97,12 +66,8 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
         group
             .append("path")
             .attr("d", arcGenerator)
-            .attr("fill", (d) => {
-                const square = squares[d.index];
-                const node = nodes.find((n) => n.square === square);
-                return node ? pieceColorScale(node.piece_type) : "#ccc";
-            })
-            .attr("stroke", "#000");
+            .attr("fill", "#4a5568")  
+            .attr("stroke", "#1a202c"); 
 
         const extendedGroups = chords.groups as ExtendedChordGroup[];
         extendedGroups.forEach((g) => {
@@ -144,9 +109,9 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
                             e.target === targetSquare) ||
                         (e.source === targetSquare && e.target === sourceSquare)
                 );
-                return edge?.type === "threat" ? "#ff4444" : "#44ff44";
+                return edge?.type === "threat" ? "darkred" : "darkgreen";
             })
-            .attr("stroke", "#000");
+            .attr("stroke", "#1a202c"); 
     }, [nodes, edges]);
 
     return (
@@ -165,3 +130,4 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
 };
 
 export default ChordDiagram;
+

@@ -6,7 +6,7 @@ import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
 import BoardDisplay from "./BoardDisplay";
 import MoveControls from "./MoveControls";
-import DisplayModeToggle from "./DisplayModeToggle";
+import PieceViewSelector from "./PieceViewSelector";
 
 interface AsciiBoardProps {
     displayMode: PieceDisplayMode;
@@ -42,7 +42,7 @@ const AsciiBoard: React.FC<AsciiBoardProps> = ({
                 <MoveControls 
                     displayMode={displayMode}
                 />
-                <DisplayModeToggle
+                <PieceViewSelector
                     displayMode={displayMode}
                     onDisplayModeChange={setDisplayMode}
                 />
