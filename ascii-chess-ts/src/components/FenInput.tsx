@@ -17,7 +17,6 @@ const FenInput: React.FC<FenInputProps> = ({
             <div className="fen-controls">
                 <input
                     id="edit-string"
-                    className="fen-edit"
                     type="text"
                     value={fen}
                     onChange={(e) => onFenChange(e.target.value)}

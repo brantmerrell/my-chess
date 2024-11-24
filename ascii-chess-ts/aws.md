@@ -1,6 +1,6 @@
 ## Load environment variables
 ```bash
-export $(cat .env | xargs)
+export $(cat ../.env | xargs)
 ```
 
 ## Build image for AMD64 architecture

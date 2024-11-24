@@ -87,7 +87,7 @@ export class ChessGame {
         const fen = `FEN:\n${wrapString(this.game.fen(), 60)}\n`;
         const moves = `Options to move:\n${wrapString(this.getMoves().join(" "), 60)}`;
 
-        return `${fen}\nBoard:\n${boardLines}\n\n${moves}`;
+        return `${boardLines}`;
     }
 }
 

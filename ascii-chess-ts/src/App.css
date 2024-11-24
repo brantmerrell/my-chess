@@ -36,7 +36,8 @@
 }
 
 .title {
-    text-align: center;
+    text-align: left;
+    padding-left: 20px;
 }
 
 @keyframes App-logo-spin {

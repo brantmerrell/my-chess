@@ -49,7 +49,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                 <button
                     id="submitMove"
                     onClick={() => makeSelectedMove(selectedMove)}
-                    className="btn btn-success"
+                    className="btn btn-info"
                 >
                     Submit Move
                 </button>
