@@ -1,15 +1,27 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
+import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 
 interface ArcViewProps {
     linksData: LinksResponse | null;
     processedEdges: ProcessedEdge[];
+    displayMode: PieceDisplayMode;
 }
 
-const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges }) => {
+const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMode }) => {
     const svgRef = useRef<SVGSVGElement>(null);
 
+    const getPieceDisplay = (piece: string): string => {
+        switch (displayMode) {
+            case "symbols":
+                return PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece;
+            case "masked":
+                return "*";
+            default:
+                return piece;
+        }
+    };
     useEffect(() => {
         if (!linksData || !processedEdges || !svgRef.current) return;
 
@@ -65,7 +77,8 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges }) => {
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
             .attr("fill", (d) => (d.color === "white" ? "#000" : "#fff"))
-            .text((d) => d.piece_type);
+            .style("font-size", (d) => displayMode === "symbols" ? "14px" : "12px")
+            .text((d) => getPieceDisplay(d.piece_type));
 
         nodeGroup
             .append("text")
@@ -99,13 +112,14 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges }) => {
                     .attr("fill", "none")
                     .attr(
                         "stroke",
-                        edge.type === "threat" ? "#ff4444" : "darkgreen"
+                        edge.type === "threat" ? "darkred" : "darkgreen"
                     )
                     .attr("stroke-width", 2)
                     .attr("opacity", 0.6);
             }
         });
-    }, [linksData, processedEdges]);
+
+    }, [linksData, processedEdges, displayMode]);
 
     return (
         <svg
@@ -117,3 +131,4 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges }) => {
 };
 
 export default ArcView;
+

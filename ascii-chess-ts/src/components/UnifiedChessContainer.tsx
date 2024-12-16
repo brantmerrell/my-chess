@@ -90,6 +90,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     <ArcView
                         linksData={linksData}
                         processedEdges={processedEdges}
+                        displayMode={displayMode}
                     />
                 );
             case "chord":
