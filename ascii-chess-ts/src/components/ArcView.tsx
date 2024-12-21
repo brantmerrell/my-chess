@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import "./ArcView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
@@ -9,12 +10,49 @@ interface ArcViewProps {
     displayMode: PieceDisplayMode;
 }
 
+type ColorScheme = "file" | "rank";
+
 const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMode }) => {
     const svgRef = useRef<SVGSVGElement>(null);
+    const [colorScheme, setColorScheme] = useState<ColorScheme>("rank");
+
+    const fileColors = {
+        a: "indigo", 
+        b: "saddlebrown",      
+        c: "steelblue",   
+        d: "darkgreen",
+        e: "limegreen",   
+        f: "crimson",     
+        g: "deeppink",    
+        h: "goldenrod",   
+    };
+
+    const rankColors = {
+        "8": "saddlebrown",
+        "7": "indigo",
+        "6": "steelblue",
+        "5": "limegreen",
+        "4": "crimson",
+        "3": "deeppink",
+        "2": "goldenrod",
+        "1": "purple"
+    };
+
+    const whitePieceMap: { [key: string]: string } = {
+        'K': '♚', // White king -> Black king symbol
+        'Q': '♛', // White queen -> Black queen symbol
+        'R': '♜', // White rook -> Black rook symbol
+        'B': '♝', // White bishop -> Black bishop symbol
+        'N': '♞', // White knight -> Black knight symbol
+        'P': '♟'  // White pawn -> Black pawn symbol
+    };
 
     const getPieceDisplay = (piece: string): string => {
         switch (displayMode) {
             case "symbols":
+                if (piece in whitePieceMap) {
+                    return whitePieceMap[piece];
+                }
                 return PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece;
             case "masked":
                 return "*";
@@ -22,6 +60,15 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
                 return piece;
         }
     };
+
+    const getNodeColor = (square: string, color: string) => {
+        if (colorScheme === "file") {
+            return fileColors[square[0] as keyof typeof fileColors];
+        } else {
+            return rankColors[square[1] as keyof typeof rankColors];
+        }
+    };
+
     useEffect(() => {
         if (!linksData || !processedEdges || !svgRef.current) return;
 
@@ -36,6 +83,16 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
         svg.attr("width", width)
             .attr("height", height)
             .attr("viewBox", `0 0 ${width} ${height}`);
+
+        const separatorGroup = svg.append("g").attr("class", "separators");
+        const labelGroup = svg.append("g").attr("class", "labels");
+
+        if (colorScheme === "file") {
+
+        } else {
+            // Add rank separator lines and labels (optional)
+            // Currently omitted as ranks are already visually distinct by color gradient
+        }
 
         const squares = Array.from(
             new Set(linksData.nodes.map((n) => n.square))
@@ -67,8 +124,8 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
 
         nodeGroup
             .append("circle")
-            .attr("r", 15)
-            .attr("fill", (d) => (d.color === "white" ? "#dddddd" : "#333333"))
+            .attr("r", 8)
+            .attr("fill", (d) => getNodeColor(d.square, d.color))
             .attr("stroke", "#666")
             .attr("stroke-width", 2);
 
@@ -76,7 +133,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             .append("text")
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
-            .attr("fill", (d) => (d.color === "white" ? "#000" : "#fff"))
+            .attr("fill", (d) => (d.color === "white" ? "#fff" : "#000"))
             .style("font-size", (d) => displayMode === "symbols" ? "14px" : "12px")
             .text((d) => getPieceDisplay(d.piece_type));
 
@@ -119,16 +176,34 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             }
         });
 
-    }, [linksData, processedEdges, displayMode]);
+    }, [linksData, processedEdges, displayMode, colorScheme]);
 
     return (
-        <svg
-            ref={svgRef}
-            className="w-full bg-gray-800"
-            style={{ minHeight: "400px", maxWidth: "100%", height: "auto" }}
-        />
+        <div className="w-full space-y-4 background">
+            <div className="flex items-center justify-start space-x-4">
+                <span className="text-sm text-gray-300">Color by:</span>
+                <div className="helper-select-container">
+                    <select
+                        className="helper-select"
+                        value={colorScheme}
+                        onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
+                    >
+                        <option value="file">File</option>
+                        <option value="rank">Rank</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* SVG visualization */}
+            <svg
+                ref={svgRef}
+                className="w-full bg-gray-800 rounded-lg"
+                style={{ minHeight: "400px", maxWidth: "100%", height: "auto" }}
+            />
+        </div>
     );
 };
 
 export default ArcView;
+
 

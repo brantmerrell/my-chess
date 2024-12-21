@@ -1,0 +1,72 @@
+direction: right
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 302
+  }
+}
+_vpcs: VPCs {
+  _vpc_fae8de82: vpc-fae8de82
+}
+_cidrs: CIDR blocks {
+  _vpc: "172.31.0.0/16" {
+    _sub_29cb6763: "172.31.32.0/20"
+    _sub_d24ecdaa: "172.31.16.0/20"
+  }
+}
+_subnets: Subnets {
+  _sub_29cb6763: subnet-29cb6763
+  _sub_d24ecdaa: "subnet-d24ecdaa"
+}
+_lbs: Load Balancers {
+  _chess_lb: chess-lb {
+    _listeners: Listeners {
+      _http: HTTP (80)
+      _https: HTTPS (443)
+    }
+    _tg: Target Groups {
+      _health_checks: |md
+        ## chess-connector-https
+        * HTTP 172.31.28.226:8000 422 error 
+        ## Chess UI
+        * HTTP 172.31.36.113:80 timed out
+        * HTTP 172.31.25.37:80 healthy
+        ## Prototype Shiny TG
+        * HTTP 172.31.28.98:3838 healthy
+        ## Prototype Shiny TG 3939
+        * HTTP    3939 no data
+      |
+    }
+  }
+}
+_sd: Service Discovery {
+  _chess_local: chess.local {
+    _connector: Connector
+  }
+}
+
+_vpcs._vpc_fae8de82 -- _subnets
+_vpcs._vpc_fae8de82 -- _lbs
+_vpcs._vpc_fae8de82 -- _cidrs._vpc
+_cidrs._vpc._sub_29cb6763 -- _subnets._sub_29cb6763
+_cidrs._vpc._sub_d24ecdaa -- _subnets._sub_d24ecdaa
+
+# Good fill options: #e3f2fd #bbdefb #f3e5f5 #f8bbd0 #e8f5e9 #fff3e0 #fbe9e7
+_vpcs._vpc_fae8de82.style.fill: "#bbdefb"
+_lbs._chess_lb.style.fill: "#bbdefb"
+_cidrs._vpc.style.fill: "#bbdefb"
+_cidrs._vpc._sub_29cb6763.style.fill: "#f8bbd0"
+_cidrs._vpc._sub_d24ecdaa.style.fill: "#f3e5f5"
+_subnets._sub_29cb6763.style.fill: "#f8bbd0"
+_subnets._sub_d24ecdaa.style.fill: "#f3e5f5"
+
+
+# Good stroke options: #2196f3 #1976d2 #9c27b0 #e91e63 #4caf50  #ff9800 #ff5722
+_cidrs.style.stroke: "#1976d2"
+_vpcs._vpc_fae8de82.style.stroke: "#1976d2"
+_cidrs._vpc.style.stroke: "#1976d2"
+_cidrs._vpc._sub_29cb6763.style.stroke: "#9c27b0"
+_cidrs._vpc._sub_d24ecdaa.style.stroke: "#e91e63"
+_subnets.style.stroke: "#1976d2"
+_subnets._sub_29cb6763.style.stroke: "#9c27b0"
+_subnets._sub_d24ecdaa.style.stroke: "#e91e63"

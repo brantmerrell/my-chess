@@ -1,0 +1,35 @@
+
+_dc: Local docker-compose {
+  dcnet: docker-compose\nnetwork {class: component}
+  conn: Connector {class: component}
+
+  dcnet -> conn: "Forward\nrequest" {class: request}
+  dcnet <- conn: "Response" {class: success}
+}
+browser: Browser {
+  class: component
+  script: Frontend Script {
+    apiBaseUrl: ""
+  }
+  _j: chess.jbm.eco/index.html {}
+  _j_conn: chess.jbm.eco/links/?fen_string= {
+  }
+  _l3838: localhost:3838
+  _l8000: localhost:8000
+
+  script -> _j_conn: "Requests to same origin\ndue to empty apiBaseUrl" {class: issue}
+}
+aws: AWS Environment {
+  alb: Application\nLoad Balancer {class: component}
+  ecs: ECS Fargate\n(Connector) {class: component}
+  
+  alb -> ecs: "Never reaches connector\nservice" {class: issue}
+}
+
+browser._j -> aws.alb: "HTTPS" {class: request}
+browser._j <- aws.alb: "200 - UI Assets" {class: success}
+browser._j_conn -x-> aws.alb: "Should go to ALB's /links\nbut doesn't due to empty apiBaseUrl" {class: issue}
+browser._l3838 -> _dc.dcnet: "HTTPS" {class: request}
+browser._l3838 <- _dc.dcnet: "200" {class: success}
+browser._l8000 -> _dc.dcnet: "HTTPS" {class: request}
+browser._l8000 <- _dc.dcnet: "200" {class: success}

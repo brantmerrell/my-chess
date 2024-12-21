@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant Browser
+    participant ALB as Application Load Balancer
+    participant ECS as ECS Fargate (Connector)
+    
+    note over Browser,ECS: Local Environment (Working)
+    Browser->>ECS: Direct request to localhost:8000/links/?fen_string=...
+    ECS->>Browser: 200 OK with chess data JSON
+
+    note over Browser,ECS: AWS Environment (Failing)
+    Browser->>ALB: HTTPS request to jbm.eco/links/?fen_string=...
+    ALB->>ECS: Forward request to container port 8000
+    
+    alt Scenario 1
+        ECS--xALB: Invalid HTTP Request Warning
+        ALB--xBrowser: 502 Bad Gateway
+    else Scenario 2
+        ECS--xALB: No response within timeout
+        ALB--xBrowser: 504 Gateway Timeout
+    end
+
+    note over ALB,ECS: Health Check Issues
+    ALB->>ECS: Health check to /links/
+    ECS-->>ALB: 422 Unprocessable Entity

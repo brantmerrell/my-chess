@@ -1,0 +1,654 @@
+HostedZones:
+  - Id: /hostedzone/Z09993342DTENH85DU8MJ
+    Name: jbm.eco.
+    CallerReference: 229a3461-42ba-43b3-941f-0efb1ce49a83
+    Config:
+      Comment: ''
+      PrivateZone: false
+    ResourceRecordSetCount: 6
+  - Id: /hostedzone/Z10056702BVU3F7WKSSPY
+    Name: chess.local.
+    CallerReference: >-
+      crrosijujo26jehtsibyuk5wug663chv-63wgbgxh-rs3qqq2w3pvk4gqgvxwqoxwthdqiho3vn2enpyfnaqn46thynqqq====
+    Config:
+      Comment: >-
+        Created by AWS Cloud Map namespace with ARN
+        arn:aws:servicediscovery:us-west-2:505731006192:namespace/ns-espm24vn2i6n3nar
+      PrivateZone: true
+    ResourceRecordSetCount: 3
+    LinkedService:
+      ServicePrincipal: servicediscovery.amazonaws.com
+      Description: >-
+        arn:aws:servicediscovery:us-west-2:505731006192:namespace/ns-espm24vn2i6n3nar
+Listeners:
+  - ListenerArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener/app/chess-lb/ac2d3406379c47e1/65cfb0ff4832ac40
+    LoadBalancerArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    Port: 80
+    Protocol: HTTP
+    DefaultActions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+  - ListenerArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b
+    LoadBalancerArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    Port: 443
+    Protocol: HTTPS
+    Certificates:
+      - CertificateArn: >-
+          arn:aws:acm:us-west-2:505731006192:certificate/7699b4db-a8be-47b3-90f3-235aa282bf10
+    SslPolicy: ELBSecurityPolicy-2016-08
+    DefaultActions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    MutualAuthentication:
+      Mode: 'off'
+
+LoadBalancers:
+  - LoadBalancerArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    DNSName: chess-lb-689103240.us-west-2.elb.amazonaws.com
+    CanonicalHostedZoneId: Z1H1FL5HABSF5
+    CreatedTime: '2024-11-08T16:30:28.500000+00:00'
+    LoadBalancerName: chess-lb
+    Scheme: internet-facing
+    VpcId: vpc-fae8de82
+    State:
+      Code: active
+    Type: application
+    AvailabilityZones:
+      - ZoneName: us-west-2b
+        SubnetId: subnet-29cb6763
+        LoadBalancerAddresses: []
+      - ZoneName: us-west-2a
+        SubnetId: subnet-d24ecdaa
+        LoadBalancerAddresses: []
+    SecurityGroups:
+      - sg-bb4e128b
+    IpAddressType: ipv4
+    EnablePrefixForIpv6SourceNat: 'off'
+Rules:
+  - RuleArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener-rule/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b/24ded20faace5124
+    Priority: '1'
+    Conditions:
+      - Field: path-pattern
+        Values:
+          - /links/*
+        PathPatternConfig:
+          Values:
+            - /links/*
+    Actions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-connector-https/2bcbd89118dd95d9
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-connector-https/2bcbd89118dd95d9
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    IsDefault: false
+  - RuleArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener-rule/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b/ed550eba29f885f0
+    Priority: '3'
+    Conditions:
+      - Field: host-header
+        Values:
+          - chess.jbm.eco
+        HostHeaderConfig:
+          Values:
+            - chess.jbm.eco
+    Actions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    IsDefault: false
+  - RuleArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener-rule/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b/3ab2c32b25e365e6
+    Priority: '10'
+    Conditions:
+      - Field: host-header
+        Values:
+          - shiny-chess.jbm.eco
+        HostHeaderConfig:
+          Values:
+            - shiny-chess.jbm.eco
+    Actions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg/aab9be021edde823
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg/aab9be021edde823
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    IsDefault: false
+  - RuleArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener-rule/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b/264eb411bb26f991
+    Priority: '15'
+    Conditions:
+      - Field: host-header
+        Values:
+          - shiny-chess.jbm.eco
+        HostHeaderConfig:
+          Values:
+            - shiny-chess.jbm.eco
+    Actions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg-3939/039938defe72536e
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg-3939/039938defe72536e
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    IsDefault: false
+  - RuleArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:listener-rule/app/chess-lb/ac2d3406379c47e1/d75025c944c38c8b/f8b1ce10dc083f0c
+    Priority: default
+    Conditions: []
+    Actions:
+      - Type: forward
+        TargetGroupArn: >-
+          arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+        ForwardConfig:
+          TargetGroups:
+            - TargetGroupArn: >-
+                arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+              Weight: 1
+          TargetGroupStickinessConfig:
+            Enabled: false
+    IsDefault: true
+services:
+  - serviceArn: 'arn:aws:ecs:us-west-2:505731006192:service/my-chess/connector'
+    serviceName: connector
+    clusterArn: 'arn:aws:ecs:us-west-2:505731006192:cluster/my-chess'
+    loadBalancers: []
+    serviceRegistries:
+      - registryArn: >-
+          arn:aws:servicediscovery:us-west-2:505731006192:service/srv-3z56melxpvuocrdg
+    status: ACTIVE
+    desiredCount: 1
+    runningCount: 1
+    pendingCount: 0
+    launchType: FARGATE
+    platformVersion: LATEST
+    platformFamily: Linux
+    taskDefinition: 'arn:aws:ecs:us-west-2:505731006192:task-definition/my-chess-connector:5'
+    deploymentConfiguration:
+      deploymentCircuitBreaker:
+        enable: false
+        rollback: false
+      maximumPercent: 200
+      minimumHealthyPercent: 100
+    deployments:
+      - id: ecs-svc/5125563419183170189
+        status: PRIMARY
+        taskDefinition: >-
+          arn:aws:ecs:us-west-2:505731006192:task-definition/my-chess-connector:5
+        desiredCount: 1
+        pendingCount: 0
+        runningCount: 1
+        failedTasks: 0
+        createdAt: '2024-11-08T08:17:11.597000-06:00'
+        updatedAt: '2024-12-07T08:27:24.200000-06:00'
+        launchType: FARGATE
+        platformVersion: 1.4.0
+        platformFamily: Linux
+        networkConfiguration:
+          awsvpcConfiguration:
+            subnets:
+              - subnet-29cb6763
+              - subnet-d24ecdaa
+            securityGroups:
+              - sg-bb4e128b
+            assignPublicIp: ENABLED
+        rolloutState: COMPLETED
+        rolloutStateReason: ECS deployment ecs-svc/5125563419183170189 completed.
+    roleArn: >-
+      arn:aws:iam::505731006192:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+    events:
+      - id: d9aeceb5-eeb1-4776-9a90-7b06510f6360
+        createdAt: '2024-12-08T08:28:05.721000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: bd05778d-6ef7-4c67-b3f2-51b8b966fd64
+        createdAt: '2024-12-08T02:28:02.511000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b4b44a50-e5e0-471c-88a4-c526cda9c704
+        createdAt: '2024-12-07T20:27:51.204000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: da9f86bf-457c-46b3-8e6a-7849c7671e96
+        createdAt: '2024-12-07T14:27:40.833000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 11d23703-197f-4a64-8394-3fd77abc5fd6
+        createdAt: '2024-12-07T08:27:24.206000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 01cb20d8-0c22-40cf-99ba-3befcdd2f968
+        createdAt: '2024-12-07T08:27:14.608000-06:00'
+        message: >-
+          (service connector) has stopped 1 running tasks: (task
+          f0432e0af46e45abb3d18ab97c0f8901).
+      - id: 6ab707b6-95f8-443d-bcbe-175a962806b4
+        createdAt: '2024-12-07T08:24:44.872000-06:00'
+        message: >-
+          (service connector) has started 1 tasks: (task
+          f5e393797156478ba3905283e8800aec).
+      - id: 529f1449-0867-44f7-a6d4-4fd7931aa7eb
+        createdAt: '2024-12-07T02:49:03.684000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b3d3b76c-09a2-4ac0-af72-54874a2e4466
+        createdAt: '2024-12-06T20:48:54-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 8c93850c-7a73-43d0-9794-65110d074e86
+        createdAt: '2024-12-06T14:48:23.959000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 5ee3c2af-5ab1-4537-b7f4-eab7f3838f5d
+        createdAt: '2024-12-06T08:47:56.629000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 9c8dd8a7-2a59-4187-acbb-1abf476ac33b
+        createdAt: '2024-12-06T02:47:27.341000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: afb23ca8-d6d5-40e0-97bc-f41270a25167
+        createdAt: '2024-12-05T20:46:59.100000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 77180528-c3fe-4c47-a981-8d2f2b1bd52f
+        createdAt: '2024-12-05T14:46:41.696000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 9510eac1-f12c-4582-9744-07daf09838d8
+        createdAt: '2024-12-05T08:46:36.016000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: f4d1c2e3-52f6-42b3-8ef2-5583c1f3d6f3
+        createdAt: '2024-12-05T02:46:24.627000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 586a4254-d576-42ec-869d-80ead8047905
+        createdAt: '2024-12-04T20:46:05.534000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d2347763-cd18-4b88-9ce2-cf7074d64f8d
+        createdAt: '2024-12-04T14:45:51.943000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 7f6d2d38-760f-4d86-8f17-475e6db69ac5
+        createdAt: '2024-12-04T08:45:42.119000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d25faf02-e5ab-4682-b09c-fcad0747742b
+        createdAt: '2024-12-04T02:45:23.761000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 98cd529d-7d01-48d1-94f4-fa9ceb82776c
+        createdAt: '2024-12-03T20:44:54.350000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 9c9c7c8c-c20c-4286-85b1-538043deaa60
+        createdAt: '2024-12-03T14:44:24.451000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d4400560-0eb1-4155-b448-ab0d3ebdc3a8
+        createdAt: '2024-12-03T08:44:08.482000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: a42204dd-bada-4209-bb9a-f82d0d400c58
+        createdAt: '2024-12-03T02:43:47.495000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 8f156e00-2fcc-40f6-951d-64c1c59a0e92
+        createdAt: '2024-12-02T20:43:23.752000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: e7852aba-d173-4966-a1a0-7fbd3e9ede0c
+        createdAt: '2024-12-02T14:43:08.352000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b9534830-b36c-4337-9b2d-72b89523d745
+        createdAt: '2024-12-02T08:43:00.149000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 4cce9983-609c-4132-8a21-8a44b60ba05c
+        createdAt: '2024-12-02T02:42:32.198000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: c934f406-2bd9-4bd1-866b-bc887c57367c
+        createdAt: '2024-12-01T20:42:27.747000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 5ff2d175-aef9-43c6-a1fc-98f38bc54b15
+        createdAt: '2024-12-01T14:42:07.179000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: bdddc8e4-68d1-4aad-9663-1bd52469cfc0
+        createdAt: '2024-12-01T08:41:50.298000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 1496f982-fe6f-4035-b873-8a03cf480426
+        createdAt: '2024-12-01T02:41:50.047000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 67c52245-173b-4bd6-b890-4984374bb23d
+        createdAt: '2024-11-30T20:41:28.548000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 71b61088-b068-46b4-a16d-8f637857d5a9
+        createdAt: '2024-11-30T14:41:11.195000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 1c5f9a99-a1f5-4c5f-8071-35467eac324e
+        createdAt: '2024-11-30T08:40:56.862000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 1f633e23-b08c-49a4-baed-858d240ee7ec
+        createdAt: '2024-11-30T02:40:39.277000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 3d63b436-6821-4df7-b6da-d9d722b64e21
+        createdAt: '2024-11-29T20:40:24.929000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 20b7fab4-035e-4abd-a897-84d8e4d9029c
+        createdAt: '2024-11-29T14:39:57.193000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 8555e084-1193-4e3a-a712-c5de9f6dbfdd
+        createdAt: '2024-11-29T08:39:52.549000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 22e88ca3-4f50-45c1-8178-980d9b13b1bc
+        createdAt: '2024-11-29T02:39:47.991000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b643c80e-a163-42a2-9d19-545306ddb56e
+        createdAt: '2024-11-28T20:39:40.703000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 083f4ad2-9f6e-47b8-a707-293c2caff099
+        createdAt: '2024-11-28T14:39:37.429000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 5c6ef65b-562a-40ea-b847-17fba0f36bdd
+        createdAt: '2024-11-28T08:39:27.220000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 1d634a0e-ada7-4a42-b785-e68896d132af
+        createdAt: '2024-11-28T02:39:22.048000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 46c30ae7-9228-42d8-b912-2e570fd99c85
+        createdAt: '2024-11-27T20:39:03.105000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 964775a3-ec40-4014-97a6-1a7b5779b141
+        createdAt: '2024-11-27T14:38:45.800000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: bd182289-6d31-46dd-8f6c-d6a5951d93d1
+        createdAt: '2024-11-27T08:38:43.157000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d24de362-7eae-4482-8bfc-1eeb94a0456d
+        createdAt: '2024-11-27T02:38:41.518000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 18cf9f4d-80d1-4350-b286-8bf861bfeb17
+        createdAt: '2024-11-26T20:38:26.401000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 878187a0-ead2-402a-b85a-a56a726a0e9d
+        createdAt: '2024-11-26T14:38:19.215000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: e954a7dc-7eb2-481a-9a36-b53e4e4409fa
+        createdAt: '2024-11-26T08:38:08.469000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 93f2804e-7a2e-4ed3-a1fd-e1b8bd075806
+        createdAt: '2024-11-26T02:37:40.034000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d2c96bd0-745a-43a1-aecd-5130c83be64b
+        createdAt: '2024-11-25T20:37:28.984000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 6bda457a-9938-4ad5-b452-27e16c09b249
+        createdAt: '2024-11-25T14:37:12.274000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 3999cbf1-8990-40a3-a685-6a8227289c2a
+        createdAt: '2024-11-25T08:37:01.458000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: ba43beb3-3ad9-4349-a21c-a0b7d4d78bc5
+        createdAt: '2024-11-25T02:36:40.698000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 4fa50e61-3e36-41a5-8b53-46b5c0dfd09b
+        createdAt: '2024-11-24T20:36:13.847000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: af680670-d676-452e-b4e9-192c02b90896
+        createdAt: '2024-11-24T14:36:11.244000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: ee873d52-f3ca-4a09-8055-0a2ae7bbaf6f
+        createdAt: '2024-11-24T08:36:07.423000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 8abce6df-ae1f-4d96-9574-66a24e074c7d
+        createdAt: '2024-11-24T02:36:06.807000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: efbb35c1-078d-4517-909e-4bd38171c577
+        createdAt: '2024-11-23T20:35:48.913000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 2823a240-a2be-445e-b12f-ac600eeeb0a5
+        createdAt: '2024-11-23T14:35:26.300000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: ef39f0c9-cf3b-4ada-85e5-9e383967178d
+        createdAt: '2024-11-23T08:35:16.344000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 57acd16d-cb6b-42ce-97fd-903adab9c39b
+        createdAt: '2024-11-23T02:35:03.982000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 77795cfd-60d1-4062-a8d7-f12e07aaed3d
+        createdAt: '2024-11-22T20:34:59.623000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: a131c692-9a3c-458e-9e84-4542d54be3bd
+        createdAt: '2024-11-22T14:34:49.644000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 76dcce87-ea80-4611-be16-ad05fcd11dd3
+        createdAt: '2024-11-22T08:34:39.738000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: aedcd4d5-d3b5-4b1a-b249-66cf31ea6609
+        createdAt: '2024-11-22T02:34:37.630000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b472bf3f-20c4-4978-9925-630b789a4f0d
+        createdAt: '2024-11-21T20:34:07.966000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 18369a3f-6976-46a7-a732-6968638918c9
+        createdAt: '2024-11-21T14:33:59.588000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 1b4382df-0e8b-4875-aaa5-3935036e9895
+        createdAt: '2024-11-21T08:33:48.042000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: bb9a879f-fe80-4361-8525-4d51592d3e81
+        createdAt: '2024-11-21T02:33:34.127000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 86fe9b5b-7e7f-406d-b258-919d223231b2
+        createdAt: '2024-11-20T20:33:25.118000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 63682fc2-49b1-4c0d-ac0d-28dcb83d0de1
+        createdAt: '2024-11-20T14:33:08.983000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 7e82c25a-d396-4236-984b-81bd9ee0f412
+        createdAt: '2024-11-20T08:32:44.475000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: ab180671-4aad-45d0-ac1a-ed4bee01f77e
+        createdAt: '2024-11-20T02:32:25.481000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 26ccedf2-945f-4d12-b73f-c233ee9a7aed
+        createdAt: '2024-11-19T20:32:15.653000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: abf24ef9-4696-48f8-a85c-e4994ef8210b
+        createdAt: '2024-11-19T14:32:13.852000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 646f34c5-7863-49e2-8bfa-44569e818cbf
+        createdAt: '2024-11-19T08:32:08.754000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 33ea13cc-fa75-4244-b488-b2b06ac4949f
+        createdAt: '2024-11-19T02:31:56.238000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 13b9c805-94e4-4ff0-96c1-df3213e23794
+        createdAt: '2024-11-18T20:31:36.826000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 56470920-2397-4292-acd1-88eb8b2f750c
+        createdAt: '2024-11-18T14:31:20.278000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 528f42ad-f7ff-4391-ad75-6f305ea85a8d
+        createdAt: '2024-11-18T08:31:01.433000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 0d01be1c-4d03-4114-ae62-ad6751558df4
+        createdAt: '2024-11-18T02:31:00.694000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 2dde34ff-08c1-4109-82a6-cbc7788e6ff6
+        createdAt: '2024-11-17T20:30:36.888000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 2cef2133-65e9-4153-b76b-fc62e303cb25
+        createdAt: '2024-11-17T14:30:08.587000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 5f4a6c74-f186-487a-a504-ae6f8082cbbc
+        createdAt: '2024-11-17T08:29:45.790000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: dd227fa7-1382-463d-954e-06b304e3eb20
+        createdAt: '2024-11-17T02:29:41.224000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: c1257831-11a3-4ede-987b-656bed4f7ca2
+        createdAt: '2024-11-16T20:29:34.427000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 86927aa0-a38d-4287-899c-d3d68c907463
+        createdAt: '2024-11-16T14:29:32.832000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 18ac1ca7-9026-44d2-b425-087671948381
+        createdAt: '2024-11-16T08:29:23.413000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: d88cfe34-8414-4a74-9985-45b11f645a49
+        createdAt: '2024-11-16T02:29:09.650000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 3878a6e4-386a-4bee-8051-16ee88aed868
+        createdAt: '2024-11-15T20:28:44.420000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 738ac2d4-b758-4841-96e5-9dcf16db7ace
+        createdAt: '2024-11-15T14:28:20.733000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: eb8bf575-51c4-4b80-ae74-6ffb501aa5f3
+        createdAt: '2024-11-15T08:28:13.788000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 0abc32e6-dcbd-4ca4-bdcd-7eab58feb5bd
+        createdAt: '2024-11-15T02:27:49.601000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 55fc151f-1da2-40b6-bf38-82903724f2d6
+        createdAt: '2024-11-14T20:27:46.945000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b5b93392-eb82-4fd8-94a6-387cf5b182b1
+        createdAt: '2024-11-14T14:27:30.108000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: 34f9b1d8-50a1-4637-86e9-21ca3f892d5a
+        createdAt: '2024-11-14T08:27:22.475000-06:00'
+        message: (service connector) has reached a steady state.
+      - id: b4fadf6b-4232-45d1-ada7-72ecba4eec80
+        createdAt: '2024-11-14T02:27:09.975000-06:00'
+        message: (service connector) has reached a steady state.
+    createdAt: '2024-11-06T23:02:19.406000-06:00'
+    placementConstraints: []
+    placementStrategy: []
+    networkConfiguration:
+      awsvpcConfiguration:
+        subnets:
+          - subnet-29cb6763
+          - subnet-d24ecdaa
+        securityGroups:
+          - sg-bb4e128b
+        assignPublicIp: ENABLED
+    healthCheckGracePeriodSeconds: 0
+    schedulingStrategy: REPLICA
+    deploymentController:
+      type: ECS
+    createdBy: 'arn:aws:iam::505731006192:user/josh.b.merrell.1'
+    enableECSManagedTags: false
+    propagateTags: NONE
+    enableExecuteCommand: false
+failures: []
+TargetGroups:
+  - TargetGroupArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-connector-https/2bcbd89118dd95d9
+    TargetGroupName: chess-connector-https
+    Protocol: HTTP
+    Port: 8000
+    VpcId: vpc-fae8de82
+    HealthCheckProtocol: HTTP
+    HealthCheckPort: traffic-port
+    HealthCheckEnabled: true
+    HealthCheckIntervalSeconds: 30
+    HealthCheckTimeoutSeconds: 5
+    HealthyThresholdCount: 5
+    UnhealthyThresholdCount: 2
+    HealthCheckPath: /links/
+    Matcher:
+      HttpCode: '200'
+    LoadBalancerArns:
+      - >-
+        arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    TargetType: ip
+    ProtocolVersion: HTTP1
+    IpAddressType: ipv4
+  - TargetGroupArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/chess-ui/6c4a06909236ee65
+    TargetGroupName: chess-ui
+    Protocol: HTTP
+    Port: 80
+    VpcId: vpc-fae8de82
+    HealthCheckProtocol: HTTP
+    HealthCheckPort: traffic-port
+    HealthCheckEnabled: true
+    HealthCheckIntervalSeconds: 30
+    HealthCheckTimeoutSeconds: 5
+    HealthyThresholdCount: 5
+    UnhealthyThresholdCount: 2
+    HealthCheckPath: /
+    Matcher:
+      HttpCode: '200'
+    LoadBalancerArns:
+      - >-
+        arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    TargetType: ip
+    ProtocolVersion: HTTP1
+    IpAddressType: ipv4
+  - TargetGroupArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg/aab9be021edde823
+    TargetGroupName: prototype-shiny-tg
+    Protocol: HTTP
+    Port: 3838
+    VpcId: vpc-fae8de82
+    HealthCheckProtocol: HTTP
+    HealthCheckPort: traffic-port
+    HealthCheckEnabled: true
+    HealthCheckIntervalSeconds: 30
+    HealthCheckTimeoutSeconds: 5
+    HealthyThresholdCount: 2
+    UnhealthyThresholdCount: 2
+    HealthCheckPath: /
+    Matcher:
+      HttpCode: '200'
+    LoadBalancerArns:
+      - >-
+        arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    TargetType: ip
+    ProtocolVersion: HTTP1
+    IpAddressType: ipv4
+  - TargetGroupArn: >-
+      arn:aws:elasticloadbalancing:us-west-2:505731006192:targetgroup/prototype-shiny-tg-3939/039938defe72536e
+    TargetGroupName: prototype-shiny-tg-3939
+    Protocol: HTTP
+    Port: 3939
+    VpcId: vpc-fae8de82
+    HealthCheckProtocol: HTTP
+    HealthCheckPort: '3939'
+    HealthCheckEnabled: true
+    HealthCheckIntervalSeconds: 30
+    HealthCheckTimeoutSeconds: 5
+    HealthyThresholdCount: 5
+    UnhealthyThresholdCount: 2
+    HealthCheckPath: /
+    Matcher:
+      HttpCode: '200'
+    LoadBalancerArns:
+      - >-
+        arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+    TargetType: ip
+    ProtocolVersion: HTTP1
+    IpAddressType: ipv4

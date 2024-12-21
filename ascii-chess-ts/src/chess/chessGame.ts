@@ -84,10 +84,7 @@ export class ChessGame {
     public asciiView(): string {
         const asciiLines = this.ascii().split("\n");
         const boardLines = asciiSub("\\.", " ", [...asciiLines]).join("\n");
-        const fen = `FEN:\n${wrapString(this.game.fen(), 60)}\n`;
-        const moves = `Options to move:\n${wrapString(this.getMoves().join(" "), 60)}`;
-
-        return `${boardLines}`;
+        return boardLines;
     }
 }
 
@@ -115,3 +112,5 @@ function wrapString(str: string, maxLen: number) {
         return "";
     }
 }
+
+

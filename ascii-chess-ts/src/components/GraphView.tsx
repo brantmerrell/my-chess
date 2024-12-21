@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import "./GraphView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
@@ -16,28 +17,27 @@ const GraphView: React.FC<GraphViewProps> = ({
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
 
+    const whitePieceMap: { [key: string]: string } = {
+        K: "♚",
+        Q: "♛",
+        R: "♜",
+        B: "♝",
+        N: "♞",
+        P: "♟",
+    };
     const getNodeStyle = (color: string) => {
-        if (displayMode === "letters") {
-            return {
-                background: color === "white" ? "#ffffff" : "#000000",
-                textColor: color === "white" ? "#000000" : "#ffffff",
-            };
-        } else if (displayMode === "symbols") {
-            return {
-                background: color === "white" ? "#ffffff" : "#000000",
-                textColor: color === "white" ? "#000000" : "#ffffff",
-            };
-        } else {
-            return {
-                background: color === "white" ? "#ffffff" : "#000000",
-                textColor: color === "white" ? "#000000" : "#ffffff",
-            };
-        }
+        return {
+            background: color === "white" ? "gray" : "gainsboro",
+            textColor: color === "white" ? "white" : "black",
+        };
     };
 
-    const getPieceDisplay = (piece: string): string => {
+    const getPieceDisplay = (piece: string, color: string): string => {
         switch (displayMode) {
             case "symbols":
+                if (color === "white") {
+                    return whitePieceMap[piece] || piece;
+                }
                 return (
                     PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece
                 );
@@ -158,7 +158,7 @@ const GraphView: React.FC<GraphViewProps> = ({
             );
 
         node.append("circle")
-            .attr("r", 15)
+            .attr("r", 18)
             .attr("fill", (d) => getNodeStyle(d.color).background)
             .attr("stroke", "#666")
             .attr("stroke-width", 2);
@@ -167,15 +167,23 @@ const GraphView: React.FC<GraphViewProps> = ({
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
             .attr("fill", (d) => getNodeStyle(d.color).textColor)
-            .text((d) => getPieceDisplay(d.piece_type));
+            .each(function (d) {
+                const textElement = d3.select(this);
 
-        node.append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", "2em")
-            .attr("fill", "#ffd700")
-            .attr("font-size", "12px")
-            .attr("font-weight", "bold")
-            .text((d) => d.square);
+                textElement
+                    .append("tspan")
+                    .attr("x", 0)
+                    .attr("dy", 0)
+                    .attr("font-size", "24px")
+                    .text(getPieceDisplay(d.piece_type, d.color));
+
+                textElement
+                    .append("tspan")
+                    .attr("x", 0)
+                    .attr("dy", "1.2em")
+                    .attr("font-size", "10px")
+                    .text(d.square);
+            });
 
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x!)

@@ -1,0 +1,71 @@
+direction: down
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 200
+  }
+}
+
+classes: {
+  request: {
+    style: {
+      stroke: aquamarine
+      font-color: aquamarine
+    }
+  }
+  success: {
+    style: {
+      stroke: crimson
+      stroke-dash: 5
+      font-color: crimson
+    }
+  }
+  error: {
+    style: {
+      stroke: red
+      stroke-dash: 5
+      font-color: "#CC0000"
+    }
+  }
+  component: {
+    style: {
+      stroke: "#81D4FA"
+    }
+  }
+}
+
+_dc: Local docker-compose {
+  dcnet: docker-compose\nnetwork {class: component}
+  conn: Connector {class: component}
+
+  dcnet -> conn: "Forward\nrequest" {class: request}
+  dcnet <- conn: "Response" {class: success}
+}
+browser: Browser {
+  class: component
+  _j: jbm.eco {
+    apiBaseUrl: |md
+    apiBaseUrl: ""
+    |
+  }
+  _j_conn: jbm.eco/links/?fen_string= {
+  }
+  _l3838: localhost:3838
+  _l8000: localhost:8000
+  "" <- _j.apiBaseUrl: "Requests to same origin\ndue to empty apiBaseUrl" {class: issue}
+}
+aws: AWS Environment {
+  alb: Application\nLoad Balancer {class: component}
+  ecs: ECS Fargate\n(Connector) {class: component}
+  alb -- ecs: "Health check\n422 Unprocessable Entity" {class: error}
+  alb -> ecs: "Never reaches connector\nservice" {class: error}
+}
+browser._j -> aws.alb: "HTTPS" {class: request}
+browser._j -> browser._j_conn: "HTTPS\ndesired behavior" {class: request}
+browser._j <- aws.alb: "502" {class: error}
+browser._j_conn -> aws.alb: "HTTPS\nempty apiBaseUrl" {class: request}
+browser._j_conn <- aws.alb: "504" {class: error}
+browser._l3838 -> _dc.dcnet: "HTTPS" {class: request}
+browser._l3838 <- _dc.dcnet: "200" {class: success}
+browser._l8000 -> _dc.dcnet: "HTTPS" {class: request}
+browser._l8000 <- _dc.dcnet: "200" {class: success}
