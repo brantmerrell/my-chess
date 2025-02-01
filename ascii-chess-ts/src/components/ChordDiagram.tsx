@@ -115,7 +115,7 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
     }, [nodes, edges]);
 
     return (
-        <div className="w-full h-[600px] flex justify-center items-center">
+        <div className="w-full h-[600px] flex justify-center items-center bg-dark">
             <svg
                 ref={svgRef}
                 className="bg-gray-800 rounded-lg"

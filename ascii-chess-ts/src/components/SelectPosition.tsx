@@ -32,7 +32,7 @@ const SelectPosition: React.FC = () => {
         <div className="position-layout">
             <select
                 aria-label="Position Selection"
-                className="position-select"
+                className="dropdown-toggle position-select btn btn-secondary"
                 value={selectedSetup}
                 onChange={handleOptionChange}
             >

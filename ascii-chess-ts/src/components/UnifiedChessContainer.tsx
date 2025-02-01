@@ -1,5 +1,6 @@
 import React from "react";
 import { useChessGame } from "../hooks/useChessGame";
+import { useTheme } from "../hooks/useTheme";
 import { PieceDisplayMode } from "../types/chess";
 import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
@@ -12,21 +13,34 @@ import GraphView from "./GraphView";
 import ArcView from "./ArcView";
 import ChordDiagram from "./ChordDiagram";
 import FENCharacterCount from "./FENCharacterCount";
+import HistoricalArcView from "./HistoricalArcView";
+import ThemeSelector from "./ThemeSelector";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { ChessGame } from "../chess/chessGame";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
 import { fetchLinks } from "../services/connector";
 import "./UnifiedChessContainer.css";
-type ViewType = "board" | "graph" | "arc" | "chord" | "history" | "fencount";
+
+type ViewType =
+    | "board"
+    | "graph"
+    | "history"
+    | "arc"
+    | "historicalArc"
+    | "fencount"
+    | "chord";
+
 interface UnifiedChessContainerProps {
     displayMode: PieceDisplayMode;
     setDisplayMode: (mode: PieceDisplayMode) => void;
 }
+
 const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     displayMode,
     setDisplayMode,
 }) => {
+    const { theme, setTheme } = useTheme();
     const [selectedView, setSelectedView] = React.useState<ViewType>("board");
     const [linksData, setLinksData] = React.useState<LinksResponse | null>(
         null
@@ -34,6 +48,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
         []
     );
+
     const { fen, setFen, currentPosition, submitFen } =
         useChessGame(displayMode);
     const chessGameState = useSelector((state: RootState) => state.chessGame);
@@ -104,13 +119,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 return <HistoryTable displayMode={displayMode} />;
             case "fencount":
                 return <FENCharacterCount fenHistory={fenHistory} />;
+            case "historicalArc":
+                return <HistoricalArcView displayMode={displayMode} />; // Add case for HistoricalArcView
             default:
                 return <BoardDisplay board={getCurrentBoard()} />;
         }
     };
+
     return (
         <div className="chess-container">
-            {/* Appearance Controls */}
             <div className="dropdowns-container">
                 <ViewSelector
                     selectedView={selectedView}
@@ -120,8 +137,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     displayMode={displayMode}
                     onDisplayModeChange={setDisplayMode}
                 />
+                <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
             </div>
-            {/* Setup Controls */}
             <div className="setup-controls">
                 <SelectPosition />
                 <FenInput
@@ -130,7 +147,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     onSubmitFen={submitFen}
                 />
             </div>
-            {/* View Selection and Display */}
             <div className="visualization-section">
                 <div className="view-container">{renderView()}</div>
             </div>
@@ -141,5 +157,5 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         </div>
     );
 };
-export default UnifiedChessContainer;
 
+export default UnifiedChessContainer;

@@ -27,8 +27,9 @@ const GraphView: React.FC<GraphViewProps> = ({
     };
     const getNodeStyle = (color: string) => {
         return {
-            background: color === "white" ? "gray" : "gainsboro",
-            textColor: color === "white" ? "white" : "black",
+            background: color === "white" ? "black" : "white",
+            fill: color === "white" ? "white" : "black",
+            stroke: color === "white" ? "white" : "black",
         };
     };
 
@@ -160,13 +161,13 @@ const GraphView: React.FC<GraphViewProps> = ({
         node.append("circle")
             .attr("r", 18)
             .attr("fill", (d) => getNodeStyle(d.color).background)
-            .attr("stroke", "#666")
-            .attr("stroke-width", 2);
+            .attr("stroke", (d) => getNodeStyle(d.color).stroke)
+            .attr("stroke-width", 3);
 
         node.append("text")
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
-            .attr("fill", (d) => getNodeStyle(d.color).textColor)
+            .attr("fill", (d) => getNodeStyle(d.color).fill)
             .each(function (d) {
                 const textElement = d3.select(this);
 
@@ -198,8 +199,10 @@ const GraphView: React.FC<GraphViewProps> = ({
     return (
         <svg
             ref={svgRef}
-            className="w-full bg-gray-800"
-            style={{ minHeight: "600px" }}
+            className="graph-view"
+            style={{
+                minHeight: "600px",
+            }}
         />
     );
 };

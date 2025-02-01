@@ -179,12 +179,12 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
     }, [linksData, processedEdges, displayMode, colorScheme]);
 
     return (
-        <div className="w-full space-y-4 background">
+        <div className="bg-dark">
             <div className="flex items-center justify-start space-x-4">
                 <span className="text-sm text-gray-300">Color by:</span>
                 <div className="helper-select-container">
                     <select
-                        className="helper-select"
+                        className="helper-select btn btn-light"
                         value={colorScheme}
                         onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
                     >

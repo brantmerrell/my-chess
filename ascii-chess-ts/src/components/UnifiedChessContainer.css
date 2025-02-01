@@ -26,6 +26,9 @@
     margin: 0;
 }
 
+.move-controls {
+    margin-bottom: 50vh;
+}
 /* SelectStyle.css updates */
 .selector-wrapper {
     display: flex;
@@ -43,3 +46,4 @@
     display: flex;
     justify-content: flex-start; /* Change from center to flex-start */
 }
+

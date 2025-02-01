@@ -11,7 +11,7 @@ function App() {
     return (
         <Provider store={store}>
             <div className="App">
-                <div>
+                <div className="header-container">
                     <h1 className="title">Ascii Chessboard</h1>
                 </div>
                 <UnifiedChessContainer
@@ -24,3 +24,4 @@ function App() {
 }
 
 export default App;
+

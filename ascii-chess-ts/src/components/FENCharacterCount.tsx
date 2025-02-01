@@ -72,7 +72,8 @@ const FENCharacterCount: React.FC<FENCharacterCountProps> = ({
 
     return (
         <div className="w-full" style={{ width: "600px", height: "400px" }}>
-            <Line data={data} options={options} />
+            <Line data={data} 
+            options={options} />
         </div>
     );
 };

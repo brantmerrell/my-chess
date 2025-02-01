@@ -100,7 +100,6 @@
 /* Error Messages */
 .move-error,
 .undo-message {
-    color: #e53e3e;
     margin-top: 0.5rem;
     font-size: 0.875rem;
 }

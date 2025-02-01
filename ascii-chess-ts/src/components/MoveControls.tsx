@@ -59,8 +59,8 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
             </button>
             {undoMessage && (
                 <div
-                    className="undo-message"
-                    style={{ color: "red", marginTop: "10px" }}
+                    className="undo-message text-danger"
+                    style={{ marginTop: "10px" }}
                 >
                     {undoMessage}
                 </div>

@@ -13,10 +13,10 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
 }) => {
     return (
         <div className="selector-wrapper">
-            <label className="selector-label">Piece View</label>
+            <label className="selector-label text-info">Piece View</label>
             <div className="selector-container">
                 <select
-                    className="select-control"
+                    className="select-control btn btn-info"
                     value={displayMode}
                     onChange={(e) => onDisplayModeChange(e.target.value as PieceDisplayMode)}
                     aria-label="Piece View Selection"
