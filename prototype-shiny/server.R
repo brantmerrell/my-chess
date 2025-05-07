@@ -36,7 +36,7 @@ server <- function(input, output, session) {
   links <- reactiveVal()
   fenDescription <- reactiveVal()
 
-  server_down_message <- readLines("server-down.txt", warn = FALSE)
+  server_down_message <- readLines("404.txt", warn = FALSE)
   links_data <- list()
   connections <- NULL
 
