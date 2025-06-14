@@ -1,5 +1,11 @@
 import * as d3 from "d3";
 
+export type ConnectionType = "links" | "adjacencies";
+
+export interface AdjacenciesResponse {
+    [square: string]: string[];
+}
+
 export interface LinkNode extends d3.SimulationNodeDatum {
     square: string;
     piece_type: string;

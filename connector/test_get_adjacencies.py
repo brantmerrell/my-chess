@@ -12,6 +12,7 @@ def test_adjacencies():
     assert "a1" in data 
     assert "a3" not in data
     assert len(data['a1']) > 0
+    print(data)
     print("Test passed!")
 
 if __name__ == "__main__":

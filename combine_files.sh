@@ -5,13 +5,37 @@ output_file="my-chess.txt"
 
 declare -a focus_files=(
     "./ascii-chess-ts/Dockerfile"
+    "./ascii-chess-ts/src/App.tsx"
+    "./ascii-chess-ts/src/app/hooks.ts"
+    "./ascii-chess-ts/src/app/store.ts"
+    "./ascii-chess-ts/src/chess/chessGame.ts"
+    "./ascii-chess-ts/src/components/BoardDisplay.tsx"
+    "./ascii-chess-ts/src/components/ConnectionTypeSelector.tsx"
+    "./ascii-chess-ts/src/components/GraphView.tsx"
+    "./ascii-chess-ts/src/components/UnifiedChessContainer.tsx"
+    "./ascii-chess-ts/src/components/ViewSelector.tsx"
+    "./ascii-chess-ts/src/constants/env.ts"
+    "./ascii-chess-ts/src/hooks/useChessGame.ts"
+    "./ascii-chess-ts/src/hooks/useMoveHistory.ts"
+    "./ascii-chess-ts/src/hooks/useTheme.ts"
+    "./ascii-chess-ts/src/index.tsx"
+    "./ascii-chess-ts/src/models/LinksResponse.ts"
+    "./ascii-chess-ts/src/reducers/positions/positions.reducers.ts"
+    "./ascii-chess-ts/src/reducers/puzzles/puzzles.actionTypes.ts"
+    "./ascii-chess-ts/src/reducers/puzzles/puzzles.actions.ts"
+    "./ascii-chess-ts/src/reducers/puzzles/puzzles.reducers.ts"
+    "./ascii-chess-ts/src/reducers/setups/setups.actions.ts"
+    "./ascii-chess-ts/src/reducers/setups/setups.reducers.ts"
+    "./ascii-chess-ts/src/services/connector.ts"
+    "./ascii-chess-ts/src/utils.ts"
     "./connector/Dockerfile"
-    "./connector/requirements.txt"
-    "./local.docker-compose.yml"
-    "./prototype-shiny/app.R"
-    "./prototype-shiny/server.R"
-    "./prototype-shiny/ui.R"
-
+    "./connector/main.py"
+    "./connector/routers/adjacencies.py"
+    "./connector/routers/graphdag.py"
+    "./connector/routers/links.py"
+    "./connector/test_generate_graphdag.py"
+    "./connector/test_get_adjacencies.py"
+    "./connector/test_get_links.py"
 )
 
 for file in "${focus_files[@]}"; do
@@ -26,7 +50,7 @@ for file in "${focus_files[@]}"; do
     fi
 done
 
-find . \( -type d \( \
+find ascii-chess-ts \( -type d \( \
     -name obj -o \
     -name .git -o \
     -name node_modules \
