@@ -19,6 +19,10 @@ app.include_router(adjacencies_router)
 app.include_router(links_router)
 app.include_router(graphdag_router)
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
