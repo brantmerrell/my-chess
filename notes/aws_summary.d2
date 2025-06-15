@@ -1,0 +1,114 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+classes: @"classes"
+chess_lb: {
+  class: obj_load_balancer
+  label: Application Load Balancer
+  description: |md
+  chess-lb-689103240.us-west-2.elb.amazonaws.com
+  |
+}
+my_chess_cluster: {
+  label: my-chess ECS Cluster
+  # ECS Services
+  asciichessts_service: {
+    label: asciichessts\nReact UI Service\nPort 80\n(Serves static files)
+    class: obj_server
+  }
+  connector_service: {
+    label: connector\nFastAPI Backend\nPort 8000\n(API endpoints)
+    class: obj_server
+  }
+  shiny_service: {
+    label: my-chess-prototype-shiny\nR Shiny Prototype\nPort 3939
+    class: obj_server
+  }
+}
+chess_ui_tg: {
+  label: chess-ui\nTarget Group\nPort 80
+  class: obj_target_group
+}
+chess_connector_tg: {
+  label: chess-connector-https\nTarget Group\nPort 8000
+  class: obj_target_group
+}
+shiny_tg: {
+  label: prototype-shiny-tg-3939\nTarget Group\nPort 3939
+  class: obj_target_group
+}
+react_chess_app: {
+  label: React Chess App\n(chess.jbm.eco)
+}
+shiny_chess_app: {
+  label: Shiny Chess App\n(shiny-chess.jbm.eco)
+}
+ecr: {
+  label: ECR Repositories
+  asciichessts_repo: {
+    label: my-chess-asciichessts\nUI Static Files
+  }
+  connector_repo: {
+    label: my-chess-connector\nAPI Images
+  }
+  shiny_repo: {
+    label: my-chess-prototype-shiny\nShiny Images
+  }
+}
+chess_lb -> chess_ui_tg: {
+  class: edge_request
+  label: HTTPS\n443 → 80
+}
+chess_ui_tg -> my_chess_cluster.asciichessts_service: {
+  class: edge_request
+}
+react_chess_app -> chess_lb: {
+  class: edge_request
+}
+chess_lb -> chess_connector_tg: {
+  class: edge_request
+  label: /links/* \nHTTP:8000
+}
+chess_connector_tg -> my_chess_cluster.connector_service: {
+  class: edge_request
+}
+shiny_chess_app -> chess_lb: {
+  class: edge_request
+}
+chess_lb -> shiny_tg: {
+  class: edge_request
+  label: HTTPS\n443 → 3939
+}
+shiny_tg -> my_chess_cluster.shiny_service: {
+  class: edge_request
+}
+chess_lb <- chess_ui_tg: {
+  class: edge_response
+}
+react_chess_app <- chess_lb: {
+  class: edge_response
+}
+chess_lb <- chess_connector_tg: {
+  class: edge_response
+}
+chess_ui_tg <- my_chess_cluster.asciichessts_service: {
+  class: edge_response
+}
+chess_connector_tg <- my_chess_cluster.connector_service: {
+  class: edge_response
+}
+shiny_chess_app <- chess_lb: {
+  class: edge_response
+}
+chess_lb <- shiny_tg: {
+  class: edge_response
+}
+shiny_tg <- my_chess_cluster.shiny_service: {
+  class: edge_response
+}
+my_chess_cluster.asciichessts_service -- ecr.asciichessts_repo
+my_chess_cluster.connector_service -- ecr.connector_repo
+my_chess_cluster.shiny_service -- ecr.shiny_repo

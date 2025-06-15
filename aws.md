@@ -30,8 +30,10 @@ Connector:
 ```bash
 docker buildx build \
     --platform linux/amd64 \
+    --push \
     --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-connector:latest \
-    -f Dockerfile .
+    -f connector/Dockerfile \
+    ./connector
 ```
 
 Ascii Chess TS:
@@ -39,6 +41,7 @@ Ascii Chess TS:
 ```bash
 docker buildx build \
     --platform linux/amd64 \
+    --push \
     --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest \
     -f Dockerfile .
 ```

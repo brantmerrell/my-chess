@@ -1,0 +1,129 @@
+generated_at: '2025-06-15T16:39:57.550560'
+data_directory: aws_inventory_20250615
+EC2 Instances:
+  i-09cc8187f5f366634:
+    name: foo.jbm.eco
+    type: t2.micro
+    state: stopped
+    zone: us-west-2c
+    vpc_id: vpc-fae8de82
+  i-083d7372688b8631b:
+    name: jbm.eco
+    type: t2.micro
+    state: running
+    zone: us-west-2a
+    vpc_id: vpc-fae8de82
+S3 Buckets:
+  cdk-hnb659fds-assets-505731006192-us-east-2:
+    created: '2022-01-23T22:31:43.000Z'
+  cdktempstack-cdkfoobucket57a72409-11xxzlt2cbhtw:
+    created: '2022-01-25T00:33:05.000Z'
+  elasticbeanstalk-us-east-2-505731006192:
+    created: '2022-01-22T19:48:20.000Z'
+  jbm.eco:
+    created: '2025-04-18T00:43:54.000Z'
+  jbmbucket:
+    created: '2021-05-24T21:08:01.000Z'
+ECR Repositories:
+  my-chess:
+    uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess
+  my-chess-asciichessts:
+    uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess-asciichessts
+  my-chess-connector:
+    uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess-connector
+  my-chess-prototype-shiny:
+    uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess-prototype-shiny
+Load Balancers (raw):
+- Name: chess-lb
+  DNSName: chess-lb-689103240.us-west-2.elb.amazonaws.com
+  Type: application
+  Scheme: internet-facing
+  VpcId: vpc-fae8de82
+  LoadBalancerArn: arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
+Target Groups:
+  chess-api:
+    protocol: HTTP
+    port: 8000
+    vpc: vpc-fae8de82
+    health_check:
+      path: /
+      port: traffic-port
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+  chess-connector:
+    protocol: HTTP
+    port: 8000
+    vpc: vpc-fae8de82
+    health_check:
+      path: /health
+      port: traffic-port
+      protocol: HTTP
+      timeout: 20
+      interval: 60
+  chess-connector-https:
+    protocol: HTTP
+    port: 8000
+    vpc: vpc-fae8de82
+    health_check:
+      path: /links/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201
+      port: traffic-port
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+  chess-ui:
+    protocol: HTTP
+    port: 80
+    vpc: vpc-fae8de82
+    health_check:
+      path: /
+      port: traffic-port
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+  connector-8000-ip:
+    protocol: HTTP
+    port: 8000
+    vpc: vpc-fae8de82
+    health_check:
+      path: /links/
+      port: traffic-port
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+  prototype-shiny-tg:
+    protocol: HTTP
+    port: 3838
+    vpc: vpc-fae8de82
+    health_check:
+      path: /
+      port: traffic-port
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+  prototype-shiny-tg-3939:
+    protocol: HTTP
+    port: 3939
+    vpc: vpc-fae8de82
+    health_check:
+      path: /
+      port: '3939'
+      protocol: HTTP
+      timeout: 5
+      interval: 30
+Security Groups:
+  sg-bb4e128b:
+    name: default
+    description: default VPC security group
+    vpc_id: vpc-fae8de82
+    ingress_count: 6
+    egress_count: 1
+  sg-081c00e5a29778c08:
+    name: launch-wizard-1
+    description: launch-wizard-1 created 2022-09-07T18:58:29.554Z
+    vpc_id: vpc-fae8de82
+    ingress_count: 3
+    egress_count: 1
+ECS Clusters:
+  my-chess:
+    arn: arn:aws:ecs:us-west-2:505731006192:cluster/my-chess

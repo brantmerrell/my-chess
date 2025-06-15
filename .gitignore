@@ -1,6 +1,8 @@
 *txt
 *md
+*json
 *swp
+*svg
 package-lock.json
 node_modules/
 __pycache__/
