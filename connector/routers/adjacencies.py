@@ -18,7 +18,7 @@ async def get_adjacencies(fen_string: str = Query(..., description="The FEN stri
                     if (rank_offset, file_offset) == (0, 0):
                         continue
                     adjacent_rank = current_rank + rank_offset
-                    adjacent_file = current_file + rank_offset
+                    adjacent_file = current_file + file_offset
                     if 0 <= adjacent_rank <= 7 and 0 <= adjacent_file <= 7:
                         adjacent_square = chess.square(adjacent_file, adjacent_rank)
                         adjacent_squares.append(chess.SQUARE_NAMES[adjacent_square])
