@@ -44,10 +44,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 }) => {
     const { theme, setTheme } = useTheme();
     const [selectedView, setSelectedView] = React.useState<ViewType>("board");
-    const [connectionType, setConnectionType] = React.useState<ConnectionType>("links");
-    const [linksData, setLinksData] = React.useState<LinksResponse | null>(null);
-    const [adjacenciesData, setAdjacenciesData] = React.useState<AdjacenciesResponse | null>(null);
-    const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>([]);
+    const [connectionType, setConnectionType] =
+        React.useState<ConnectionType>("links");
+    const [linksData, setLinksData] = React.useState<LinksResponse | null>(
+        null
+    );
+    const [adjacenciesData, setAdjacenciesData] =
+        React.useState<AdjacenciesResponse | null>(null);
+    const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
+        []
+    );
 
     const { fen, setFen, currentPosition, submitFen } =
         useChessGame(displayMode);
@@ -66,28 +72,41 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             try {
                 const fetchedLinks = await fetchLinks(chessGameState.fen);
                 setLinksData(fetchedLinks);
-                const fetchedAdjacencies = await fetchAdjacencies(chessGameState.fen);
+                const fetchedAdjacencies = await fetchAdjacencies(
+                    chessGameState.fen
+                );
                 setAdjacenciesData(fetchedAdjacencies);
 
                 // Process edges based on connection type
                 if (connectionType === "links" && fetchedLinks) {
                     const edges = fetchedLinks.edges.map((edge: any) => ({
-                        source: typeof edge.source === "string" ? edge.source : edge.source.square,
-                        target: typeof edge.target === "string" ? edge.target : edge.target.square,
+                        source:
+                            typeof edge.source === "string"
+                                ? edge.source
+                                : edge.source.square,
+                        target:
+                            typeof edge.target === "string"
+                                ? edge.target
+                                : edge.target.square,
                         type: edge.type,
                     }));
                     setProcessedEdges(edges);
-                } else if (connectionType === "adjacencies" && fetchedAdjacencies) {
+                } else if (
+                    connectionType === "adjacencies" &&
+                    fetchedAdjacencies
+                ) {
                     const edges: ProcessedEdge[] = [];
-                    Object.entries(fetchedAdjacencies).forEach(([source, targets]) => {
-                        (targets as string[]).forEach((target: string) => {
-                            edges.push({
-                                source,
-                                target,
-                                type: "adjacency"
+                    Object.entries(fetchedAdjacencies).forEach(
+                        ([source, targets]) => {
+                            (targets as string[]).forEach((target: string) => {
+                                edges.push({
+                                    source,
+                                    target,
+                                    type: "adjacency",
+                                });
                             });
-                        });
-                    });
+                        }
+                    );
                     setProcessedEdges(edges);
                 }
             } catch (error) {
@@ -138,10 +157,20 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         }
     };
 
-    const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(selectedView);
+    const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(
+        selectedView
+    );
 
     return (
         <div className="chess-container">
+            <div className="setup-controls">
+                <SelectPosition />
+                <FenInput
+                    fen={fen}
+                    onFenChange={setFen}
+                    onSubmitFen={submitFen}
+                />
+            </div>
             <div className="dropdowns-container">
                 <ViewSelector
                     selectedView={selectedView}
@@ -151,21 +180,11 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     displayMode={displayMode}
                     onDisplayModeChange={setDisplayMode}
                 />
-                {showConnectionTypeSelector && (
-                    <ConnectionTypeSelector
-                        connectionType={connectionType}
-                        onConnectionTypeChange={setConnectionType}
-                    />
-                )}
-                <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-            </div>
-            <div className="setup-controls">
-                <SelectPosition />
-                <FenInput
-                    fen={fen}
-                    onFenChange={setFen}
-                    onSubmitFen={submitFen}
+                <ConnectionTypeSelector
+                    connectionType={connectionType}
+                    onConnectionTypeChange={setConnectionType}
                 />
+                <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
             </div>
             <div className="visualization-section">
                 <div className="view-container">{renderView()}</div>
@@ -178,4 +197,3 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 };
 
 export default UnifiedChessContainer;
-

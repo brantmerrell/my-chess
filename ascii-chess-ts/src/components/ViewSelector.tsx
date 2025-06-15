@@ -1,7 +1,14 @@
 import React from "react";
 import "./SelectStyle.css";
 
-type ViewType = "board" | "graph" | "history" | "arc" | "historicalArc" | "chord" | "fencount";
+type ViewType =
+    | "board"
+    | "graph"
+    | "history"
+    | "arc"
+    | "historicalArc"
+    | "chord"
+    | "fencount";
 
 interface ViewSelectorProps {
     selectedView: ViewType;
@@ -36,4 +43,3 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({
 };
 
 export default ViewSelector;
-

@@ -17,7 +17,9 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
             <div className="selector-container">
                 <select
                     value={connectionType}
-                    onChange={(e) => onConnectionTypeChange(e.target.value as ConnectionType)}
+                    onChange={(e) =>
+                        onConnectionTypeChange(e.target.value as ConnectionType)
+                    }
                     className="select-control btn btn-info"
                     aria-label="Connection Type Selection"
                 >
@@ -30,4 +32,3 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
 };
 
 export default ConnectionTypeSelector;
-
