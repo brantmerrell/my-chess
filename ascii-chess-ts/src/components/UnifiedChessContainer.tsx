@@ -1,28 +1,29 @@
-import React from "react";
-import { useChessGame } from "../hooks/useChessGame";
-import { useTheme } from "../hooks/useTheme";
-import { PieceDisplayMode } from "../types/chess";
-import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
-import SelectPosition from "./SelectPosition";
-import FenInput from "./FenInput";
-import MoveControls from "./MoveControls";
-import ViewSelector from "./ViewSelector";
-import PieceViewSelector from "./PieceViewSelector";
-import ConnectionTypeSelector from "./ConnectionTypeSelector";
-import BoardDisplay from "./BoardDisplay";
-import HistoryTable from "./HistoryTable";
-import GraphView from "./GraphView";
-import ArcView from "./ArcView";
-import ChordDiagram from "./ChordDiagram";
-import FENCharacterCount from "./FENCharacterCount";
-import HistoricalArcView from "./HistoricalArcView";
-import ThemeSelector from "./ThemeSelector";
-import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
-import { ChessGame } from "../chess/chessGame";
-import { LinksResponse, ProcessedEdge } from "../types/visualization";
-import { fetchLinks, fetchAdjacencies } from "../services/connector";
 import "./UnifiedChessContainer.css";
+import ArcView from "./ArcView";
+import BoardDisplay from "./BoardDisplay";
+import ChordDiagram from "./ChordDiagram";
+import ConnectionTypeSelector from "./ConnectionTypeSelector";
+import FENCharacterCount from "./FENCharacterCount";
+import FenInput from "./FenInput";
+import GraphView from "./GraphView";
+import HistoricalArcView from "./HistoricalArcView";
+import HistoryTable from "./HistoryTable";
+import MoveControls from "./MoveControls";
+import NavigationControls from "./NavigationControls";
+import PieceViewSelector from "./PieceViewSelector";
+import React from "react";
+import SelectPosition from "./SelectPosition";
+import ThemeSelector from "./ThemeSelector";
+import ViewSelector from "./ViewSelector";
+import { ChessGame } from "../chess/chessGame";
+import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
+import { LinksResponse, ProcessedEdge } from "../types/visualization";
+import { PieceDisplayMode } from "../types/chess";
+import { RootState } from "../app/store";
+import { fetchLinks, fetchAdjacencies } from "../services/connector";
+import { useChessGame } from "../hooks/useChessGame";
+import { useSelector } from "react-redux";
+import { useTheme } from "../hooks/useTheme";
 
 type ViewType =
     | "board"
@@ -189,6 +190,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             <div className="visualization-section">
                 <div className="view-container">{renderView()}</div>
             </div>
+            <NavigationControls />
             <div className="move-controls">
                 <MoveControls displayMode={displayMode} />
             </div>

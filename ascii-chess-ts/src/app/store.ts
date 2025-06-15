@@ -1,6 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { chessGameSlice } from "../reducers/positions/positions.reducers";
-import { liChessPuzzleSlice, chessComPuzzleSlice } from "../reducers/puzzles/puzzles.reducers";
+import {
+    liChessPuzzleSlice,
+    chessComPuzzleSlice,
+} from "../reducers/puzzles/puzzles.reducers";
 import { selectedSetupReducer } from "../reducers/setups/setups.reducers";
 
 const rootReducer = combineReducers({
@@ -14,6 +17,14 @@ export const store = configureStore({
     reducer: rootReducer,
 });
 
-export const { loadFen, makeMove, undoMove } = chessGameSlice.actions;
+export const {
+    loadFen,
+    makeMove,
+    undoMove,
+    goToPosition,
+    goForward,
+    goBackward,
+} = chessGameSlice.actions;
+
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

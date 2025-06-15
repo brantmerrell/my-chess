@@ -7,6 +7,7 @@ export interface ChessGameState {
     moves: string[];
     history: string[];
     positions: Position[];
+    currentPositionIndex: number;
 }
 
 interface LoadFenPayload {
@@ -26,6 +27,7 @@ const initialGameState: ChessGameState = {
             fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
         },
     ],
+    currentPositionIndex: 0,
 };
 
 const createGameFromState = (state: ChessGameState): ChessGame => {
@@ -34,6 +36,17 @@ const createGameFromState = (state: ChessGameState): ChessGame => {
         const moveText = pos.san.replace(/^\d+\.\.?\.?/, "").trim();
         game.makeMove(moveText);
     });
+    return game;
+};
+
+const createGameUpToIndex = (state: ChessGameState, index: number): ChessGame => {
+    const game = new ChessGame(state.positions[0].fen);
+    for (let i = 1; i <= index; i++) {
+        if (i < state.positions.length) {
+            const moveText = state.positions[i].san.replace(/^\d+\.\.?\.?/, "").trim();
+            game.makeMove(moveText);
+        }
+    }
     return game;
 };
 
@@ -75,6 +88,7 @@ export const chessGameSlice = createSlice({
                 }
 
                 state.moves = game.getMoves();
+                state.currentPositionIndex = state.positions.length - 1;
             } catch (error) {
                 console.error("Invalid FEN string or move history", error);
                 throw error;
@@ -102,6 +116,7 @@ export const chessGameSlice = createSlice({
                     uci: game.getLastUCI(),
                     fen: newFen,
                 });
+                state.currentPositionIndex = state.positions.length - 1;
             } catch (error) {
                 console.error("Error submitting move", error);
                 throw error;
@@ -117,7 +132,35 @@ export const chessGameSlice = createSlice({
 
                 const game = createGameFromState(state);
                 state.moves = game.getMoves();
+                state.currentPositionIndex = state.positions.length - 1; // Update index after undo
+            }
+        },
+        // New navigation actions
+        goToPosition(state, action: PayloadAction<number>) {
+            const index = action.payload;
+            if (index >= 0 && index < state.positions.length) {
+                state.currentPositionIndex = index;
+                const game = createGameUpToIndex(state, index);
+                state.fen = state.positions[index].fen;
+                state.moves = game.getMoves();
+            }
+        },
+        goForward(state) {
+            if (state.currentPositionIndex < state.positions.length - 1) {
+                state.currentPositionIndex++;
+                const game = createGameUpToIndex(state, state.currentPositionIndex);
+                state.fen = state.positions[state.currentPositionIndex].fen;
+                state.moves = game.getMoves();
+            }
+        },
+        goBackward(state) {
+            if (state.currentPositionIndex > 0) {
+                state.currentPositionIndex--;
+                const game = createGameUpToIndex(state, state.currentPositionIndex);
+                state.fen = state.positions[state.currentPositionIndex].fen;
+                state.moves = game.getMoves();
             }
         },
     },
 });
+
