@@ -1,0 +1,6 @@
+*txt
+*md
+*swp
+package-lock.json
+node_modules/
+__pycache__/

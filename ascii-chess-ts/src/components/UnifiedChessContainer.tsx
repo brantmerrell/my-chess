@@ -2,11 +2,13 @@ import React from "react";
 import { useChessGame } from "../hooks/useChessGame";
 import { useTheme } from "../hooks/useTheme";
 import { PieceDisplayMode } from "../types/chess";
+import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
 import MoveControls from "./MoveControls";
 import ViewSelector from "./ViewSelector";
 import PieceViewSelector from "./PieceViewSelector";
+import ConnectionTypeSelector from "./ConnectionTypeSelector";
 import BoardDisplay from "./BoardDisplay";
 import HistoryTable from "./HistoryTable";
 import GraphView from "./GraphView";
@@ -19,7 +21,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { ChessGame } from "../chess/chessGame";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
-import { fetchLinks } from "../services/connector";
+import { fetchLinks, fetchAdjacencies } from "../services/connector";
 import "./UnifiedChessContainer.css";
 
 type ViewType =
@@ -42,12 +44,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 }) => {
     const { theme, setTheme } = useTheme();
     const [selectedView, setSelectedView] = React.useState<ViewType>("board");
-    const [linksData, setLinksData] = React.useState<LinksResponse | null>(
-        null
-    );
-    const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
-        []
-    );
+    const [connectionType, setConnectionType] = React.useState<ConnectionType>("links");
+    const [linksData, setLinksData] = React.useState<LinksResponse | null>(null);
+    const [adjacenciesData, setAdjacenciesData] = React.useState<AdjacenciesResponse | null>(null);
+    const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>([]);
 
     const { fen, setFen, currentPosition, submitFen } =
         useChessGame(displayMode);
@@ -66,24 +66,36 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             try {
                 const fetchedLinks = await fetchLinks(chessGameState.fen);
                 setLinksData(fetchedLinks);
-                const edges = fetchedLinks.edges.map((edge: any) => ({
-                    source:
-                        typeof edge.source === "string"
-                            ? edge.source
-                            : edge.source.square,
-                    target:
-                        typeof edge.target === "string"
-                            ? edge.target
-                            : edge.target.square,
-                    type: edge.type,
-                }));
-                setProcessedEdges(edges);
+                const fetchedAdjacencies = await fetchAdjacencies(chessGameState.fen);
+                setAdjacenciesData(fetchedAdjacencies);
+
+                // Process edges based on connection type
+                if (connectionType === "links" && fetchedLinks) {
+                    const edges = fetchedLinks.edges.map((edge: any) => ({
+                        source: typeof edge.source === "string" ? edge.source : edge.source.square,
+                        target: typeof edge.target === "string" ? edge.target : edge.target.square,
+                        type: edge.type,
+                    }));
+                    setProcessedEdges(edges);
+                } else if (connectionType === "adjacencies" && fetchedAdjacencies) {
+                    const edges: ProcessedEdge[] = [];
+                    Object.entries(fetchedAdjacencies).forEach(([source, targets]) => {
+                        (targets as string[]).forEach((target: string) => {
+                            edges.push({
+                                source,
+                                target,
+                                type: "adjacency"
+                            });
+                        });
+                    });
+                    setProcessedEdges(edges);
+                }
             } catch (error) {
-                console.error("Error fetching links:", error);
+                console.error("Error fetching data:", error);
             }
         };
         fetchData();
-    }, [chessGameState.fen]);
+    }, [chessGameState.fen, connectionType]);
     const getCurrentBoard = () => {
         const game = new ChessGame(currentPosition, displayMode);
         return game.asciiView();
@@ -120,11 +132,13 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             case "fencount":
                 return <FENCharacterCount fenHistory={fenHistory} />;
             case "historicalArc":
-                return <HistoricalArcView displayMode={displayMode} />; // Add case for HistoricalArcView
+                return <HistoricalArcView displayMode={displayMode} />;
             default:
                 return <BoardDisplay board={getCurrentBoard()} />;
         }
     };
+
+    const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(selectedView);
 
     return (
         <div className="chess-container">
@@ -137,6 +151,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     displayMode={displayMode}
                     onDisplayModeChange={setDisplayMode}
                 />
+                {showConnectionTypeSelector && (
+                    <ConnectionTypeSelector
+                        connectionType={connectionType}
+                        onConnectionTypeChange={setConnectionType}
+                    />
+                )}
                 <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
             </div>
             <div className="setup-controls">
@@ -150,7 +170,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             <div className="visualization-section">
                 <div className="view-container">{renderView()}</div>
             </div>
-            {/* Move Controls */}
             <div className="move-controls">
                 <MoveControls displayMode={displayMode} />
             </div>
@@ -159,3 +178,4 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 };
 
 export default UnifiedChessContainer;
+

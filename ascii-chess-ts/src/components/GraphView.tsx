@@ -48,6 +48,18 @@ const GraphView: React.FC<GraphViewProps> = ({
                 return piece;
         }
     };
+const getEdgeStyle = (edgeType: string) => {
+    switch (edgeType) {
+        case "threat":
+            return { color: "darkred", marker: "url(#arrowheadRed)" };
+        case "protection":
+            return { color: "darkgreen", marker: "url(#arrowheadGreen)" };
+        case "adjacency":
+            return { color: "blue", marker: "url(#arrowheadBlue)" };
+        default:
+            return { color: "gray", marker: "url(#arrowheadGray)" };
+    }
+};
 
     useEffect(() => {
         if (!linksData || !processedEdges || !svgRef.current) return;
@@ -82,7 +94,13 @@ const GraphView: React.FC<GraphViewProps> = ({
             };
         }) as SimulationNode[];
 
-        const links = processedEdges.map((edge) => ({
+        const validEdges = processedEdges.filter(edge => {
+            const sourceNode = nodes.find((n) => n.square === edge.source);
+            const targetNode = nodes.find((n) => n.square === edge.target);
+            return sourceNode && targetNode;
+        });
+
+        const links = validEdges.map((edge) => ({
             source: nodes.find((n) => n.square === edge.source)!,
             target: nodes.find((n) => n.square === edge.target)!,
             type: edge.type,
@@ -103,7 +121,7 @@ const GraphView: React.FC<GraphViewProps> = ({
 
         svg.append("defs")
             .selectAll("marker")
-            .data(["arrowheadRed", "arrowheadGreen"])
+            .data(["arrowheadRed", "arrowheadGreen", "arrowheadBlue", "arrowheadGray"])
             .join("marker")
             .attr("id", (d) => d)
             .attr("viewBox", "0 -5 10 10")
@@ -113,9 +131,14 @@ const GraphView: React.FC<GraphViewProps> = ({
             .attr("markerHeight", 6)
             .attr("orient", "auto")
             .append("path")
-            .attr("fill", (d) =>
-                d === "arrowheadRed" ? "darkred" : "darkgreen"
-            )
+            .attr("fill", (d) => {
+                switch (d) {
+                    case "arrowheadRed": return "darkred";
+                    case "arrowheadGreen": return "darkgreen";
+                    case "arrowheadBlue": return "blue";
+                    default: return "gray";
+                }
+            })
             .attr("d", "M0,-5L10,0L0,5");
 
         const link = g
@@ -123,15 +146,9 @@ const GraphView: React.FC<GraphViewProps> = ({
             .selectAll<SVGLineElement, SimulationLink>("line")
             .data(links)
             .join("line")
-            .attr("stroke", (d) =>
-                d.type === "threat" ? "darkred" : "darkgreen"
-            )
+            .attr("stroke", (d) => getEdgeStyle(d.type).color)
             .attr("stroke-width", 2)
-            .attr("marker-end", (d) =>
-                d.type === "threat"
-                    ? "url(#arrowheadRed)"
-                    : "url(#arrowheadGreen)"
-            );
+            .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
         const node = g
             .append("g")
