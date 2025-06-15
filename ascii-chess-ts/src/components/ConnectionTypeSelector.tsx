@@ -21,8 +21,8 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
                     className="select-control btn btn-info"
                     aria-label="Connection Type Selection"
                 >
-                    <option value="links">Links (Piece Moves)</option>
-                    <option value="adjacencies">Adjacencies (Literal)</option>
+                    <option value="links">Links</option>
+                    <option value="adjacencies">Adjacencies</option>
                 </select>
             </div>
         </div>
