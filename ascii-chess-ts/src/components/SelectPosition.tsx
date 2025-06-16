@@ -1,7 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import "./SelectPosition.css"
+import { ChessComPuzzleViewModel } from "../models/ChessComPuzzleViewModel";
+import { LiChessPuzzleViewModel } from "../models/LiChessPuzzleViewModel";
 import { RootState, AppDispatch } from "../app/store";
-import { useDispatch } from "react-redux";
 import {
     fetchLiChessDailyPuzzle,
     fetchChessComDailyPuzzle,
@@ -10,8 +11,8 @@ import {
     loadFen,
     goToPosition,
 } from "../reducers/positions/positions.reducers";
-import { LiChessPuzzleViewModel } from "../models/LiChessPuzzleViewModel";
-import { ChessComPuzzleViewModel } from "../models/ChessComPuzzleViewModel";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 enum SetupOptions {
     STANDARD = "standard",
