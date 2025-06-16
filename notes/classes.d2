@@ -1,28 +1,8 @@
+# classes.d2
 note: {
   shape: page
   style: {
     font-size: 26
-  }
-}
-edge_invis: {
-  style: {
-    stroke-width: 0
-  }
-}
-edge_request: {
-  label: rq
-  style: {
-    font-color: crimson
-    stroke-dash: 5
-    stroke: black
-  }
-}
-edge_response: {
-  label: rsp
-  style: {
-    font-color: crimson
-    stroke-dash: 3
-    stroke: deepskyblue
   }
 }
 obj_load_balancer: {
@@ -33,15 +13,134 @@ obj_load_balancer: {
     fill: burlywood
   }
 }
-obj_server: {
+obj_listener: {
+  shape: rectangle
   style: {
-    font-size: 20
-    fill: darkmagenta
-    font-color: white
+    fill: lightgray
+    font-size: 14
   }
 }
-obj_target_group: {
+obj_target_group_healthy: {
+  style: {
+    fill: lightgreen
+    font-size: 16
+    stroke: darkgreen
+    stroke-width: 2
+  }
+}
+obj_target_group_unhealthy: {
+  style: {
+    fill: lightcoral
+    font-size: 16
+    stroke: darkred
+    stroke-width: 2
+  }
+}
+obj_target_group_partial: {
+  style: {
+    fill: yellow
+    font-size: 16
+    stroke: orange
+    stroke-width: 2
+  }
+}
+obj_task_healthy: {
+  style: {
+    fill: lightgreen
+    font-color: black
+    font-size: 14
+  }
+}
+obj_tag_latest: {
+  style: {
+    fill: gold
+    font-size: 12
+    stroke: orange
+    stroke-width: 2
+  }
+}
+obj_tag_current: {
+  style: {
+    fill: lightgreen
+    font-size: 12
+  }
+}
+obj_tag_outdated: {
+  style: {
+    fill: orange
+    font-size: 12
+    stroke: red
+    stroke-width: 2
+  }
+}
+obj_tag_old: {
+  style: {
+    fill: lightgray
+    font-size: 10
+  }
+}
+obj_external: {
+  shape: oval
   style: {
     fill: lightblue
+  }
+}
+edge_rule_high: {
+  style: {
+    font-color: darkgreen
+    stroke: darkgreen
+    stroke-width: 3
+  }
+}
+edge_rule_medium: {
+  style: {
+    font-color: blue
+    stroke: blue
+    stroke-width: 2
+  }
+}
+edge_rule_low: {
+  style: {
+    font-color: purple
+    stroke: purple
+  }
+}
+edge_rule_default: {
+  style: {
+    font-color: gray
+    stroke: gray
+    stroke-dash: 5
+  }
+}
+edge_healthy: {
+  style: {
+    stroke: green
+    stroke-width: 2
+  }
+}
+edge_unhealthy: {
+  style: {
+    stroke: red
+    stroke-width: 2
+    stroke-dash: 5
+  }
+}
+edge_current: {
+  style: {
+    stroke: green
+    stroke-width: 2
+  }
+}
+edge_warning: {
+  style: {
+    stroke: red
+    stroke-width: 3
+    stroke-dash: 5
+  }
+}
+edge_external: {
+  style: {
+    stroke: blue
+    stroke-width: 3
   }
 }

@@ -1,114 +1,184 @@
 vars: {
-  d2-config: {
-    layout-engine: elk
-    theme-id: 1
-  }
+ d2-config: {
+   layout-engine: elk
+   theme-id: 1
+ }
 }
 classes: @"classes"
+# Load Balancer with actual listener ports
 chess_lb: {
-  class: obj_load_balancer
-  label: Application Load Balancer
-  description: |md
-  chess-lb-689103240.us-west-2.elb.amazonaws.com
-  |
+ class: obj_load_balancer
+ label: chess-lb
+ listener_80: {
+   label: HTTP:80
+   class: obj_listener
+ }
+ listener_443: {
+   label: HTTPS:443
+   class: obj_listener
+ }
+ listener_8000: {
+   label: HTTP:8000
+   class: obj_listener
+ }
 }
+# Target Groups with health status
+target_groups: {
+ label: Target Groups
+ chess_ui_tg: {
+   label: chess-ui\nPort 80\n1/2 healthy
+   class: obj_target_group_partial
+ }
+ chess_connector_tg: {
+   label: chess-connector\nPort 8000\n0/2 healthy\nUNUSED
+   class: obj_target_group_unhealthy
+ }
+ chess_connector_https_tg: {
+   label: chess-connector-https\nPort 8000\n1/1 healthy
+   class: obj_target_group_healthy
+ }
+ prototype_shiny_tg_3939: {
+   label: prototype-shiny-tg-3939\nPort 3939\n0/2 healthy
+   class: obj_target_group_unhealthy
+ }
+}
+# ECS Cluster with running services
 my_chess_cluster: {
-  label: my-chess ECS Cluster
-  # ECS Services
-  asciichessts_service: {
-    label: asciichessts\nReact UI Service\nPort 80\n(Serves static files)
-    class: obj_server
-  }
-  connector_service: {
-    label: connector\nFastAPI Backend\nPort 8000\n(API endpoints)
-    class: obj_server
-  }
-  shiny_service: {
-    label: my-chess-prototype-shiny\nR Shiny Prototype\nPort 3939
-    class: obj_server
-  }
+ label: my-chess ECS Cluster
+ asciichessts_service: {
+   label: asciichessts
+   running_task: {
+     label: Task: f9c19be1\nRunning: 1/1
+     class: obj_task_healthy
+   }
+ }
+ connector_service: {
+   label: connector
+   running_task: {
+     label: Task: e8f4e12a\nRunning: 1/1
+     class: obj_task_healthy
+   }
+ }
+ shiny_service: {
+   label: my-chess-prototype-shiny
+   running_task: {
+     label: Task: 563f7933\nRunning: 1/1
+     class: obj_task_healthy
+   }
+ }
 }
-chess_ui_tg: {
-  label: chess-ui\nTarget Group\nPort 80
-  class: obj_target_group
-}
-chess_connector_tg: {
-  label: chess-connector-https\nTarget Group\nPort 8000
-  class: obj_target_group
-}
-shiny_tg: {
-  label: prototype-shiny-tg-3939\nTarget Group\nPort 3939
-  class: obj_target_group
-}
-react_chess_app: {
-  label: React Chess App\n(chess.jbm.eco)
-}
-shiny_chess_app: {
-  label: Shiny Chess App\n(shiny-chess.jbm.eco)
-}
+# ECR Repositories with image tags
 ecr: {
-  label: ECR Repositories
-  asciichessts_repo: {
-    label: my-chess-asciichessts\nUI Static Files
-  }
-  connector_repo: {
-    label: my-chess-connector\nAPI Images
-  }
-  shiny_repo: {
-    label: my-chess-prototype-shiny\nShiny Images
-  }
+ label: ECR Repositories
+ asciichessts_repo: {
+   label: my-chess-asciichessts
+   latest_tag: {
+     label: latest\n04074550e7
+     class: obj_tag_latest
+   }
+   running_image: {
+     label: running\n04074550e7
+     class: obj_tag_current
+   }
+   old_images: {
+     label: 27 older images
+     class: obj_tag_old
+   }
+ }
+ connector_repo: {
+   label: my-chess-connector
+   latest_tag: {
+     label: latest\n0776a46b
+     class: obj_tag_latest
+   }
+   running_image: {
+     label: running\n9343443c
+     class: obj_tag_outdated
+   }
+   old_images: {
+     label: 8 older images
+     class: obj_tag_old
+   }
+ }
+ shiny_repo: {
+   label: my-chess-prototype-shiny
+   latest_tag: {
+     label: latest\n038c6340
+     class: obj_tag_latest
+   }
+   running_image: {
+     label: running\n038c6340
+     class: obj_tag_current
+   }
+   old_images: {
+     label: 1 older image
+     class: obj_tag_old
+   }
+ }
 }
-chess_lb -> chess_ui_tg: {
-  class: edge_request
-  label: HTTPS\n443 → 80
+# Load Balancer Routing Rules
+chess_lb.listener_443 -> target_groups.chess_connector_https_tg: {
+ label: /links/*
+ class: edge_rule_high # Priority 1
 }
-chess_ui_tg -> my_chess_cluster.asciichessts_service: {
-  class: edge_request
+chess_lb.listener_443 -> target_groups.chess_connector_https_tg: {
+ label: /adjacencies/*
+ class: edge_rule_high # Priority 2
 }
-react_chess_app -> chess_lb: {
-  class: edge_request
+chess_lb.listener_443 -> target_groups.chess_ui_tg: {
+ label: host: chess.jbm.eco
+ class: edge_rule_medium # Priority 3
 }
-chess_lb -> chess_connector_tg: {
-  class: edge_request
-  label: /links/* \nHTTP:8000
+chess_lb.listener_443 -> target_groups.prototype_shiny_tg_3939: {
+ label: shiny-chess.jbm.eco # host
+ class: edge_rule_low # Priority 15
 }
-chess_connector_tg -> my_chess_cluster.connector_service: {
-  class: edge_request
+chess_lb.listener_443 -> target_groups.chess_ui_tg: {
+ label: Other
+ class: edge_rule_default
 }
-shiny_chess_app -> chess_lb: {
-  class: edge_request
+chess_lb.listener_80 -> target_groups.chess_ui_tg: {
+ label: All
+ class: edge_rule_default
 }
-chess_lb -> shiny_tg: {
-  class: edge_request
-  label: HTTPS\n443 → 3939
+chess_lb.listener_80 -> target_groups.chess_connector_https_tg: {
+ label: /links/*
+ class: edge_rule_medium # Priority 10
 }
-shiny_tg -> my_chess_cluster.shiny_service: {
-  class: edge_request
+chess_lb.listener_8000 -> target_groups.chess_connector_https_tg: {
+ label: Default\nAll traffic
+ class: edge_rule_default
 }
-chess_lb <- chess_ui_tg: {
-  class: edge_response
+# Target Groups to Services
+target_groups.chess_ui_tg -> my_chess_cluster.asciichessts_service.running_task: {
+ class: edge_healthy
 }
-react_chess_app <- chess_lb: {
-  class: edge_response
+target_groups.chess_connector_https_tg -> my_chess_cluster.connector_service.running_task: {
+ class: edge_healthy
 }
-chess_lb <- chess_connector_tg: {
-  class: edge_response
+target_groups.prototype_shiny_tg_3939 -> my_chess_cluster.shiny_service.running_task: {
+ class: edge_unhealthy
 }
-chess_ui_tg <- my_chess_cluster.asciichessts_service: {
-  class: edge_response
+# ECR to Running Tasks - Image Relationships
+my_chess_cluster.asciichessts_service.running_task <- ecr.asciichessts_repo.running_image: {
+ class: edge_current
 }
-chess_connector_tg <- my_chess_cluster.connector_service: {
-  class: edge_response
+my_chess_cluster.connector_service.running_task <- ecr.connector_repo.running_image: {
+ class: edge_warning
 }
-shiny_chess_app <- chess_lb: {
-  class: edge_response
+my_chess_cluster.shiny_service.running_task <- ecr.shiny_repo.running_image: {
+ class: edge_current
 }
-chess_lb <- shiny_tg: {
-  class: edge_response
+# Show that latest tags point to different images
+ecr.connector_repo.running_image <- ecr.connector_repo.latest_tag: {
+ class: edge_warning
 }
-shiny_tg <- my_chess_cluster.shiny_service: {
-  class: edge_response
+# External Traffic
+internet: {
+ label: Internet Traffic
+ class: obj_external
 }
-my_chess_cluster.asciichessts_service -- ecr.asciichessts_repo
-my_chess_cluster.connector_service -- ecr.connector_repo
-my_chess_cluster.shiny_service -- ecr.shiny_repo
+internet -> chess_lb: {
+ label: HTTPS\nchess.jbm.eco\nshiny-chess.jbm.eco
+ class: edge_external
+}
