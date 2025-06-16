@@ -164,3 +164,6 @@ export const chessGameSlice = createSlice({
     },
 });
 
+export const { loadFen, makeMove, undoMove, goToPosition, goForward, goBackward } = chessGameSlice.actions;
+
+export default chessGameSlice.reducer;

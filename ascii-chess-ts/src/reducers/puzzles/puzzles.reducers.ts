@@ -1,4 +1,5 @@
 import { ChessComPuzzleModel } from "../../models/ChessComPuzzleModel";
+import { goToPosition } from "../positions/positions.reducers";
 import { ChessComPuzzleViewModel } from "../../models/ChessComPuzzleViewModel";
 import { createSlice } from "@reduxjs/toolkit";
 import { LiChessPuzzleModel } from "../../models/LiChessPuzzleModel";

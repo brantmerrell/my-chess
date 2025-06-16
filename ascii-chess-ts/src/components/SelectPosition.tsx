@@ -1,30 +1,83 @@
-import { useSelector } from "react-redux";
 import React from "react";
-import { useAppDispatch } from "../app/hooks";
-import { RootState } from "../app/store";
-import { SetupOptions } from "../models/SetupOptions";
+import { useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../app/store";
+import { useDispatch } from "react-redux";
 import {
-    fetchChessComDailyPuzzle,
     fetchLiChessDailyPuzzle,
+    fetchChessComDailyPuzzle,
 } from "../reducers/puzzles/puzzles.actions";
-import { setSelectedSetup } from "../reducers/setups/setups.actions";
-import "./SelectPosition.css";
+import {
+    loadFen,
+    goToPosition,
+} from "../reducers/positions/positions.reducers";
+import { LiChessPuzzleViewModel } from "../models/LiChessPuzzleViewModel";
+import { ChessComPuzzleViewModel } from "../models/ChessComPuzzleViewModel";
+
+enum SetupOptions {
+    STANDARD = "standard",
+    LICHESS_DAILY_PUZZLE = "lichess",
+    CHESS_COM_DAILY_PUZZLE = "chesscom",
+}
 
 const SelectPosition: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const selectedSetup = useSelector(
-        (state: RootState) => state.selectedSetup
+    const dispatch = useDispatch<AppDispatch>();
+    const liChessPuzzle = useSelector(
+        (state: RootState) => state.liChessPuzzle
+    );
+    const chessComPuzzle = useSelector(
+        (state: RootState) => state.chessComPuzzle
+    );
+    const [selectedSetup, setSelectedSetup] = React.useState<string>(
+        SetupOptions.STANDARD
     );
 
-    const handleOptionChange = (
+    const handleOptionChange = async (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
-        dispatch(setSelectedSetup(event.target.value));
-        if (event.target.value === SetupOptions.CHESS_COM_DAILY_PUZZLE) {
-            dispatch(fetchChessComDailyPuzzle());
-        }
-        if (event.target.value === SetupOptions.LICHESS_DAILY_PUZZLE) {
-            dispatch(fetchLiChessDailyPuzzle());
+        const value = event.target.value;
+        setSelectedSetup(value);
+
+        if (value === SetupOptions.LICHESS_DAILY_PUZZLE) {
+            const action = await dispatch(fetchLiChessDailyPuzzle());
+
+            if (fetchLiChessDailyPuzzle.fulfilled.match(action)) {
+                const puzzleResponse = action.payload;
+                const puzzleData = new LiChessPuzzleViewModel(puzzleResponse)
+                    .puzzle;
+
+                // Load the complete game with setup history
+                dispatch(
+                    loadFen({
+                        fen: puzzleData.setupHistory[0].fen,
+                        setupHistory: puzzleData.setupHistory,
+                    })
+                );
+
+                // Navigate to the initial puzzle position
+                dispatch(goToPosition(puzzleResponse.puzzle.initialPly));
+            }
+        } else if (value === SetupOptions.CHESS_COM_DAILY_PUZZLE) {
+            const action = await dispatch(fetchChessComDailyPuzzle());
+
+            if (fetchChessComDailyPuzzle.fulfilled.match(action)) {
+                const puzzleResponse = action.payload;
+                const puzzleData = new ChessComPuzzleViewModel(puzzleResponse)
+                    .puzzle;
+
+                // Load the chess.com puzzle
+                dispatch(
+                    loadFen({
+                        fen: puzzleData.initialPuzzleFEN,
+                    })
+                );
+            }
+        } else if (value === SetupOptions.STANDARD) {
+            // Load standard starting position
+            dispatch(
+                loadFen({
+                    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                })
+            );
         }
     };
 
@@ -35,15 +88,23 @@ const SelectPosition: React.FC = () => {
                 className="dropdown-toggle position-select btn btn-secondary"
                 value={selectedSetup}
                 onChange={handleOptionChange}
+                disabled={
+                    liChessPuzzle.fetchStatus.loading ||
+                    chessComPuzzle.fetchStatus.loading
+                }
             >
                 <option value={SetupOptions.STANDARD}>
                     Standard Starting Position
                 </option>
                 <option value={SetupOptions.LICHESS_DAILY_PUZZLE}>
-                    Daily Lichess Puzzle
+                    {liChessPuzzle.fetchStatus.loading
+                        ? "Loading..."
+                        : "Daily Lichess Puzzle"}
                 </option>
                 <option value={SetupOptions.CHESS_COM_DAILY_PUZZLE}>
-                    Daily Chess.com Puzzle
+                    {chessComPuzzle.fetchStatus.loading
+                        ? "Loading..."
+                        : "Daily Chess.com Puzzle"}
                 </option>
             </select>
         </div>
@@ -51,4 +112,3 @@ const SelectPosition: React.FC = () => {
 };
 
 export default SelectPosition;
-
