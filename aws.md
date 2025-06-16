@@ -43,7 +43,8 @@ docker buildx build \
     --platform linux/amd64 \
     --push \
     --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest \
-    -f Dockerfile .
+    -f ascii-chess-ts/Dockerfile . \
+    ./ascii-chess-ts
 ```
 
 ## Authenticate with ECR
