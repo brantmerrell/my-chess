@@ -123,7 +123,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const renderView = () => {
         switch (selectedView) {
             case "board":
-                return <BoardDisplay board={getCurrentBoard()} />;
+                return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
             case "graph":
                 return (
                     <GraphView
@@ -154,7 +154,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             case "historicalArc":
                 return <HistoricalArcView displayMode={displayMode} />;
             default:
-                return <BoardDisplay board={getCurrentBoard()} />;
+                return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
         }
     };
 
@@ -190,8 +190,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             <div className="visualization-section">
                 <div className="view-container">{renderView()}</div>
             </div>
-            <NavigationControls />
             <div className="move-controls">
+                <NavigationControls />
                 <MoveControls displayMode={displayMode} />
             </div>
         </div>

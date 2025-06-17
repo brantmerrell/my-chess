@@ -9,12 +9,35 @@
     padding: 10px;
     margin: 5px;
     font-size: 31px;
-    background-color: lightskyblue;
     color: black;
     border-radius: 5px;
     font-family: monospace;
     white-space: pre;
     overflow-x: auto;
+    background-color: #2a9fd6;
 }
 
+.ascii-board--cyborg {
+    background-color: #2a9fd6; /* Cyborg (primary) */
+}
+
+.ascii-board--vapor {
+    background-color: #1ba2f6; /* Vapor (secondary) */
+}
+
+.ascii-board--journal {
+    background-color: #eb6864; /* Journal (primary) */
+}
+
+.ascii-board--solar {
+    background-color: #b58900; /* Solar (primary) */
+}
+
+.ascii-board--superhero {
+    background-color: #df6919; /* Superhero (primary) */
+}
+
+.ascii-board--minty {
+    background-color: #78c2ad; /* Minty (primary) */
+}
 
