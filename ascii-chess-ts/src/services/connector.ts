@@ -7,6 +7,7 @@ if (window.location.hostname === "localhost") {
     apiBaseUrl = ``;
 }
 
+// should the apiBaseURL fetch functions be in a connector/connector.service.ts?
 export const fetchLinks = async (inputString: string) => {
     try {
         const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}`;

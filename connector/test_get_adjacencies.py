@@ -12,6 +12,7 @@ def test_adjacencies():
     assert "a1" in data 
     assert "a3" not in data
     assert len(data['a1']) > 0
+    # TODO: compare to a JSON file
     print(data)
     print("Test passed!")
 

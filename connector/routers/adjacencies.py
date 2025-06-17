@@ -7,6 +7,7 @@ router = APIRouter()
 async def get_adjacencies(fen_string: str = Query(..., description="The FEN string representing the board state")):
     board = chess.Board(fen_string)
     adjacencies = {}
+    # TODO: export to helper function
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:

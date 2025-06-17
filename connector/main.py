@@ -21,6 +21,7 @@ app.include_router(graphdag_router)
 
 @app.get("/health")
 async def health_check():
+    # should this depend on tests or are healthchecks just network checks?
     return {"status": "healthy"}
 
 if __name__ == "__main__":

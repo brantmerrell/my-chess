@@ -8,6 +8,7 @@ export $(cat ../.env | xargs)
 ```bash
 docker buildx build \
     --platform linux/amd64 \
+    --push \
     --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest \
     -f Dockerfile .
 ```

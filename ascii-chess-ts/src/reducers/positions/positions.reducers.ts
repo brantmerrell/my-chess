@@ -97,6 +97,7 @@ export const chessGameSlice = createSlice({
         makeMove(state, action) {
             try {
                 const game = createGameFromState(state);
+                // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each makeMove
                 game.makeMove(action.payload);
 
                 const newFen = game.toFen();
@@ -131,6 +132,7 @@ export const chessGameSlice = createSlice({
                 state.fen = previousPosition.fen;
 
                 const game = createGameFromState(state);
+                // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each undoMove
                 state.moves = game.getMoves();
                 state.currentPositionIndex = state.positions.length - 1; // Update index after undo
             }

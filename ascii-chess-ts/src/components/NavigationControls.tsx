@@ -53,7 +53,7 @@ const NavigationControls: React.FC = () => {
                     ◀
                 </button>
                 <span className="position-indicator">
-                    {currentPositionIndex + 1} / {positions.length}
+                    {currentPositionIndex + 0} / {positions.length - 1}
                 </span>
                 <button
                     onClick={handleForward}
