@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './ThemeSelector.css';
 
+// I think BootstrapTheme should be called BootswatchTheme
 export type BootstrapTheme = 'cyborg' | 'vapor' | 'journal' | 'solar' | 'superhero' | 'minty';
 
 interface ThemeSelectorProps {
@@ -8,6 +9,9 @@ interface ThemeSelectorProps {
     onThemeChange: (theme: BootstrapTheme) => void;
 }
 
+// TODO
+// Quartz bootwatch theme
+// LiChess themes
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ currentTheme, onThemeChange }) => {
     return (
         <div className="selector-wrapper">

@@ -23,6 +23,12 @@ interface FENCharacterCountProps {
     fenHistory: string[];
 }
 
+// TODO
+// Rename to broaden from Character Count to any metric along moves
+// Add color-categorized piece mobility
+// Add color-categorized piece count
+// Add color-categorized point count
+// Add centipawn advantage (API/service dependent)
 const FENCharacterCount: React.FC<FENCharacterCountProps> = ({
     fenHistory,
 }) => {

@@ -12,6 +12,9 @@ interface HistoricalArcViewProps {
     displayMode: PieceDisplayMode;
 }
 
+// TODO:
+// center horizontally
+// fix issue: nodes have multiple conflicting labels
 const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) => {
     const [historicalData, setHistoricalData] = useState<{
         linksData: LinksResponse | null;

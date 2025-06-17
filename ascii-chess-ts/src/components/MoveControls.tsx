@@ -7,6 +7,8 @@ interface MoveControlsProps {
     displayMode: PieceDisplayMode;
 }
 
+// TODO
+// disable if active move is not most recent
 const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
     const {
         moves,

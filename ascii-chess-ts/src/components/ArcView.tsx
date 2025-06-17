@@ -12,6 +12,8 @@ interface ArcViewProps {
 
 type ColorScheme = "file" | "rank";
 
+// TODO
+// center horizontally
 const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMode }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [colorScheme, setColorScheme] = useState<ColorScheme>("rank");

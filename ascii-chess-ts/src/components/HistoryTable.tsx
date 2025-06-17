@@ -7,6 +7,10 @@ interface HistoryTableProps {
     displayMode: PieceDisplayMode;
 }
 
+// TODO
+// enable scrolling
+// limit vertical size to be about the same as other displays (ie. BoardDisplay)
+// highlight row that's currently active
 const HistoryTable: React.FC<HistoryTableProps> = ({ displayMode }) => {
     const { positions } = useMoveHistory(displayMode);
 
