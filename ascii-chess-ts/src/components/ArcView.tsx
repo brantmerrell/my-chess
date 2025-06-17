@@ -12,8 +12,6 @@ interface ArcViewProps {
 
 type ColorScheme = "file" | "rank";
 
-// TODO
-// center horizontally
 const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMode }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [colorScheme, setColorScheme] = useState<ColorScheme>("rank");
@@ -78,7 +76,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
         svg.selectAll("*").remove();
 
         const width = 600;
-        const height = 50;
+        const height = 150;
         const margin = { top: 20, right: 30, bottom: 40, left: 30 };
         const maxArcHeight = 150;
 
@@ -181,8 +179,8 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
     }, [linksData, processedEdges, displayMode, colorScheme]);
 
     return (
-        <div className="bg-dark">
-            <div className="flex items-center justify-start space-x-4">
+        <div className="arc-view-container">
+            <div className="arc-view-controls">
                 <span className="text-sm text-gray-300">Color by:</span>
                 <div className="helper-select-container">
                     <select
@@ -197,15 +195,15 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             </div>
 
             {/* SVG visualization */}
-            <svg
-                ref={svgRef}
-                className="w-full bg-gray-800 rounded-lg"
-                style={{ minHeight: "400px", maxWidth: "100%", height: "auto" }}
-            />
+            <div className="arc-view-svg-container">
+                <svg
+                    ref={svgRef}
+                    className="arc-view-svg"
+                />
+            </div>
         </div>
     );
 };
 
 export default ArcView;
-
 

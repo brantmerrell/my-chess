@@ -60,24 +60,29 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) =>
     }, [fenHistory]);
 
     return (
-        <div className="w-full space-y-4">
-            {historicalData.map((data, index) => (
-                <div key={index} className="relative">
-                    <h3 className="text-sm text-gray-400 mb-2">
-                        {index === 0 ? "Initial Position" : positions[index].san + " (" + positions[index].uci + ")"}
-                    </h3>
-                    <ArcViewSegment
-                        linksData={data.linksData}
-                        processedEdges={data.processedEdges}
-                        displayMode={displayMode}
-                        index={index}
-                        isFirst={index === 0}
-                        isLast={index === historicalData.length - 1}
-                        previousData={index > 0 ? historicalData[index - 1] : null}
-                        moveUCI={index > 0 ? positions[index].uci : null}
-                    />
-                </div>
-            ))}
+        <div className="historical-arc-view">
+            <div className="historical-arc-header">
+                <h2>Move History Arc View</h2>
+            </div>
+            <div className="historical-arc-content">
+                {historicalData.map((data, index) => (
+                    <div key={index} className="historical-arc-segment">
+                        <div className="move-title">
+                            {index === 0 ? "Initial Position" : `${positions[index].san} (${positions[index].uci})`}
+                        </div>
+                        <ArcViewSegment
+                            linksData={data.linksData}
+                            processedEdges={data.processedEdges}
+                            displayMode={displayMode}
+                            index={index}
+                            isFirst={index === 0}
+                            isLast={index === historicalData.length - 1}
+                            previousData={index > 0 ? historicalData[index - 1] : null}
+                            moveUCI={index > 0 ? positions[index].uci : null}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
@@ -119,9 +124,11 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
         const margin = { top: 60, right: 30, bottom: 40, left: 30 };
         const maxArcHeight = 80;
 
-        svg.attr("width", width)
+        svg.attr("width", "100%")
             .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`);
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .style("display", "block")
+            .style("margin", "0 auto");
 
         const squares = Array.from(
             new Set(linksData.nodes.map((n) => n.square))
@@ -285,14 +292,11 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
     }, [linksData, processedEdges, displayMode, isFirst, isLast, previousData, moveUCI]);
 
     return (
-        <svg
-            ref={svgRef}
-            className="w-full bg-gray-800 rounded-lg"
-            style={{ height: "150px" }}
-        />
+        <div className="arc-segment-container">
+            <svg ref={svgRef} className="arc-segment-svg" />
+        </div>
     );
 };
 
 export default HistoricalArcView;
-
 
