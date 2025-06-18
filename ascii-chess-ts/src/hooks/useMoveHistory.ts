@@ -25,6 +25,9 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         isProcessing: false,
     });
 
+    const isAtLatestPosition =
+        chessGameState.currentPositionIndex ===
+        chessGameState.positions.length - 1;
     useEffect(() => {
         try {
             const game = new ChessGame(chessGameState.fen, displayMode);
@@ -32,6 +35,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
                 ...prev,
                 moves: game.getMoves(),
                 isProcessing: false,
+                selectedMove: isAtLatestPosition ? prev.selectedMove : "",
             }));
         } catch (error) {
             setState((prev) => ({
@@ -40,9 +44,10 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
                 isProcessing: false,
             }));
         }
-    }, [chessGameState.fen, displayMode]);
+    }, [chessGameState.fen, displayMode, isAtLatestPosition]);
 
     const setSelectedMove = (move: string) => {
+        if (!isAtLatestPosition) return;
         setState((prev) => ({
             ...prev,
             selectedMove: move,
@@ -52,6 +57,14 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
 
     const makeSelectedMove = async (move: string) => {
         if (!move.trim()) return;
+        if (!isAtLatestPosition) {
+            setState((prev) => ({
+                ...prev,
+                errorMessage:
+                    "Cannot make moves from historical positions. Navigate to the latest position first.",
+            }));
+            return;
+        }
 
         setState((prev) => ({ ...prev, isProcessing: true }));
 
@@ -61,6 +74,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
                 ...prev,
                 selectedMove: "",
                 errorMessage: "",
+                undoMessage: "",
                 isProcessing: false,
             }));
         } catch (error) {
@@ -73,6 +87,19 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
     };
 
     const undoLastMove = () => {
+        // Prevent undo when not at latest position
+        if (!isAtLatestPosition) {
+            setState((prev) => ({
+                ...prev,
+                undoMessage:
+                    "Cannot undo moves from historical positions. Navigate to the latest position first.",
+            }));
+            setTimeout(() => {
+                setState((prev) => ({ ...prev, undoMessage: "" }));
+            }, 3000);
+            return;
+        }
+
         if (chessGameState.history.length === 0) {
             setState((prev) => ({
                 ...prev,
@@ -85,6 +112,11 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         }
 
         dispatch(undoMove());
+        setState((prev) => ({
+            ...prev,
+            undoMessage: "",
+            errorMessage: "",
+        }));
     };
 
     const resetToPosition = (fen: string, setupHistory?: Position[]) => {
@@ -131,6 +163,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         currentPosition: chessGameState.fen,
         positions: chessGameState.positions,
         currentPositionIndex: chessGameState.currentPositionIndex,
+        isAtLatestPosition,
 
         setSelectedMove,
         makeSelectedMove,

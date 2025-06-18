@@ -3,12 +3,14 @@
     gap: 1rem;
     align-items: flex-start;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .moves-forward {
     display: flex;
     gap: 0.5rem;
     flex: 1;
+    min-width: 300px;
 }
 
 /* Move Selection Dropdown */
@@ -21,7 +23,6 @@
     font-family: monospace;
     font-size: 14px;
     cursor: pointer;
-    /* Custom dropdown arrow */
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
@@ -31,12 +32,20 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    transition: opacity 0.2s, background-color 0.2s;
 }
 
 #selectedMove:focus {
     outline: none;
     border-color: #2b6cb0;
     box-shadow: 0 0 0 1px #2b6cb0;
+}
+
+#selectedMove:disabled {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Move Input */
@@ -49,12 +58,24 @@
     font-family: monospace;
     font-size: 14px;
     width: 100px;
+    transition: opacity 0.2s, background-color 0.2s;
 }
 
 #move:focus {
     outline: none;
     border-color: #2b6cb0;
     box-shadow: 0 0 0 1px #2b6cb0;
+}
+
+#move:disabled {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#move:disabled::placeholder {
+    color: #cbd5e0;
 }
 
 /* Submit Move Button */
@@ -67,14 +88,21 @@
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
-#submitMove:hover {
+#submitMove:hover:not(:disabled) {
     background-color: #006400;
 }
 
-#submitMove:active {
+#submitMove:active:not(:disabled) {
     background-color: #004d00;
+}
+
+#submitMove:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Undo Button */
@@ -87,14 +115,21 @@
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
-#undo:hover {
+#undo:hover:not(:disabled) {
     background-color: #8b0000;
 }
 
-#undo:active {
+#undo:active:not(:disabled) {
     background-color: #660000;
+}
+
+#undo:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Error Messages */
@@ -102,6 +137,10 @@
 .undo-message {
     margin-top: 0.5rem;
     font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: #fee;
+    border: 1px solid #fcc;
 }
 
 /* Responsive adjustments */
@@ -113,6 +152,7 @@
 
     .moves-forward {
         flex-wrap: wrap;
+        min-width: auto;
     }
 
     #selectedMove,
@@ -120,6 +160,7 @@
     #submitMove,
     #undo {
         width: 100%;
+        margin-bottom: 0.5rem;
     }
 }
 
