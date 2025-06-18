@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { ChessGame } from "../chess/chessGame";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
-import { PieceDisplayMode } from "../types/chess";
+import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 import { fetchLinks } from "../services/connector";
 import { useMoveHistory } from "../hooks/useMoveHistory";
 
@@ -12,8 +12,7 @@ interface HistoricalArcViewProps {
     displayMode: PieceDisplayMode;
 }
 
-// TODO:
-// center horizontally
+// DOING:
 // fix issue: nodes have multiple conflicting labels
 const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) => {
     const [historicalData, setHistoricalData] = useState<{
@@ -113,15 +112,39 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
 
+    const whitePieceMap: { [key: string]: string } = {
+        'K': '♚',
+        'Q': '♛', 
+        'R': '♜',
+        'B': '♝',
+        'N': '♞',
+        'P': '♟'
+    };
+
+    const getPieceDisplay = (piece: string): string => {
+        switch (displayMode) {
+            case "symbols":
+                if (piece in whitePieceMap) {
+                    return whitePieceMap[piece];
+                }
+                return PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece;
+            case "masked":
+                return "*";
+            default:
+                return piece;
+        }
+    };
+
     useEffect(() => {
         if (!linksData || !processedEdges || !svgRef.current) return;
 
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
-        const width = 600;
+        const containerWidth = svgRef.current.parentElement?.clientWidth || 600;
+        const width = Math.min(containerWidth - 40, 600);
         const height = 150;
-        const margin = { top: 60, right: 30, bottom: 40, left: 30 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 30 };
         const maxArcHeight = 80;
 
         svg.attr("width", "100%")
@@ -182,14 +205,6 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
             });
         }
 
-        const nodeGroup = svg
-            .append("g")
-            .attr("class", "nodes")
-            .selectAll("g")
-            .data(linksData.nodes)
-            .join("g")
-            .attr("transform", (d) => `translate(${x(d.square)},${baseY})`);
-
         let destinationSquare: string | null = null;
         let originSquare: string | null = null;
         if (moveUCI && moveUCI.length >= 4) {
@@ -197,98 +212,98 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
             destinationSquare = moveUCI.substring(2, 4);
         }
 
-        nodeGroup
-            .append("circle")
-            .attr("r", 6)
-            .attr("fill", (d) => {
-                if (d.square === destinationSquare) {
-                    return "palegoldenrod";
-                }
-                if (d.square === originSquare) {
-                    return "lightblue";
-                }
-                return d.color === "white" ? "lightgray" : "saddlebrown";
-            })
-            .attr("stroke", (d) => {
-                if (d.square === destinationSquare) {
-                    return "darksalmon";
-                }
-                if (d.square === originSquare) {
-                    return "cornflowerblue";
-                }
-                return "gray";
-            })
-            .attr("stroke-width", (d) =>
-                (d.square === destinationSquare || d.square === originSquare) ? 2 : 1
-            );
+        const squareToPieceMap = new Map<string, { piece_type: string; color: string }>();
+        linksData.nodes.forEach(node => {
+            squareToPieceMap.set(node.square, {
+                piece_type: node.piece_type,
+                color: node.color
+            });
+        });
 
-        nodeGroup
-            .append("text")
-            .attr("text-anchor", "middle")
-            .attr("dy", -10)
-            .attr("fill", "hotpink")
-            .style("font-size", "10px")
-            .text((d) => d.square);
+        const nodeGroup = svg
+            .append("g")
+            .attr("class", "nodes");
 
-        if (originSquare && !squares.includes(originSquare)) {
-            nodeGroup
+        linksData.nodes.forEach(node => {
+            const nodeX = x(node.square);
+            if (nodeX === undefined) return;
+
+            const nodeG = nodeGroup
                 .append("g")
-                .attr("transform", `translate(${x(originSquare)},${baseY})`)
+                .attr("transform", `translate(${nodeX},${baseY})`);
+
+            nodeG
                 .append("circle")
                 .attr("r", 6)
-                .attr("fill", "lightblue")
-                .attr("stroke", "cornflowerblue")
-            .attr("fill", (d) => {
-                if (d.square === destinationSquare) {
-                    return "palegoldenrod";
-                }
-                if (d.square === originSquare) {
-                    return "lightblue";
-                }
-                return d.color === "white" ? "lightgray" : "saddlebrown";
-            })
-            .attr("stroke", (d) => {
-                if (d.square === destinationSquare) {
-                    return "darksalmon";
-                }
-                if (d.square === originSquare) {
-                    return "cornflowerblue";
-                }
-                return "gray";
-            })
-                .attr("stroke-width", 2);
+                .attr("fill", () => {
+                    if (node.square === destinationSquare) {
+                        return "palegoldenrod";
+                    }
+                    if (node.square === originSquare) {
+                        return "lightblue";
+                    }
+                    return node.color === "white" ? "lightgray" : "saddlebrown";
+                })
+                .attr("stroke", () => {
+                    if (node.square === destinationSquare) {
+                        return "darksalmon";
+                    }
+                    if (node.square === originSquare) {
+                        return "cornflowerblue";
+                    }
+                    return "gray";
+                })
+                .attr("stroke-width", (node.square === destinationSquare || node.square === originSquare) ? 2 : 1);
 
-            nodeGroup
-                .append("g")
-                .attr("transform", `translate(${x(originSquare)},${baseY})`)
+            if (displayMode === "symbols") {
+                nodeG
+                    .append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", "0.3em")
+                    .attr("fill", node.color === "white" ? "#fff" : "#000")
+                    .style("font-size", "10px")
+                    .text(getPieceDisplay(node.piece_type));
+            }
+
+            nodeG
                 .append("text")
                 .attr("text-anchor", "middle")
-                .attr("dy", -10)
+                .attr("dy", "1.8em")
                 .attr("fill", "hotpink")
-                .style("font-size", "10px")
-                .text(originSquare);
-        }
+                .style("font-size", "8px")
+                .text(node.square);
+        });
 
-        if (destinationSquare && !squares.includes(destinationSquare)) {
-            nodeGroup
-                .append("g")
-                .attr("transform", `translate(${x(destinationSquare)},${baseY})`)
-                .append("circle")
-                .attr("r", 6)
-                .attr("fill", "palegoldenrod")
-                .attr("stroke", "darksalmon")
-                .attr("stroke-width", 2);
+        // Handle move squares that might not have pieces on them (for captures, etc.)
+        [originSquare, destinationSquare].forEach((square, idx) => {
+            if (square && !squareToPieceMap.has(square)) {
+                const xPos = x(square);
+                if (xPos !== undefined) {
+                    const color = idx === 0 ? "lightblue" : "palegoldenrod";
+                    const strokeColor = idx === 0 ? "cornflowerblue" : "darksalmon";
+                    
+                    const emptyNodeG = nodeGroup
+                        .append("g")
+                        .attr("transform", `translate(${xPos},${baseY})`);
 
-            nodeGroup
-                .append("g")
-                .attr("transform", `translate(${x(destinationSquare)},${baseY})`)
-                .append("text")
-                .attr("text-anchor", "middle")
-                .attr("dy", -10)
-                .attr("fill", "hotpink")
-                .style("font-size", "10px")
-                .text(destinationSquare);
-        }
+                    emptyNodeG
+                        .append("circle")
+                        .attr("r", 6)
+                        .attr("fill", color)
+                        .attr("stroke", strokeColor)
+                        .attr("stroke-width", 2);
+
+                    emptyNodeG
+                        .append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", "1.8em")
+                        .attr("fill", "hotpink")
+                        .style("font-size", "8px")
+                        .text(square);
+                }
+            }
+        });
+
     }, [linksData, processedEdges, displayMode, isFirst, isLast, previousData, moveUCI]);
 
     return (
@@ -299,4 +314,3 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
 };
 
 export default HistoricalArcView;
-
