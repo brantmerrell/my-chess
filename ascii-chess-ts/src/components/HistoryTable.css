@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
 }
 
 .history-table-header {
@@ -15,6 +16,9 @@
     border-bottom: 1px solid #374151;
     background-color: #111827;
     border-radius: 0.5rem 0.5rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .history-table-header h3 {
@@ -22,13 +26,20 @@
     color: #e5e7eb;
     font-size: 1.125rem;
     font-weight: 600;
-    text-align: center;
+}
+
+.position-info {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .history-table-wrapper {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
 }
 
 .history-table {
@@ -43,6 +54,7 @@
     top: 0;
     background-color: #374151;
     z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .history-table th {
@@ -72,7 +84,8 @@
 }
 
 .history-row {
-    transition: background-color 0.15s ease;
+    transition: all 0.2s ease;
+    scroll-margin: 2rem; /* Ensures some padding when scrolling to element */
 }
 
 .history-row:hover {
@@ -82,10 +95,24 @@
 .history-row.current-position {
     background-color: #1e3a8a;
     border-left: 4px solid #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+    animation: highlightPulse 1s ease-in-out;
 }
 
 .history-row.current-position:hover {
     background-color: #1e40af;
+}
+
+@keyframes highlightPulse {
+    0% {
+        box-shadow: 0 0 0 1px #3b82f6;
+    }
+    50% {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 0 1px #3b82f6;
+    }
 }
 
 .history-table td {
@@ -121,21 +148,62 @@
     max-width: 0; /* Forces text wrapping */
 }
 
-/* Scrollbar styling for webkit browsers */
 .history-table-wrapper::-webkit-scrollbar {
-    width: 8px;
+    width: 12px;
 }
 
 .history-table-wrapper::-webkit-scrollbar-track {
     background: #1f2937;
+    border-radius: 6px;
 }
 
 .history-table-wrapper::-webkit-scrollbar-thumb {
     background: #4b5563;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 2px solid #1f2937;
 }
 
 .history-table-wrapper::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
+}
+
+.history-table-wrapper::-webkit-scrollbar-thumb:active {
+    background: #9ca3af;
+}
+
+.history-table-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+}
+
+@media (max-width: 768px) {
+    .history-table-container {
+        height: 400px;
+    }
+    
+    .history-table-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 0.5rem;
+    }
+    
+    .fen-cell {
+        font-size: 0.6rem;
+    }
+    
+}
+
+.history-row:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+}
+
+.history-table-wrapper {
+    scroll-padding-top: 3rem; /* Account for sticky header */
 }
 
