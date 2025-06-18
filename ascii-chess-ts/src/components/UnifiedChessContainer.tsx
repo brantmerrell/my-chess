@@ -3,7 +3,7 @@ import ArcView from "./ArcView";
 import BoardDisplay from "./BoardDisplay";
 import ChordDiagram from "./ChordDiagram";
 import ConnectionTypeSelector from "./ConnectionTypeSelector";
-import FENCharacterCount from "./FENCharacterCount";
+import SequenceMetrics from "./SequenceMetrics";
 import FenInput from "./FenInput";
 import GraphView from "./GraphView";
 import HistoricalArcView from "./HistoricalArcView";
@@ -150,7 +150,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             case "history":
                 return <HistoryTable displayMode={displayMode} />;
             case "fencount":
-                return <FENCharacterCount fenHistory={fenHistory} />;
+                return <SequenceMetrics fenHistory={fenHistory} />;
             case "historicalArc":
                 return <HistoricalArcView displayMode={displayMode} />;
             default:

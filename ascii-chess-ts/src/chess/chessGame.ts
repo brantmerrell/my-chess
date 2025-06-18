@@ -14,6 +14,55 @@ export class ChessGame {
         this.displayMode = displayMode;
     }
 
+    public getMobilityForBothSides(): { white: number; black: number } {
+        const originalFen = this.toFen();
+        const [position, activeColor, castling, enPassant, halfMove, fullMove] =
+            originalFen.split(" ");
+
+        const currentMoves = this.getMoves().length;
+
+        const switchedColor = activeColor === "w" ? "b" : "w";
+        const switchedFen = `${position} ${switchedColor} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
+
+        try {
+            const tempGame = new ChessGame(switchedFen, this.displayMode);
+            const opponentMoves = tempGame.getMoves().length;
+
+            if (activeColor === "w") {
+                return { white: currentMoves, black: opponentMoves };
+            } else {
+                return { white: opponentMoves, black: currentMoves };
+            }
+        } catch (error) {
+            console.warn(
+                "Could not calculate opponent mobility for FEN:",
+                switchedFen
+            );
+            if (activeColor === "w") {
+                return { white: currentMoves, black: 0 };
+            } else {
+                return { white: 0, black: currentMoves };
+            }
+        }
+    }
+    public static calculateMobilityFromFen(fen: string): {
+        totalMoves: number;
+        white: number;
+        black: number;
+    } {
+        try {
+            const game = new ChessGame(fen);
+            const mobility = game.getMobilityForBothSides();
+            return {
+                totalMoves: mobility.white + mobility.black,
+                white: mobility.white,
+                black: mobility.black,
+            };
+        } catch (error) {
+            console.error("Error calculating mobility for FEN:", fen, error);
+            return { totalMoves: 0, white: 0, black: 0 };
+        }
+    }
     public setDisplayMode(mode: PieceDisplayMode) {
         this.displayMode = mode;
     }
@@ -23,6 +72,21 @@ export class ChessGame {
             throw new Error("Invalid move provided to ChessGame.makeMove");
         }
         return result;
+    }
+    public static countPiecesFromFen(fen: string): { white: number; black: number } {
+        const position = fen.split(" ")[0];
+        let whitePieces = 0;
+        let blackPieces = 0;
+
+        for (const char of position) {
+            if (/[KQRBNP]/.test(char)) {
+                whitePieces++;
+            } else if (/[kqrbnp]/.test(char)) {
+                blackPieces++;
+            }
+        }
+
+        return { white: whitePieces, black: blackPieces };
     }
 
     public loadFen(fen: string) {
@@ -112,5 +176,3 @@ function wrapString(str: string, maxLen: number) {
         return "";
     }
 }
-
-
