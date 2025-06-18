@@ -12,14 +12,17 @@ interface HistoricalArcViewProps {
     displayMode: PieceDisplayMode;
 }
 
-// DOING:
-// fix issue: nodes have multiple conflicting labels
-const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) => {
-    const [historicalData, setHistoricalData] = useState<{
-        linksData: LinksResponse | null;
-        processedEdges: ProcessedEdge[];
-    }[]>([]);
+const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
+    displayMode,
+}) => {
+    const [historicalData, setHistoricalData] = useState<
+        {
+            linksData: LinksResponse | null;
+            processedEdges: ProcessedEdge[];
+        }[]
+    >([]);
     const state = useSelector((state: RootState) => state.chessGame);
+    const svgRef = useRef<SVGSVGElement>(null);
 
     const { positions } = useMoveHistory(displayMode);
 
@@ -39,8 +42,14 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) =>
                 const historicalDataPromises = fenHistory.map(async (fen) => {
                     const fetchedLinks = await fetchLinks(fen);
                     const edges = fetchedLinks.edges.map((edge: any) => ({
-                        source: typeof edge.source === "string" ? edge.source : edge.source.square,
-                        target: typeof edge.target === "string" ? edge.target : edge.target.square,
+                        source:
+                            typeof edge.source === "string"
+                                ? edge.source
+                                : edge.source.square,
+                        target:
+                            typeof edge.target === "string"
+                                ? edge.target
+                                : edge.target.square,
                         type: edge.type,
                     }));
                     return {
@@ -59,67 +68,13 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) =>
         fetchHistoricalData();
     }, [fenHistory]);
 
-    return (
-        <div className="historical-arc-view">
-            <div className="historical-arc-header">
-                <h2>Move History Arc View</h2>
-            </div>
-            <div className="historical-arc-content">
-                {historicalData.map((data, index) => (
-                    <div key={index} className="historical-arc-segment">
-                        <div className="move-title">
-                            {index === 0 ? "Initial Position" : `${positions[index].san} (${positions[index].uci})`}
-                        </div>
-                        <ArcViewSegment
-                            linksData={data.linksData}
-                            processedEdges={data.processedEdges}
-                            displayMode={displayMode}
-                            index={index}
-                            isFirst={index === 0}
-                            isLast={index === historicalData.length - 1}
-                            previousData={index > 0 ? historicalData[index - 1] : null}
-                            moveUCI={index > 0 ? positions[index].uci : null}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-interface ArcViewSegmentProps {
-    linksData: LinksResponse | null;
-    processedEdges: ProcessedEdge[];
-    displayMode: PieceDisplayMode;
-    index: number;
-    isFirst: boolean;
-    isLast: boolean;
-    previousData: {
-        linksData: LinksResponse | null;
-        processedEdges: ProcessedEdge[];
-    } | null;
-    moveUCI: string | null;
-}
-
-const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
-    linksData,
-    processedEdges,
-    displayMode,
-    index,
-    isFirst,
-    isLast,
-    previousData,
-    moveUCI
-}) => {
-    const svgRef = useRef<SVGSVGElement>(null);
-
     const whitePieceMap: { [key: string]: string } = {
-        'K': '♚',
-        'Q': '♛', 
-        'R': '♜',
-        'B': '♝',
-        'N': '♞',
-        'P': '♟'
+        K: "♚",
+        Q: "♛",
+        R: "♜",
+        B: "♝",
+        N: "♞",
+        P: "♟",
     };
 
     const getPieceDisplay = (piece: string): string => {
@@ -128,7 +83,9 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
                 if (piece in whitePieceMap) {
                     return whitePieceMap[piece];
                 }
-                return PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece;
+                return (
+                    PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece
+                );
             case "masked":
                 return "*";
             default:
@@ -137,179 +94,234 @@ const ArcViewSegment: React.FC<ArcViewSegmentProps> = ({
     };
 
     useEffect(() => {
-        if (!linksData || !processedEdges || !svgRef.current) return;
+        if (!historicalData.length || !svgRef.current) return;
 
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
-        const containerWidth = svgRef.current.parentElement?.clientWidth || 600;
-        const width = Math.min(containerWidth - 40, 600);
-        const height = 150;
+        const containerWidth = svgRef.current.parentElement?.clientWidth || 800;
+        const width = Math.min(containerWidth - 40, 800);
+        const segmentHeight = 180;
+        const totalHeight = segmentHeight * historicalData.length;
         const margin = { top: 20, right: 30, bottom: 40, left: 30 };
-        const maxArcHeight = 80;
 
         svg.attr("width", "100%")
-            .attr("height", height)
-            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("height", totalHeight)
+            .attr("viewBox", `0 0 ${width} ${totalHeight}`)
             .style("display", "block")
             .style("margin", "0 auto");
 
-        const squares = Array.from(
-            new Set(linksData.nodes.map((n) => n.square))
-        ).sort((a, b) => {
-            const rankA = parseInt(a[1]);
-            const rankB = parseInt(b[1]);
-            const fileA = a[0];
-            const fileB = b[0];
-            if (rankA !== rankB) {
-                return rankB - rankA;
-            } else {
-                return fileA.charCodeAt(0) - fileB.charCodeAt(0);
-            }
-        });
+        const segmentPositions: {
+            [segmentIndex: number]: { [square: string]: number };
+        } = {};
 
-        const x = d3
-            .scalePoint<string>()
-            .domain(squares)
-            .range([margin.left, width - margin.right]);
+        historicalData.forEach((data, index) => {
+            if (!data.linksData) return;
 
-        const baseY = height - margin.bottom;
+            const segmentY = index * segmentHeight;
+            const baseY = segmentY + segmentHeight - margin.bottom;
 
-        const arcGroup = svg.append("g").attr("class", "arcs");
+            const segmentGroup = svg
+                .append("g")
+                .attr("class", `segment-${index}`);
 
-        if (isFirst || isLast) {
-            processedEdges.forEach((edge) => {
-                const sourceX = x(edge.source);
-                const targetX = x(edge.target);
+            segmentGroup
+                .append("text")
+                .attr("x", margin.left)
+                .attr("y", segmentY + 20)
+                .attr("fill", "white")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text(
+                    index === 0
+                        ? "Initial Position"
+                        : `${positions[index].san} (${positions[index].uci})`
+                );
 
-                if (sourceX !== undefined && targetX !== undefined) {
-                    const distance = Math.abs(targetX - sourceX);
-                    const arcHeight = Math.min(distance * 0.4, maxArcHeight);
-                    const path = d3.path();
-                    path.moveTo(sourceX, baseY);
-                    const arcDirection = isLast ? 1 : -1;
-                    path.quadraticCurveTo(
-                        (sourceX + targetX) / 2,
-                        baseY + (arcDirection * arcHeight),
-                        targetX,
-                        baseY
-                    );
+            const segmentSquares = data.linksData.nodes
+                .map((n) => n.square)
+                .sort((a, b) => {
+                    const rankA = parseInt(a[1]);
+                    const rankB = parseInt(b[1]);
+                    const fileA = a[0];
+                    const fileB = b[0];
+                    if (rankA !== rankB) {
+                        return rankB - rankA;
+                    } else {
+                        return fileA.charCodeAt(0) - fileB.charCodeAt(0);
+                    }
+                });
 
-                    arcGroup
-                        .append("path")
-                        .attr("d", path.toString())
-                        .attr("fill", "none")
-                        .attr("stroke", edge.type === "threat" ? "darkred" : "springgreen")
-                        .attr("stroke-width", 1)
-                        .attr("opacity", 0.6);
+            const x = d3
+                .scalePoint<string>()
+                .domain(segmentSquares)
+                .range([margin.left, width - margin.right]);
+
+            segmentPositions[index] = {};
+            segmentSquares.forEach((square) => {
+                const pos = x(square);
+                if (pos !== undefined) {
+                    segmentPositions[index][square] = pos;
                 }
             });
-        }
 
-        let destinationSquare: string | null = null;
-        let originSquare: string | null = null;
-        if (moveUCI && moveUCI.length >= 4) {
-            originSquare = moveUCI.substring(0, 2);
-            destinationSquare = moveUCI.substring(2, 4);
-        }
+            if (index === 0 || index === historicalData.length - 1) {
+                const arcGroup = segmentGroup.append("g").attr("class", "arcs");
+                const maxArcHeight = 80;
 
-        const squareToPieceMap = new Map<string, { piece_type: string; color: string }>();
-        linksData.nodes.forEach(node => {
-            squareToPieceMap.set(node.square, {
-                piece_type: node.piece_type,
-                color: node.color
-            });
-        });
+                data.processedEdges.forEach((edge) => {
+                    const sourceX = x(edge.source);
+                    const targetX = x(edge.target);
 
-        const nodeGroup = svg
-            .append("g")
-            .attr("class", "nodes");
+                    if (sourceX !== undefined && targetX !== undefined) {
+                        const distance = Math.abs(targetX - sourceX);
+                        const arcHeight = Math.min(
+                            distance * 0.4,
+                            maxArcHeight
+                        );
+                        const path = d3.path();
+                        path.moveTo(sourceX, baseY);
+                        const arcDirection =
+                            index === historicalData.length - 1 ? 1 : -1;
+                        path.quadraticCurveTo(
+                            (sourceX + targetX) / 2,
+                            baseY + arcDirection * arcHeight,
+                            targetX,
+                            baseY
+                        );
 
-        linksData.nodes.forEach(node => {
-            const nodeX = x(node.square);
-            if (nodeX === undefined) return;
-
-            const nodeG = nodeGroup
-                .append("g")
-                .attr("transform", `translate(${nodeX},${baseY})`);
-
-            nodeG
-                .append("circle")
-                .attr("r", 6)
-                .attr("fill", () => {
-                    if (node.square === destinationSquare) {
-                        return "palegoldenrod";
+                        arcGroup
+                            .append("path")
+                            .attr("d", path.toString())
+                            .attr("fill", "none")
+                            .attr(
+                                "stroke",
+                                edge.type === "threat"
+                                    ? "darkred"
+                                    : "springgreen"
+                            )
+                            .attr("stroke-width", 1)
+                            .attr("opacity", 0.6);
                     }
-                    if (node.square === originSquare) {
-                        return "lightblue";
-                    }
-                    return node.color === "white" ? "lightgray" : "saddlebrown";
-                })
-                .attr("stroke", () => {
-                    if (node.square === destinationSquare) {
-                        return "darksalmon";
-                    }
-                    if (node.square === originSquare) {
-                        return "cornflowerblue";
-                    }
-                    return "gray";
-                })
-                .attr("stroke-width", (node.square === destinationSquare || node.square === originSquare) ? 2 : 1);
+                });
+            }
 
-            if (displayMode === "symbols") {
+            const nodeGroup = segmentGroup.append("g").attr("class", "nodes");
+
+            data.linksData.nodes.forEach((node) => {
+                const nodeX = x(node.square);
+                if (nodeX === undefined) return;
+
+                const nodeG = nodeGroup
+                    .append("g")
+                    .attr("transform", `translate(${nodeX},${baseY})`);
+
+                let destinationSquare: string | null = null;
+                let originSquare: string | null = null;
+                if (index > 0 && positions[index].uci.length >= 4) {
+                    originSquare = positions[index].uci.substring(0, 2);
+                    destinationSquare = positions[index].uci.substring(2, 4);
+                }
+
+                nodeG
+                    .append("circle")
+                    .attr("r", 6)
+                    .attr("fill", () => {
+                        if (node.square === destinationSquare) {
+                            return "palegoldenrod";
+                        }
+                        if (node.square === originSquare) {
+                            return "lightblue";
+                        }
+                        return node.color === "white"
+                            ? "lightgray"
+                            : "saddlebrown";
+                    })
+                    .attr("stroke", () => {
+                        if (node.square === destinationSquare) {
+                            return "darksalmon";
+                        }
+                        if (node.square === originSquare) {
+                            return "cornflowerblue";
+                        }
+                        return "gray";
+                    })
+                    .attr(
+                        "stroke-width",
+                        node.square === destinationSquare ||
+                            node.square === originSquare
+                            ? 2
+                            : 1
+                    );
+
+                if (displayMode === "symbols") {
+                    nodeG
+                        .append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dy", "0.3em")
+                        .attr("fill", node.color === "white" ? "#fff" : "#000")
+                        .style("font-size", "10px")
+                        .text(getPieceDisplay(node.piece_type));
+                }
+
                 nodeG
                     .append("text")
                     .attr("text-anchor", "middle")
-                    .attr("dy", "0.3em")
-                    .attr("fill", node.color === "white" ? "#fff" : "#000")
-                    .style("font-size", "10px")
-                    .text(getPieceDisplay(node.piece_type));
-            }
-
-            nodeG
-                .append("text")
-                .attr("text-anchor", "middle")
-                .attr("dy", "1.8em")
-                .attr("fill", "hotpink")
-                .style("font-size", "8px")
-                .text(node.square);
+                    .attr("dy", "1.8em")
+                    .attr("fill", "hotpink")
+                    .style("font-size", "8px")
+                    .text(node.square);
+            });
         });
 
-        // Handle move squares that might not have pieces on them (for captures, etc.)
-        [originSquare, destinationSquare].forEach((square, idx) => {
-            if (square && !squareToPieceMap.has(square)) {
-                const xPos = x(square);
-                if (xPos !== undefined) {
-                    const color = idx === 0 ? "lightblue" : "palegoldenrod";
-                    const strokeColor = idx === 0 ? "cornflowerblue" : "darksalmon";
-                    
-                    const emptyNodeG = nodeGroup
-                        .append("g")
-                        .attr("transform", `translate(${xPos},${baseY})`);
+        historicalData.forEach((data, index) => {
+            if (index > 0 && positions[index].uci.length >= 4) {
+                const originSquare = positions[index].uci.substring(0, 2);
+                const destinationSquare = positions[index].uci.substring(2, 4);
 
-                    emptyNodeG
-                        .append("circle")
-                        .attr("r", 6)
-                        .attr("fill", color)
-                        .attr("stroke", strokeColor)
-                        .attr("stroke-width", 2);
+                const originX = segmentPositions[index - 1]?.[originSquare];
+                const destX = segmentPositions[index]?.[destinationSquare];
 
-                    emptyNodeG
-                        .append("text")
-                        .attr("text-anchor", "middle")
-                        .attr("dy", "1.8em")
-                        .attr("fill", "hotpink")
-                        .style("font-size", "8px")
-                        .text(square);
+                if (originX !== undefined && destX !== undefined) {
+                    const prevSegmentY = (index - 1) * segmentHeight;
+                    const prevBaseY =
+                        prevSegmentY + segmentHeight - margin.bottom;
+                    const currentSegmentY = index * segmentHeight;
+                    const currentBaseY =
+                        currentSegmentY + segmentHeight - margin.bottom;
+
+                    const distance = Math.abs(originX - destX);
+                    const arcHeight = Math.min(distance * 0.3, 60);
+                    const midY = (prevBaseY + currentBaseY) / 2;
+
+                    const connectionPath = d3.path();
+                    connectionPath.moveTo(originX, prevBaseY);
+                    connectionPath.quadraticCurveTo(
+                        (originX + destX) / 2,
+                        midY - arcHeight,
+                        destX,
+                        currentBaseY
+                    );
+
+                    svg.append("path")
+                        .attr("d", connectionPath.toString())
+                        .attr("fill", "none")
+                        .attr("stroke", "darkgreen")
+                        .attr("stroke-width", 2)
+                        .attr("opacity", 0.6);
                 }
             }
         });
-
-    }, [linksData, processedEdges, displayMode, isFirst, isLast, previousData, moveUCI]);
+    }, [historicalData, displayMode, positions]);
 
     return (
-        <div className="arc-segment-container">
-            <svg ref={svgRef} className="arc-segment-svg" />
+        <div className="historical-arc-view">
+            <div className="historical-arc-header">
+                <h2>Move History Arc View</h2>
+            </div>
+            <div className="historical-arc-content">
+                <svg ref={svgRef} className="historical-arc-svg" />
+            </div>
         </div>
     );
 };
