@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
@@ -19,18 +19,19 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({ displayMode }) =>
         linksData: LinksResponse | null;
         processedEdges: ProcessedEdge[];
     }[]>([]);
+    const state = useSelector((state: RootState) => state.chessGame);
 
     const { positions } = useMoveHistory(displayMode);
 
-    const fenHistory = useSelector((state: RootState) => {
-        const game = new ChessGame(state.chessGame.positions[0].fen);
+    const fenHistory = useMemo(() => {
+        const game = new ChessGame(state.positions[0].fen);
         const fens = [game.toFen()];
-        state.chessGame.history.forEach((move) => {
+        state.history.forEach((move: string) => {
             game.makeMove(move);
             fens.push(game.toFen());
         });
         return fens;
-    });
+    }, [state.positions, state.history]);
 
     useEffect(() => {
         const fetchHistoricalData = async () => {
