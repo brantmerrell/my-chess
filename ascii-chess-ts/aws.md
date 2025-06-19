@@ -3,16 +3,6 @@
 export $(cat ../.env | xargs)
 ```
 
-## Build image for AMD64 architecture
-
-```bash
-docker buildx build \
-    --platform linux/amd64 \
-    --push \
-    --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest \
-    -f Dockerfile .
-```
-
 ## Authenticate with ECR
 ```bash
 aws ecr get-login-password \
@@ -23,10 +13,14 @@ docker login \
     --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 ```
 
-## Push image to ECR
+## Build image for AMD64 architecture and push
 
 ```bash
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest
+docker buildx build \
+    --platform linux/amd64 \
+    --push \
+    --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest \
+    -f Dockerfile .
 ```
 
 ## Update ECS service

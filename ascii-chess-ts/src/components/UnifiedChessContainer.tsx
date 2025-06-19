@@ -50,8 +50,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [linksData, setLinksData] = React.useState<LinksResponse | null>(
         null
     );
-    const [adjacenciesData, setAdjacenciesData] =
-        React.useState<AdjacenciesResponse | null>(null);
     const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
         []
     );
@@ -71,16 +69,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const fetchedLinks = await fetchLinks(chessGameState.fen);
-                setLinksData(fetchedLinks);
-                const fetchedAdjacencies = await fetchAdjacencies(
-                    chessGameState.fen
-                );
-                setAdjacenciesData(fetchedAdjacencies);
+                let fetchedData;
+                if (connectionType === "links") {
+                    fetchedData = await fetchLinks(chessGameState.fen);
+                } else if (connectionType === "adjacencies") {
+                    fetchedData = await fetchAdjacencies(chessGameState.fen);
+                }
+                if (fetchedData && fetchedData.nodes && fetchedData.edges) {
+                    setLinksData(fetchedData);
 
-                // Process edges based on connection type
-                if (connectionType === "links" && fetchedLinks) {
-                    const edges = fetchedLinks.edges.map((edge: any) => ({
+                    const edges = fetchedData.edges.map((edge: any) => ({
                         source:
                             typeof edge.source === "string"
                                 ? edge.source
@@ -92,28 +90,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         type: edge.type,
                     }));
                     setProcessedEdges(edges);
-                } else if (
-                    connectionType === "adjacencies" &&
-                    fetchedAdjacencies
-                ) {
-                    const edges: ProcessedEdge[] = [];
-                    Object.entries(fetchedAdjacencies).forEach(
-                        ([source, targets]) => {
-                            (targets as string[]).forEach((target: string) => {
-                                edges.push({
-                                    source,
-                                    target,
-                                    type: "adjacency",
-                                });
-                            });
-                        }
-                    );
-                    setProcessedEdges(edges);
+                } else {
+                    setLinksData({ nodes: [], edges: [] });
+                    setProcessedEdges([]);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                setLinksData({ nodes: [], edges: [] });
+                setProcessedEdges([]);
             }
         };
+
         fetchData();
     }, [chessGameState.fen, connectionType]);
     const getCurrentBoard = () => {

@@ -9,15 +9,10 @@ declare -a focus_files=(
     "ascii-chess-ts/src/chess/chessGame.ts"
     "ascii-chess-ts/src/components/ArcView.css"
     "ascii-chess-ts/src/components/ArcView.tsx"
-    "ascii-chess-ts/src/components/BoardDisplay.css"
-    "ascii-chess-ts/src/components/BoardDisplay.tsx"
     "ascii-chess-ts/src/components/ChordDiagram.tsx"
-    "ascii-chess-ts/src/components/SequenceMetrics.tsx"
     "ascii-chess-ts/src/components/FenInput.tsx"
     "ascii-chess-ts/src/components/GraphView.tsx"
     "ascii-chess-ts/src/components/HistoricalArcView.tsx"
-    "ascii-chess-ts/src/components/HistoryTable.tsx"
-    "ascii-chess-ts/src/components/MoveControls.css"
     "ascii-chess-ts/src/components/MoveControls.tsx"
     "ascii-chess-ts/src/components/NavigationControls.tsx"
     "ascii-chess-ts/src/components/SelectPosition.tsx"
@@ -41,6 +36,10 @@ declare -a focus_files=(
     "ascii-chess-ts/src/types/chess.ts"
     "ascii-chess-ts/src/types/visualization.ts"
     "ascii-chess-ts/src/utils.ts"
+    "connector/main.py"
+    "connector/routers/adjacencies.py"
+    "connector/routers/links.py"
+    "connector/utils.py"
 )
 
 for file in "${focus_files[@]}"; do

@@ -1,17 +1,3 @@
-## Load environment variables
-```bash
-export $(cat .env | xargs)
-```
-
-## Build image for AMD64 architecture
-
-```bash
-docker buildx build \
-    --platform linux/amd64 \
-    --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-connector:latest \
-    -f Dockerfile .
-```
-
 ## Authenticate with ECR
 ```bash
 aws ecr get-login-password \
@@ -22,10 +8,14 @@ docker login \
     --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 ```
 
-## Push image to ECR
+## Build image for AMD64 architecture and push
 
 ```bash
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-connector:latest
+docker buildx build \
+    --platform linux/amd64 \
+    --push \
+    --tag ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-connector:latest \
+    -f Dockerfile .
 ```
 
 ## Update ECS service
@@ -39,21 +29,3 @@ aws ecs update-service \
     --region ${AWS_REGION} > update-connector-execute.json
 ```
 
-## Monitor deployment status
-
-```bash
-aws ecs describe-services \
-    --cluster my-chess \
-    --services connector \
-    --profile ${AWS_PROFILE} \
-    --region ${AWS_REGION} > describe-connector-service.json
-```
-
-## Watch for new task status
-```bash
-aws ecs list-tasks \
-    --cluster my-chess \
-    --service-name connector \
-    --profile ${AWS_PROFILE} \
-    --region ${AWS_REGION} > list-connector-tasks.json
-```
