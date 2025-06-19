@@ -16,6 +16,7 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
             <label className="selector-label text-info">Connection Type</label>
             <div className="selector-container">
                 <select
+                    id="connection-type-selector"
                     value={connectionType}
                     onChange={(e) =>
                         onConnectionTypeChange(e.target.value as ConnectionType)

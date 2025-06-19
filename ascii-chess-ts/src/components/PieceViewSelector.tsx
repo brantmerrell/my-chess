@@ -16,9 +16,12 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
             <label className="selector-label text-info">Piece View</label>
             <div className="selector-container">
                 <select
+                    id="piece-view-selector"
                     className="select-control btn btn-info"
                     value={displayMode}
-                    onChange={(e) => onDisplayModeChange(e.target.value as PieceDisplayMode)}
+                    onChange={(e) =>
+                        onDisplayModeChange(e.target.value as PieceDisplayMode)
+                    }
                     aria-label="Piece View Selection"
                 >
                     <option value="symbols">Unicode</option>
@@ -31,5 +34,3 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
 };
 
 export default PieceViewSelector;
-
-

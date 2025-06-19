@@ -25,6 +25,7 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({
             <div className="selector-container">
                 <select
                     value={selectedView}
+                    id="game-view-selector"
                     onChange={(e) => onViewChange(e.target.value as ViewType)}
                     className="select-control btn btn-info"
                     aria-label="Game View Selection"
