@@ -48,7 +48,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ displayMode }) => {
                     <thead>
                         <tr>
                             <th>Ply</th>
-                            <th>Move</th>
+                            <th>SAN</th>
                             <th>UCI</th>
                             <th>FEN</th>
                         </tr>
