@@ -11,10 +11,13 @@
     font-size: 31px;
     color: black;
     border-radius: 5px;
-    font-family: monospace;
+    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace;
+    font-weight: 500; /* Slightly bolder for better symbol visibility */
     white-space: pre;
     overflow-x: auto;
     background-color: #2a9fd6;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
 }
 
 .ascii-board--cyborg {
@@ -40,4 +43,5 @@
 .ascii-board--minty {
     background-color: #78c2ad; /* Minty (primary) */
 }
+
 
