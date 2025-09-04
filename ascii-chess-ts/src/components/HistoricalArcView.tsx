@@ -319,8 +319,10 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
             <div className="historical-arc-header">
                 <h2>Move History Arc View</h2>
             </div>
-            <div className="historical-arc-content">
-                <svg ref={svgRef} className="historical-arc-svg" />
+            <div className="historical-arc-wrapper">
+                <div className="historical-arc-content">
+                    <svg ref={svgRef} className="historical-arc-svg" />
+                </div>
             </div>
         </div>
     );

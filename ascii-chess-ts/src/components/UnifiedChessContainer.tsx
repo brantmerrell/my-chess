@@ -15,7 +15,7 @@ import React, { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./SelectPosition";
 import ThemeSelector from "./ThemeSelector";
-import ViewSelector from "./ViewSelector";
+import { PositionalViewSelector, HistoricalViewSelector } from "./ViewSelector";
 import { ChessGame } from "../chess/chessGame";
 import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
@@ -26,14 +26,8 @@ import { useChessGame } from "../hooks/useChessGame";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
 
-type ViewType =
-    | "board"
-    | "graph"
-    | "history"
-    | "arc"
-    | "historicalArc"
-    | "fencount"
-    | "chord";
+type PositionalViewType = "board" | "graph" | "arc" | "chord";
+type HistoricalViewType = "history" | "fencount"; // "historicalArc" | 
 
 interface UnifiedChessContainerProps {
     displayMode: PieceDisplayMode;
@@ -47,7 +41,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [notification, setNotification] = React.useState<string>("");
     const { theme, setTheme } = useTheme();
     const dispatch = useAppDispatch();
-    const [selectedView, setSelectedView] = React.useState<ViewType>("board");
+    const [selectedPositionalView, setSelectedPositionalView] = React.useState<PositionalViewType>("board");
+    const [selectedHistoricalView, setSelectedHistoricalView] = React.useState<HistoricalViewType>("history");
     const [connectionType, setConnectionType] =
         React.useState<ConnectionType>("links");
     const [linksData, setLinksData] = React.useState<LinksResponse | null>(
@@ -202,7 +197,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
         window.addEventListener("keydown", handleGlobalKeyDown);
         return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-    }, [dispatch, submitUndoMove, setSelectedView, chessGameState]);
+    }, [dispatch, submitUndoMove, chessGameState]);
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -243,8 +238,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         const game = new ChessGame(currentPosition, displayMode);
         return game.asciiView();
     };
-    const renderView = () => {
-        switch (selectedView) {
+    const renderPositionalView = () => {
+        switch (selectedPositionalView) {
             case "board":
                 return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
             case "graph":
@@ -270,19 +265,26 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         edges={processedEdges}
                     />
                 );
-            case "history":
-                return <HistoryTable displayMode={displayMode} />;
-            case "fencount":
-                return <SequenceMetrics fenHistory={fenHistory} />;
-            case "historicalArc":
-                return <HistoricalArcView displayMode={displayMode} />;
             default:
                 return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
         }
     };
 
+    const renderHistoricalView = () => {
+        switch (selectedHistoricalView) {
+            case "history":
+                return <HistoryTable displayMode={displayMode} />;
+            case "fencount":
+                return <SequenceMetrics fenHistory={fenHistory} />;
+            //case "historicalArc":
+            //    return <HistoricalArcView displayMode={displayMode} />;
+            default:
+                return <HistoryTable displayMode={displayMode} />;
+        }
+    };
+
     const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(
-        selectedView
+        selectedPositionalView
     );
 
     return (
@@ -301,7 +303,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     {notification}
                 </div>
             )}
-            <div className="fen-controls-disclosure">
+            <div className="combined-controls-disclosure">
                 <button
                     className="disclosure-header"
                     onClick={() => setShowFenControls(!showFenControls)}
@@ -323,60 +325,62 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         />
                     </div>
                 </div>
+                <button
+                    className="disclosure-header attached-header"
+                    onClick={() => setShowViewControls(!showViewControls)}
+                    aria-expanded={showViewControls}
+                    aria-label={showViewControls ? "Collapse View Controls" : "Expand View Controls"}
+                >
+                    <span className={`disclosure-chevron ${showViewControls ? 'expanded' : 'collapsed'}`}>
+                        ▶
+                    </span>
+                    <span className="disclosure-title">View Controls</span>
+                </button>
+                <div className={`disclosure-content ${showViewControls ? 'expanded' : 'collapsed'}`}>
+                    <div className="view-controls-grid">
+                        <PositionalViewSelector
+                            selectedView={selectedPositionalView}
+                            onViewChange={setSelectedPositionalView}
+                        />
+                        <HistoricalViewSelector
+                            selectedView={selectedHistoricalView}
+                            onViewChange={setSelectedHistoricalView}
+                        />
+                        <PieceViewSelector
+                            displayMode={displayMode}
+                            onDisplayModeChange={setDisplayMode}
+                        />
+                        <ConnectionTypeSelector
+                            connectionType={connectionType}
+                            onConnectionTypeChange={setConnectionType}
+                        />
+                        <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
+                    </div>
+                </div>
             </div>
             <div className="main-content">
-                <div className="visualization-section">
-                    <div className="view-container">{renderView()}</div>
+                <div className="positional-section">
+                    <div className="view-container">{renderPositionalView()}</div>
                 </div>
-                <div className="controls-sidebar">
-                    <div className="view-controls-disclosure">
-                        <button
-                            className="disclosure-header"
-                            onClick={() => setShowViewControls(!showViewControls)}
-                            aria-expanded={showViewControls}
-                            aria-label={showViewControls ? "Collapse View Controls" : "Expand View Controls"}
-                        >
-                            <span className={`disclosure-chevron ${showViewControls ? 'expanded' : 'collapsed'}`}>
-                                ▶
-                            </span>
-                            <span className="disclosure-title">View Controls</span>
-                        </button>
-                        <div className={`disclosure-content ${showViewControls ? 'expanded' : 'collapsed'}`}>
-                            <div className="view-controls-grid">
-                                <ViewSelector
-                                    selectedView={selectedView}
-                                    onViewChange={(view) => setSelectedView(view as ViewType)}
-                                />
-                                <PieceViewSelector
-                                    displayMode={displayMode}
-                                    onDisplayModeChange={setDisplayMode}
-                                />
-                                <ConnectionTypeSelector
-                                    connectionType={connectionType}
-                                    onConnectionTypeChange={setConnectionType}
-                                />
-                                <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="move-controls-disclosure">
-                        <button
-                            className="disclosure-header"
-                            onClick={() => setShowMoveControls(!showMoveControls)}
-                            aria-expanded={showMoveControls}
-                            aria-label={showMoveControls ? "Collapse Move Controls" : "Expand Move Controls"}
-                        >
-                            <span className={`disclosure-chevron ${showMoveControls ? 'expanded' : 'collapsed'}`}>
-                                ▶
-                            </span>
-                            <span className="disclosure-title">Move Controls</span>
-                        </button>
-                        <div className={`disclosure-content ${showMoveControls ? 'expanded' : 'collapsed'}`}>
-                            <NavigationControls />
-                            <MoveControls displayMode={displayMode} />
-                        </div>
-                    </div>
+                <div className="historical-section">
+                    <div className="view-container">{renderHistoricalView()}</div>
+                </div>
+            </div>
+            <div className="move-controls-disclosure">
+                <button
+                    className="disclosure-header"
+                    onClick={() => setShowMoveControls(!showMoveControls)}
+                    aria-expanded={showMoveControls}
+                    aria-label={showMoveControls ? "Collapse Move Controls" : "Expand Move Controls"}
+                >
+                    <span className={`disclosure-chevron ${showMoveControls ? 'expanded' : 'collapsed'}`}>
+                        ▶
+                    </span>
+                    <span className="disclosure-title">Move Controls</span>
+                </button>
+                <div className={`disclosure-content ${showMoveControls ? 'expanded' : 'collapsed'}`}>
+                    <NavigationControls />
+                    <MoveControls displayMode={displayMode} />
                 </div>
             </div>
         </div>

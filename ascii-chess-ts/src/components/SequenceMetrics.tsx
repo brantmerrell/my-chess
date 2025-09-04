@@ -151,11 +151,16 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory }) => {
 
     return (
         <div
-            className="w-full"
+            className="sequence-metrics-container"
             style={{
-                width: "600px",
-                height: "400px",
-                backgroundColor: "slateGray",
+                width: "100%",
+                maxWidth: "800px",
+                height: "465px",
+                backgroundColor: "#1f2937",
+                borderRadius: "0.5rem",
+                border: "1px solid #374151",
+                padding: "1rem",
+                boxSizing: "border-box",
             }}
         >
             <Line data={data} options={options} />

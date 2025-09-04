@@ -3,6 +3,8 @@
     flex-direction: column;
     gap: 10px;
     margin: 10px 0;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .navigation-buttons {
@@ -57,7 +59,7 @@
 .position-indicator {
     font-size: 12px;
     font-weight: bold;
-    color: #333;
+    color: white;
     text-align: center;
     grid-area: position;
     padding: 8px 4px;

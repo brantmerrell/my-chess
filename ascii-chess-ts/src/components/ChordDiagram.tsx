@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import "./ChordDiagram.css";
 import { LinkNode, ProcessedEdge } from "../types/visualization";
 
 interface ChordDiagramProps {
@@ -115,15 +116,10 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
     }, [nodes, edges]);
 
     return (
-        <div className="w-full h-[600px] flex justify-center items-center bg-dark">
+        <div className="chord-diagram-container">
             <svg
                 ref={svgRef}
-                className="bg-gray-800 rounded-lg"
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    minHeight: "400px",
-                }}
+                className="chord-diagram"
             />
         </div>
     );

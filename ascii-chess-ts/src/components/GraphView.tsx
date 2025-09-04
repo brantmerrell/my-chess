@@ -214,13 +214,12 @@ const getEdgeStyle = (edgeType: string) => {
     }, [linksData, processedEdges, displayMode]);
 
     return (
-        <svg
-            ref={svgRef}
-            className="graph-view"
-            style={{
-                minHeight: "600px",
-            }}
-        />
+        <div className="graph-view-container">
+            <svg
+                ref={svgRef}
+                className="graph-view"
+            />
+        </div>
     );
 };
 

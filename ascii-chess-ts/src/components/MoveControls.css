@@ -6,10 +6,10 @@
 }
 
 .moves-forward {
-    display: grid;
-    grid-template-columns: 80px 70px 1fr;
+    display: flex;
     gap: 0.5rem;
     align-items: center;
+    justify-content: center;
 }
 
 /* Move Selection Dropdown */
@@ -27,7 +27,7 @@
     background-position: right 0.75rem center;
     background-size: 16px 12px;
     padding-right: 2.5rem;
-    width: 100%;
+    width: 90px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -56,7 +56,7 @@
     background-color: white;
     font-family: monospace;
     font-size: 14px;
-    width: 100%;
+    width: 80px;
     transition: opacity 0.2s, background-color 0.2s;
 }
 
@@ -80,15 +80,15 @@
 /* Submit Move Button */
 #submitMove {
     height: 38px;
-    padding: 0 8px;
+    padding: 0 12px;
     color: white;
-    font-size: 11px;
+    font-size: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s, opacity 0.2s;
-    width: 100%;
+    width: 100px;
 }
 
 #submitMove:hover:not(:disabled) {

@@ -1,24 +1,46 @@
 .historical-arc-view {
     width: 100%;
     max-width: 800px;
+    height: 465px;
     margin: 0 auto;
-    padding: 1rem;
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
 }
 
 .historical-arc-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid #374151;
+    background-color: #111827;
+    border-radius: 0.5rem 0.5rem 0 0;
+    flex-shrink: 0;
 }
 
 .historical-arc-header h2 {
     color: #e5e7eb;
     margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.historical-arc-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
 }
 
 .historical-arc-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
 }
 
 .historical-arc-segment {
@@ -48,5 +70,34 @@
     background-color: #374151;
     border-radius: 0.375rem;
     border: 1px solid #4b5563;
+}
+
+/* Scrollbar styling to match History Table */
+.historical-arc-wrapper::-webkit-scrollbar {
+    width: 12px;
+}
+
+.historical-arc-wrapper::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 6px;
+}
+
+.historical-arc-wrapper::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 6px;
+    border: 2px solid #1f2937;
+}
+
+.historical-arc-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+.historical-arc-wrapper::-webkit-scrollbar-thumb:active {
+    background: #9ca3af;
+}
+
+.historical-arc-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
 }
 
