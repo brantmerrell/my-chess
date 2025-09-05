@@ -1,34 +1,29 @@
 import React from "react";
 import { ConnectionType } from "../types/visualization";
-import "./SelectStyle.css";
+import Selector from "./Selector";
 
 interface ConnectionTypeSelectorProps {
     connectionType: ConnectionType;
     onConnectionTypeChange: (type: ConnectionType) => void;
 }
 
+const CONNECTION_TYPE_OPTIONS = [
+    { value: "links", label: "Links" },
+    { value: "adjacencies", label: "Adjacencies" }
+] as const;
+
 const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
     connectionType,
     onConnectionTypeChange,
 }) => {
     return (
-        <div className="selector-wrapper">
-            <label className="selector-label text-info">Connection Type</label>
-            <div className="selector-container">
-                <select
-                    id="connection-type-selector"
-                    value={connectionType}
-                    onChange={(e) =>
-                        onConnectionTypeChange(e.target.value as ConnectionType)
-                    }
-                    className="select-control btn btn-info"
-                    aria-label="Connection Type Selection"
-                >
-                    <option value="links">Links</option>
-                    <option value="adjacencies">Adjacencies</option>
-                </select>
-            </div>
-        </div>
+        <Selector
+            id="connection-type-selector"
+            label="Connection Type"
+            value={connectionType}
+            onChange={onConnectionTypeChange}
+            options={CONNECTION_TYPE_OPTIONS}
+        />
     );
 };
 

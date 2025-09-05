@@ -1,5 +1,5 @@
 import React from "react";
-import "./SelectStyle.css";
+import Selector from "./Selector";
 
 type PositionalViewType = "board" | "graph" | "arc" | "chord";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" | 
@@ -14,28 +14,30 @@ interface HistoricalViewSelectorProps {
     onViewChange: (view: HistoricalViewType) => void;
 }
 
+const POSITIONAL_VIEW_OPTIONS = [
+    { value: "board", label: "Board" },
+    { value: "graph", label: "Graph" },
+    { value: "arc", label: "Arc" },
+    { value: "chord", label: "Chord" }
+] as const;
+
+const HISTORICAL_VIEW_OPTIONS = [
+    { value: "history", label: "History" },
+    { value: "fencount", label: "Line" }
+] as const;
+
 export const PositionalViewSelector: React.FC<PositionalViewSelectorProps> = ({
     selectedView,
     onViewChange,
 }) => {
     return (
-        <div className="selector-wrapper">
-            <label className="selector-label text-info">Positional View</label>
-            <div className="selector-container">
-                <select
-                    value={selectedView}
-                    id="positional-view-selector"
-                    onChange={(e) => onViewChange(e.target.value as PositionalViewType)}
-                    className="select-control btn btn-info"
-                    aria-label="Positional View Selection"
-                >
-                    <option value="board">Board</option>
-                    <option value="graph">Graph</option>
-                    <option value="arc">Arc</option>
-                    <option value="chord">Chord</option>
-                </select>
-            </div>
-        </div>
+        <Selector
+            id="positional-view-selector"
+            label="Positional View"
+            value={selectedView}
+            onChange={onViewChange}
+            options={POSITIONAL_VIEW_OPTIONS}
+        />
     );
 };
 
@@ -44,21 +46,13 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
     onViewChange,
 }) => {
     return (
-        <div className="selector-wrapper">
-            <label className="selector-label text-info">Historical View</label>
-            <div className="selector-container">
-                <select
-                    value={selectedView}
-                    id="historical-view-selector"
-                    onChange={(e) => onViewChange(e.target.value as HistoricalViewType)}
-                    className="select-control btn btn-info"
-                    aria-label="Historical View Selection"
-                >
-                    <option value="history">History</option>
-                    <option value="fencount">Line</option>
-                </select>
-            </div>
-        </div>
+        <Selector
+            id="historical-view-selector"
+            label="Historical View"
+            value={selectedView}
+            onChange={onViewChange}
+            options={HISTORICAL_VIEW_OPTIONS}
+        />
     );
 };
 

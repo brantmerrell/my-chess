@@ -1,35 +1,30 @@
 import React from "react";
 import { PieceDisplayMode } from "../types/chess";
-import "./SelectStyle.css";
+import Selector from "./Selector";
 
 interface PieceViewSelectorProps {
     displayMode: PieceDisplayMode;
     onDisplayModeChange: (mode: PieceDisplayMode) => void;
 }
 
+const PIECE_VIEW_OPTIONS = [
+    { value: "symbols", label: "Unicode" },
+    { value: "letters", label: "Letters" },
+    { value: "masked", label: "Asterisk" }
+] as const;
+
 const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
     displayMode,
     onDisplayModeChange,
 }) => {
     return (
-        <div className="selector-wrapper">
-            <label className="selector-label text-info">Piece View</label>
-            <div className="selector-container">
-                <select
-                    id="piece-view-selector"
-                    className="select-control btn btn-info"
-                    value={displayMode}
-                    onChange={(e) =>
-                        onDisplayModeChange(e.target.value as PieceDisplayMode)
-                    }
-                    aria-label="Piece View Selection"
-                >
-                    <option value="symbols">Unicode</option>
-                    <option value="letters">Letters</option>
-                    <option value="masked">Asterisk</option>
-                </select>
-            </div>
-        </div>
+        <Selector
+            id="piece-view-selector"
+            label="Piece View"
+            value={displayMode}
+            onChange={onDisplayModeChange}
+            options={PIECE_VIEW_OPTIONS}
+        />
     );
 };
 

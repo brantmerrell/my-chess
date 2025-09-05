@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import "./ThemeSelector.css";
+import React from "react";
+import Selector from "./Selector";
 
 // I think BootstrapTheme should be called BootswatchTheme
 export type BootstrapTheme =
@@ -15,6 +15,15 @@ interface ThemeSelectorProps {
     onThemeChange: (theme: BootstrapTheme) => void;
 }
 
+const THEME_OPTIONS = [
+    { value: "cyborg", label: "Cyborg" },
+    { value: "vapor", label: "Vapor" },
+    { value: "journal", label: "Journal" },
+    { value: "solar", label: "Solar" },
+    { value: "superhero", label: "Superhero" },
+    { value: "minty", label: "Minty" }
+] as const;
+
 // TODO
 // Quartz bootwatch theme
 // LiChess themes
@@ -23,27 +32,13 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
     onThemeChange,
 }) => {
     return (
-        <div className="selector-wrapper">
-            <label className="selector-label text-info">Theme</label>
-            <div className="selector-container">
-                <select
-                    id="theme-selector"
-                    value={currentTheme}
-                    onChange={(e) =>
-                        onThemeChange(e.target.value as BootstrapTheme)
-                    }
-                    className="select-control btn btn-info"
-                    aria-label="Theme Selection"
-                >
-                    <option value="cyborg">Cyborg</option>
-                    <option value="vapor">Vapor</option>
-                    <option value="journal">Journal</option>
-                    <option value="solar">Solar</option>
-                    <option value="superhero">Superhero</option>
-                    <option value="minty">Minty</option>
-                </select>
-            </div>
-        </div>
+        <Selector
+            id="theme-selector"
+            label="Theme"
+            value={currentTheme}
+            onChange={onThemeChange}
+            options={THEME_OPTIONS}
+        />
     );
 };
 
