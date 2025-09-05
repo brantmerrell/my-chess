@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
+    align-items: center;
 }
 
 .moves-forward {
@@ -24,10 +25,10 @@
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
+    background-position: right 0.5rem center;
     background-size: 16px 12px;
-    padding-right: 2.5rem;
-    width: 90px;
+    padding-right: 3.5rem;
+    width: 180px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -116,7 +117,8 @@
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s, opacity 0.2s;
-    width: 100%;
+    width: 100px;
+    margin-left: calc(180px + 80px + 1rem);
 }
 
 #undo:hover:not(:disabled) {
