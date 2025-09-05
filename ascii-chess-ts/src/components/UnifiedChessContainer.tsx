@@ -1,4 +1,5 @@
 import "./UnifiedChessContainer.css";
+import Accordion from "./Accordion";
 import ArcView from "./ArcView";
 import BoardDisplay from "./BoardDisplay";
 import ChordDiagram from "./ChordDiagram";
@@ -51,8 +52,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
         []
     );
-    const [showFenControls, setShowFenControls] = React.useState<boolean>(true);
-    const [showViewControls, setShowViewControls] = React.useState<boolean>(true);
+    const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
+    const [showViewControls, setShowViewControls] = React.useState<boolean>(false);
     const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
 
     const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
@@ -303,61 +304,48 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     {notification}
                 </div>
             )}
-            <div className="combined-controls-disclosure">
-                <button
-                    className="disclosure-header"
-                    onClick={() => setShowFenControls(!showFenControls)}
-                    aria-expanded={showFenControls}
-                    aria-label={showFenControls ? "Collapse FEN Controls" : "Expand FEN Controls"}
-                >
-                    <span className={`disclosure-chevron ${showFenControls ? 'expanded' : 'collapsed'}`}>
-                        ▶
-                    </span>
-                    <span className="disclosure-title">FEN Controls</span>
-                </button>
-                <div className={`disclosure-content ${showFenControls ? 'expanded' : 'collapsed'}`}>
-                    <div className="setup-controls">
-                        <SelectPosition />
-                        <FenInput
-                            fen={fen}
-                            onFenChange={setFen}
-                            onSubmitFen={submitFen}
-                        />
-                    </div>
+            <Accordion
+                title="Appearance"
+                isExpanded={showViewControls}
+                onToggle={() => setShowViewControls(!showViewControls)}
+                theme={theme}
+                className="combined-controls-disclosure"
+            >
+                <div className="view-controls-grid">
+                    <PositionalViewSelector
+                        selectedView={selectedPositionalView}
+                        onViewChange={setSelectedPositionalView}
+                    />
+                    <HistoricalViewSelector
+                        selectedView={selectedHistoricalView}
+                        onViewChange={setSelectedHistoricalView}
+                    />
+                    <PieceViewSelector
+                        displayMode={displayMode}
+                        onDisplayModeChange={setDisplayMode}
+                    />
+                    <ConnectionTypeSelector
+                        connectionType={connectionType}
+                        onConnectionTypeChange={setConnectionType}
+                    />
+                    <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
                 </div>
-                <button
-                    className="disclosure-header attached-header"
-                    onClick={() => setShowViewControls(!showViewControls)}
-                    aria-expanded={showViewControls}
-                    aria-label={showViewControls ? "Collapse View Controls" : "Expand View Controls"}
-                >
-                    <span className={`disclosure-chevron ${showViewControls ? 'expanded' : 'collapsed'}`}>
-                        ▶
-                    </span>
-                    <span className="disclosure-title">View Controls</span>
-                </button>
-                <div className={`disclosure-content ${showViewControls ? 'expanded' : 'collapsed'}`}>
-                    <div className="view-controls-grid">
-                        <PositionalViewSelector
-                            selectedView={selectedPositionalView}
-                            onViewChange={setSelectedPositionalView}
-                        />
-                        <HistoricalViewSelector
-                            selectedView={selectedHistoricalView}
-                            onViewChange={setSelectedHistoricalView}
-                        />
-                        <PieceViewSelector
-                            displayMode={displayMode}
-                            onDisplayModeChange={setDisplayMode}
-                        />
-                        <ConnectionTypeSelector
-                            connectionType={connectionType}
-                            onConnectionTypeChange={setConnectionType}
-                        />
-                        <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
-                    </div>
+            </Accordion>
+            <Accordion
+                title="Setup"
+                isExpanded={showFenControls}
+                onToggle={() => setShowFenControls(!showFenControls)}
+                theme={theme}
+            >
+                <div className="setup-controls">
+                    <SelectPosition />
+                    <FenInput
+                        fen={fen}
+                        onFenChange={setFen}
+                        onSubmitFen={submitFen}
+                    />
                 </div>
-            </div>
+            </Accordion>
             <div className="main-content">
                 <div className="positional-section">
                     <div className="view-container">{renderPositionalView()}</div>
@@ -366,23 +354,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     <div className="view-container">{renderHistoricalView()}</div>
                 </div>
             </div>
-            <div className="move-controls-disclosure">
-                <button
-                    className="disclosure-header"
-                    onClick={() => setShowMoveControls(!showMoveControls)}
-                    aria-expanded={showMoveControls}
-                    aria-label={showMoveControls ? "Collapse Move Controls" : "Expand Move Controls"}
-                >
-                    <span className={`disclosure-chevron ${showMoveControls ? 'expanded' : 'collapsed'}`}>
-                        ▶
-                    </span>
-                    <span className="disclosure-title">Move Controls</span>
-                </button>
-                <div className={`disclosure-content ${showMoveControls ? 'expanded' : 'collapsed'}`}>
-                    <NavigationControls />
-                    <MoveControls displayMode={displayMode} />
-                </div>
-            </div>
+            <Accordion
+                title="Moves"
+                isExpanded={showMoveControls}
+                onToggle={() => setShowMoveControls(!showMoveControls)}
+                theme={theme}
+                className="move-controls-disclosure"
+            >
+                <NavigationControls />
+                <MoveControls displayMode={displayMode} />
+            </Accordion>
         </div>
     );
 };

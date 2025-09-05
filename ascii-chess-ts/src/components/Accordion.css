@@ -1,0 +1,117 @@
+.accordion {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    text-align: left;
+}
+
+.accordion-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.accordion-header:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+}
+
+.accordion-chevron {
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+    color: #007bff;
+}
+
+.accordion-chevron.expanded {
+    transform: rotate(90deg);
+}
+
+.accordion-title {
+    font-weight: 600;
+}
+
+/* Theme-specific title colors */
+.accordion-title--cyborg,
+.accordion-title--darkly,
+.accordion-title--slate,
+.accordion-title--superhero,
+.accordion-title--vapor,
+.accordion-title--solar {
+    color: #e2e8f0; /* Light text for dark themes */
+}
+
+.accordion-title--cerulean,
+.accordion-title--cosmo,
+.accordion-title--flatly,
+.accordion-title--journal,
+.accordion-title--litera,
+.accordion-title--lumen,
+.accordion-title--materia,
+.accordion-title--minty,
+.accordion-title--pulse,
+.accordion-title--sandstone,
+.accordion-title--simplex,
+.accordion-title--sketchy,
+.accordion-title--spacelab,
+.accordion-title--united,
+.accordion-title--yeti {
+    color: #1a202c; /* Dark text for light themes */
+}
+
+/* Header theme-specific styling */
+.accordion-header--cyborg,
+.accordion-header--darkly,
+.accordion-header--slate,
+.accordion-header--superhero,
+.accordion-header--vapor,
+.accordion-header--solar {
+    color: #e2e8f0;
+}
+
+.accordion-header--cerulean,
+.accordion-header--cosmo,
+.accordion-header--flatly,
+.accordion-header--journal,
+.accordion-header--litera,
+.accordion-header--lumen,
+.accordion-header--materia,
+.accordion-header--minty,
+.accordion-header--pulse,
+.accordion-header--sandstone,
+.accordion-header--simplex,
+.accordion-header--sketchy,
+.accordion-header--spacelab,
+.accordion-header--united,
+.accordion-header--yeti {
+    color: #1a202c;
+}
+
+.accordion-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.accordion-content.collapsed {
+    max-height: 0;
+    padding: 0 1rem;
+}
+
+.accordion-content.expanded {
+    max-height: 500px;
+    padding: 0 1rem 1rem 1rem;
+}
