@@ -6,7 +6,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: lightgrayscale;
     .chess-table {
@@ -43,45 +42,6 @@ body {
                 border-radius: 5px;
                 margin: 5px;
                 width: 100%;
-            }
-        }
-        .moves-layout {
-            margin: 5px;
-            display: flex;
-            justify-content: space-between;
-            .moves-forward {
-                #selectedMove {
-                    background-color: white;
-                    height: 35px;
-                    border-radius: 5px;
-                    margin: 5px;
-                    height: 35px;
-                    width: 100px;
-                }
-                #move {
-                    width: 100px;
-                    border-radius: 5px;
-                    margin: 5px;
-                    background-color: white;
-                    height: 35px;
-                    width: 100px;
-                }
-                #submitMove {
-                    background-color: darkgreen;
-                    font-size: 12px;
-                    color: white;
-                    margin: 5px;
-                    border-radius: 5px;
-                    height: 35px;
-                }
-            }
-            #undo {
-                font-size: 12px;
-                background-color: darkred;
-                color: white;
-                margin: 5px;
-                border-radius: 5px;
-                height: 35px;
             }
         }
     }

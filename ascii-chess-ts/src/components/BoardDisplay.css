@@ -1,13 +1,19 @@
 .board-display {
+    width: 100%;
+    max-width: 800px;
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
     display: flex;
-    width: 630px;
-    margin: 0 auto;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
 }
 
 .ascii-board {
-    width: 100%;
+    width: 630px;
     padding: 10px;
-    margin: 5px;
+    margin: 5px auto;
     font-size: 31px;
     color: black;
     border-radius: 5px;
