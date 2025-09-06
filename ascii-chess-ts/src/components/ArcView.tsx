@@ -40,8 +40,6 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
         "1": "purple"
     };
 
-
-
     const getNodeColor = (square: string, color: string) => {
         if (colorScheme === "file") {
             return fileColors[square[0] as keyof typeof fileColors];
@@ -116,7 +114,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             .attr("dy", ".3em")
             .attr("fill", (d) => (d.color === "white" ? "#fff" : "#000"))
             .style("font-size", (d) => displayMode === "symbols" ? "14px" : "12px")
-            .text((d) => getPieceDisplay(d.piece_type, undefined, displayMode));
+            .text((d) => getPieceDisplay(d.piece_type, d.color, displayMode));
 
         nodeGroup
             .append("text")
@@ -160,7 +158,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
     }, [linksData, processedEdges, displayMode, colorScheme]);
 
     return (
-        <VisualizationContainer withPadding>
+        <VisualizationContainer withPadding className="arc-view-container">
             <div className="arc-view-controls">
                 <span className="text-sm text-gray-300">Color by:</span>
                 <div className="helper-select-container">
@@ -176,10 +174,10 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             </div>
 
             {/* SVG visualization */}
-            <div className="arc-view-svg-container">
+            <div className="visualization-svg-container arc-view-svg-container">
                 <svg
                     ref={svgRef}
-                    className="visualization-svg"
+                    className="visualization-svg arc-view-svg"
                 />
             </div>
         </VisualizationContainer>

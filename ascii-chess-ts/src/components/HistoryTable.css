@@ -1,32 +1,8 @@
-.history-table-container {
-    width: 100%;
-    max-width: 800px;
-    height: 465px;
-    background-color: #1f2937;
-    border-radius: 0.5rem;
-    border: 1px solid #374151;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-}
+.history-table-container {}
 
-.history-table-header {
-    padding: 1rem;
-    border-bottom: 1px solid #374151;
-    background-color: #111827;
-    border-radius: 0.5rem 0.5rem 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+.history-table-header {}
 
-.history-table-header h3 {
-    margin: 0;
-    color: #e5e7eb;
-    font-size: 1.125rem;
-    font-weight: 600;
-}
+.history-table-header h3 {}
 
 .position-info {
     color: #9ca3af;

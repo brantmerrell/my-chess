@@ -36,8 +36,8 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ displayMode }) => {
     }, [currentPositionIndex]);
 
     return (
-        <div className="history-table-container">
-            <div className="history-table-header">
+        <div className="visualization-container visualization-container--fixed-height history-table-container">
+            <div className="visualization-header history-table-header">
                 <h3>Move History</h3>
                 <div className="position-info">
                     Position {currentPositionIndex + 1} of {positions.length}
