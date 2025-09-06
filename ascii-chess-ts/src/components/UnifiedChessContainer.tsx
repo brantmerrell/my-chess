@@ -56,7 +56,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
     const [showViewControls, setShowViewControls] = React.useState<boolean>(false);
     const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
-    const [showKeybindings, setShowKeybindings] = React.useState<boolean>(true);
+    const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
 
     const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
         useChessGame(displayMode);

@@ -81,7 +81,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
         const width = Math.min(containerWidth - 40, 800);
         const segmentHeight = 180;
         const totalHeight = segmentHeight * historicalData.length;
-        const margin = { top: 20, right: 30, bottom: 40, left: 30 };
+        const margin = { top: 60, right: 30, bottom: 60, left: 30 };
 
         svg.attr("width", "100%")
             .attr("height", totalHeight)
@@ -97,7 +97,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
             if (!data.linksData) return;
 
             const segmentY = index * segmentHeight;
-            const baseY = segmentY + segmentHeight - margin.bottom;
+            const baseY = segmentY + segmentHeight / 2 + 20;
 
             const segmentGroup = svg
                 .append("g")
@@ -262,11 +262,9 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
 
                 if (originX !== undefined && destX !== undefined) {
                     const prevSegmentY = (index - 1) * segmentHeight;
-                    const prevBaseY =
-                        prevSegmentY + segmentHeight - margin.bottom;
+                    const prevBaseY = prevSegmentY + segmentHeight / 2 + 20;
                     const currentSegmentY = index * segmentHeight;
-                    const currentBaseY =
-                        currentSegmentY + segmentHeight - margin.bottom;
+                    const currentBaseY = currentSegmentY + segmentHeight / 2 + 20;
 
                     const distance = Math.abs(originX - destX);
                     const arcHeight = Math.min(distance * 0.3, 60);

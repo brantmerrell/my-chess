@@ -20,7 +20,7 @@ const FenInput: React.FC<FenInputProps> = ({
             <div className="fen-controls">
                 <input
                     id="edit-string"
-                    className={`text-secondary fen-input--${theme}`}
+                    className={`fen-input--${theme}`}
                     type="text"
                     value={fen}
                     onChange={(e) => onFenChange(e.target.value)}

@@ -55,9 +55,9 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
         svg.selectAll("*").remove();
 
         const width = 600;
-        const height = 150;
-        const margin = { top: 20, right: 30, bottom: 40, left: 30 };
-        const maxArcHeight = 150;
+        const height = 200;
+        const margin = { top: 200, right: 30, bottom: 80, left: 30 };
+        const maxArcHeight = 100;
 
         svg.attr("width", width)
             .attr("height", height)

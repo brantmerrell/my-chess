@@ -5,6 +5,7 @@
     align-items: center;
     gap: 0.5rem;
     justify-content: center;
+    margin-bottom: 60px;
 }
 
 .arc-view-svg-container {}

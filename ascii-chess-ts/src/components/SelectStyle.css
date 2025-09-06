@@ -20,6 +20,7 @@
     justify-content: center;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
+    width: 160px;
 }
 
 /* Override Bootstrap btn classes with more specific selectors */
@@ -31,8 +32,6 @@ select.select-control.btn {
     background-repeat: no-repeat;
     background-position: right 0.5rem center;
     background-size: 16px 12px;
-    min-width: 120px !important;
-    width: 120px !important;
     padding-right: 3rem !important;
 }
 

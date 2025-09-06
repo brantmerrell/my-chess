@@ -1,7 +1,6 @@
 .historical-arc-view {
     width: 100%;
     max-width: 800px;
-    height: 465px;
     margin: 0 auto;
     background-color: #1f2937;
     border-radius: 0.5rem;
@@ -39,8 +38,11 @@
 .historical-arc-content {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 1rem;
     padding: 1rem;
+    height: 100%;
 }
 
 .historical-arc-segment {

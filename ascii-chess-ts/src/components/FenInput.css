@@ -25,9 +25,11 @@
     margin-bottom: 8px;
 }
 
-/* Theme-specific text color for Quartz theme */
+/* Theme-specific styling for Quartz theme */
 .fen-input--quartz {
-    color: #333 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #4e5d6c !important;
 }
 
 #submitFen {

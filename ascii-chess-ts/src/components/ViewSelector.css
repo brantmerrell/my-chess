@@ -24,7 +24,7 @@
     background: #2d3748;
     color: white;
     border: 1px solid #4a5568;
-    min-width: 180px;
+    width: 160px;
 }
 
 .select-control:focus {
