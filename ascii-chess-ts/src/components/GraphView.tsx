@@ -171,6 +171,9 @@ const getEdgeStyle = (edgeType: string) => {
                     .attr("x", 0)
                     .attr("dy", 0)
                     .attr("font-size", "24px")
+                    .attr("font-family", "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace")
+                    .attr("font-weight", "500")
+                    .attr("font-variant-numeric", "tabular-nums")
                     .text(getPieceDisplay(d.piece_type, d.color, displayMode));
 
                 textElement
