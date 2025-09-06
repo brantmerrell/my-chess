@@ -9,7 +9,8 @@ interface ConnectionTypeSelectorProps {
 
 const CONNECTION_TYPE_OPTIONS = [
     { value: "links", label: "Links" },
-    { value: "adjacencies", label: "Adjacencies" }
+    { value: "adjacencies", label: "Adjacencies" },
+    { value: "king_box", label: "King Box" }
 ] as const;
 
 const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({

@@ -23,7 +23,7 @@ import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
 import { PieceDisplayMode } from "../types/chess";
 import { RootState, goBackward, goForward, goToPosition } from "../app/store";
-import { fetchLinks, fetchAdjacencies } from "../services/connector";
+import { fetchLinks, fetchAdjacencies, fetchKingBox } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
@@ -239,6 +239,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     fetchedData = await fetchLinks(chessGameState.fen);
                 } else if (connectionType === "adjacencies") {
                     fetchedData = await fetchAdjacencies(chessGameState.fen);
+                } else if (connectionType === "king_box") {
+                    fetchedData = await fetchKingBox(chessGameState.fen);
                 }
                 if (fetchedData && fetchedData.nodes && fetchedData.edges) {
                     setLinksData(fetchedData);

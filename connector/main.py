@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from routers.adjacencies import router as adjacencies_router
 from routers.links import router as links_router
 from routers.graphdag import router as graphdag_router
+from routers.king_box import router as king_box_router
 
 app = FastAPI()
 
@@ -18,6 +19,7 @@ app.add_middleware(
 app.include_router(adjacencies_router)
 app.include_router(links_router)
 app.include_router(graphdag_router)
+app.include_router(king_box_router)
 
 @app.get("/health")
 async def health_check():

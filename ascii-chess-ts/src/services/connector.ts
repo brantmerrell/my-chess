@@ -29,3 +29,14 @@ export const fetchAdjacencies = async (inputString: string) => {
     }
 };
 
+// Add new function for king_box
+export const fetchKingBox = async (inputString: string) => {
+    try {
+        const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}`;
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching king_box:", error);
+    }
+};
+
