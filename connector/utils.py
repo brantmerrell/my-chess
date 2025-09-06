@@ -10,11 +10,13 @@ def get_nodes(board):
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
-            nodes.append({
-                "square": chess.square_name(square),
-                "piece_type": piece.symbol(),
-                "color": "white" if piece.color else "black"
-            })
+            nodes.append(
+                {
+                    "square": chess.square_name(square),
+                    "piece_type": piece.symbol(),
+                    "color": "white" if piece.color else "black",
+                }
+            )
     return nodes
 
 
@@ -27,18 +29,22 @@ def get_edges(board):
             defenders = board.attackers(piece.color, square)
 
             for attacker_square in attackers:
-                edges.append({
-                    "type": "threat",
-                    "source": chess.square_name(attacker_square),
-                    "target": chess.square_name(square)
-                })
+                edges.append(
+                    {
+                        "type": "threat",
+                        "source": chess.square_name(attacker_square),
+                        "target": chess.square_name(square),
+                    }
+                )
 
             for defender_square in defenders:
-                edges.append({
-                    "type": "protection",
-                    "source": chess.square_name(defender_square),
-                    "target": chess.square_name(square)
-                })
+                edges.append(
+                    {
+                        "type": "protection",
+                        "source": chess.square_name(defender_square),
+                        "target": chess.square_name(square),
+                    }
+                )
     return edges
 
 
@@ -50,9 +56,9 @@ def build_acyclic_graph(edges: List[Dict[str, str]]) -> nx.DiGraph:
     """
     DG = nx.DiGraph()
     for edge in edges:
-        DG.add_edge(edge['source'], edge['target'])
+        DG.add_edge(edge["source"], edge["target"])
         if not nx.is_directed_acyclic_graph(DG):
-            DG.remove_edge(edge['source'], edge['target'])
+            DG.remove_edge(edge["source"], edge["target"])
     return DG
 
 
@@ -81,5 +87,3 @@ def visualize_graph(
         fig = plt.figure()
         nx.draw(G, with_labels=True)
         return plt
-
-

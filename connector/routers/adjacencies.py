@@ -4,15 +4,20 @@ from utils import get_nodes
 
 router = APIRouter()
 
+
 @router.get("/adjacencies/{input_string:path}")
-async def get_adjacencies(fen_string: str = Query(..., description="The FEN string representing the board state")):
+async def get_adjacencies(
+    fen_string: str = Query(
+        ..., description="The FEN string representing the board state"
+    )
+):
     try:
         board = chess.Board(fen_string)
     except ValueError:
         return {"error": "Invalid FEN string"}
 
     nodes = get_nodes(board)
-    
+
     edges = []
     for square in chess.SQUARES:
         piece = board.piece_at(square)
@@ -30,11 +35,12 @@ async def get_adjacencies(fen_string: str = Query(..., description="The FEN stri
                         adjacent_square = chess.square(adjacent_file, adjacent_rank)
                         adjacent_piece = board.piece_at(adjacent_square)
                         if adjacent_piece:  # Only include if there's a piece there
-                            edges.append({
-                                "type": "adjacency",
-                                "source": chess.square_name(square),
-                                "target": chess.square_name(adjacent_square)
-                            })
+                            edges.append(
+                                {
+                                    "type": "adjacency",
+                                    "source": chess.square_name(square),
+                                    "target": chess.square_name(adjacent_square),
+                                }
+                            )
 
     return {"nodes": nodes, "edges": edges}
-

@@ -21,12 +21,14 @@ app.include_router(links_router)
 app.include_router(graphdag_router)
 app.include_router(king_box_router)
 
+
 @app.get("/health")
 async def health_check():
     # should this depend on tests or are healthchecks just network checks?
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
 
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)

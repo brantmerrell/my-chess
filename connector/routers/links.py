@@ -4,8 +4,13 @@ from utils import get_nodes, get_edges
 
 router = APIRouter()
 
+
 @router.get("/links/{input_string:path}")
-async def get_links(fen_string: str = Query(..., description="The FEN string representing the board state")):
+async def get_links(
+    fen_string: str = Query(
+        ..., description="The FEN string representing the board state"
+    )
+):
     try:
         board = chess.Board(fen_string)
     except ValueError:
@@ -15,4 +20,3 @@ async def get_links(fen_string: str = Query(..., description="The FEN string rep
     edges = get_edges(board)
 
     return {"nodes": nodes, "edges": edges}
-
