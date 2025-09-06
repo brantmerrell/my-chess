@@ -101,10 +101,5 @@
     scrollbar-color: #4b5563 #1f2937;
 }
 
-/* Force consistent monospace font for chess pieces in SVG */
-.arc-segment-svg text {
-    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace !important;
-    font-weight: 500 !important;
-    font-variant-numeric: tabular-nums !important;
-}
+/* Font styling now handled by shared VisualizationContainer */
 

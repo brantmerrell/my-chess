@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from "react";
 import "./GraphView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
-import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
-import { cleanChessPieceUnicode } from "../utils";
+import { PieceDisplayMode } from "../types/chess";
+import { getPieceDisplay } from "../utils/chessDisplay";
+import VisualizationContainer from "./VisualizationContainer";
 
 interface GraphViewProps {
     linksData: LinksResponse | null;
@@ -18,14 +19,6 @@ const GraphView: React.FC<GraphViewProps> = ({
 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
 
-    const whitePieceMap: { [key: string]: string } = {
-        K: cleanChessPieceUnicode("♚"),
-        Q: cleanChessPieceUnicode("♛"),
-        R: cleanChessPieceUnicode("♜"),
-        B: cleanChessPieceUnicode("♝"),
-        N: cleanChessPieceUnicode("♞"),
-        P: cleanChessPieceUnicode("♟"),
-    };
     const getNodeStyle = (color: string) => {
         return {
             background: color === "white" ? "black" : "white",
@@ -34,21 +27,6 @@ const GraphView: React.FC<GraphViewProps> = ({
         };
     };
 
-    const getPieceDisplay = (piece: string, color: string): string => {
-        switch (displayMode) {
-            case "symbols":
-                if (color === "white") {
-                    return whitePieceMap[piece] || piece;
-                }
-                return (
-                    PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece
-                );
-            case "masked":
-                return "*";
-            default:
-                return piece;
-        }
-    };
 const getEdgeStyle = (edgeType: string) => {
     switch (edgeType) {
         case "threat":
@@ -194,7 +172,7 @@ const getEdgeStyle = (edgeType: string) => {
                     .attr("x", 0)
                     .attr("dy", 0)
                     .attr("font-size", "24px")
-                    .text(getPieceDisplay(d.piece_type, d.color));
+                    .text(getPieceDisplay(d.piece_type, d.color, displayMode));
 
                 textElement
                     .append("tspan")
@@ -215,12 +193,12 @@ const getEdgeStyle = (edgeType: string) => {
     }, [linksData, processedEdges, displayMode]);
 
     return (
-        <div className="graph-view-container">
+        <VisualizationContainer>
             <svg
                 ref={svgRef}
-                className="graph-view"
+                className="visualization-svg"
             />
-        </div>
+        </VisualizationContainer>
     );
 };
 

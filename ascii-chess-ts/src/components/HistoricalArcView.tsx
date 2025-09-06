@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { ChessGame } from "../chess/chessGame";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
-import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
+import { PieceDisplayMode } from "../types/chess";
 import { fetchLinks } from "../services/connector";
 import { useMoveHistory } from "../hooks/useMoveHistory";
-import { cleanChessPieceUnicode } from "../utils";
+import { getPieceDisplay } from "../utils/chessDisplay";
 
 interface HistoricalArcViewProps {
     displayMode: PieceDisplayMode;
@@ -69,30 +69,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
         fetchHistoricalData();
     }, [fenHistory]);
 
-    const whitePieceMap: { [key: string]: string } = {
-        K: cleanChessPieceUnicode("♚"),
-        Q: cleanChessPieceUnicode("♛"),
-        R: cleanChessPieceUnicode("♜"),
-        B: cleanChessPieceUnicode("♝"),
-        N: cleanChessPieceUnicode("♞"),
-        P: cleanChessPieceUnicode("♟"),
-    };
 
-    const getPieceDisplay = (piece: string): string => {
-        switch (displayMode) {
-            case "symbols":
-                if (piece in whitePieceMap) {
-                    return whitePieceMap[piece];
-                }
-                return (
-                    PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece
-                );
-            case "masked":
-                return "*";
-            default:
-                return piece;
-        }
-    };
 
     useEffect(() => {
         if (!historicalData.length || !svgRef.current) return;
@@ -262,7 +239,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
                         .attr("dy", "0.3em")
                         .attr("fill", node.color === "white" ? "#fff" : "#000")
                         .style("font-size", "10px")
-                        .text(getPieceDisplay(node.piece_type));
+                        .text(getPieceDisplay(node.piece_type, undefined, displayMode));
                 }
 
                 nodeG

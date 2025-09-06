@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import "./ArcView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
-import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
-import { cleanChessPieceUnicode } from "../utils";
+import { PieceDisplayMode } from "../types/chess";
+import { getPieceDisplay } from "../utils/chessDisplay";
+import VisualizationContainer from "./VisualizationContainer";
 
 interface ArcViewProps {
     linksData: LinksResponse | null;
@@ -39,28 +40,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
         "1": "purple"
     };
 
-    const whitePieceMap: { [key: string]: string } = {
-        'K': cleanChessPieceUnicode('♚'),
-        'Q': cleanChessPieceUnicode('♛'),
-        'R': cleanChessPieceUnicode('♜'),
-        'B': cleanChessPieceUnicode('♝'),
-        'N': cleanChessPieceUnicode('♞'),
-        'P': cleanChessPieceUnicode('♟') 
-    };
 
-    const getPieceDisplay = (piece: string): string => {
-        switch (displayMode) {
-            case "symbols":
-                if (piece in whitePieceMap) {
-                    return whitePieceMap[piece];
-                }
-                return PIECE_SYMBOLS[piece as keyof typeof PIECE_SYMBOLS] || piece;
-            case "masked":
-                return "*";
-            default:
-                return piece;
-        }
-    };
 
     const getNodeColor = (square: string, color: string) => {
         if (colorScheme === "file") {
@@ -136,7 +116,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             .attr("dy", ".3em")
             .attr("fill", (d) => (d.color === "white" ? "#fff" : "#000"))
             .style("font-size", (d) => displayMode === "symbols" ? "14px" : "12px")
-            .text((d) => getPieceDisplay(d.piece_type));
+            .text((d) => getPieceDisplay(d.piece_type, undefined, displayMode));
 
         nodeGroup
             .append("text")
@@ -180,7 +160,7 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
     }, [linksData, processedEdges, displayMode, colorScheme]);
 
     return (
-        <div className="arc-view-container">
+        <VisualizationContainer withPadding>
             <div className="arc-view-controls">
                 <span className="text-sm text-gray-300">Color by:</span>
                 <div className="helper-select-container">
@@ -199,10 +179,10 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
             <div className="arc-view-svg-container">
                 <svg
                     ref={svgRef}
-                    className="arc-view-svg"
+                    className="visualization-svg"
                 />
             </div>
-        </div>
+        </VisualizationContainer>
     );
 };
 

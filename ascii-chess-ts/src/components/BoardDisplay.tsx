@@ -2,6 +2,7 @@ import React from "react";
 import "./BoardDisplay.css";
 import { BootstrapTheme } from "./ThemeSelector";
 import { processUnicodeChars, cleanChessPieceUnicode } from "../utils";
+import { createWhitePieceMapBySymbol } from "../utils/chessDisplay";
 
 interface BoardDisplayProps {
     board: string;
@@ -11,20 +12,12 @@ interface BoardDisplayProps {
 const BoardDisplay: React.FC<BoardDisplayProps> = ({ board, theme }) => {
     const rows: string[] = board.split("\n");
 
-    const whitePieceMap: { [key: string]: string } = {
-        [cleanChessPieceUnicode('♔')]: cleanChessPieceUnicode('♚'),
-        [cleanChessPieceUnicode('♕')]: cleanChessPieceUnicode('♛'),
-        [cleanChessPieceUnicode('♖')]: cleanChessPieceUnicode('♜'),
-        [cleanChessPieceUnicode('♗')]: cleanChessPieceUnicode('♝'),
-        [cleanChessPieceUnicode('♘')]: cleanChessPieceUnicode('♞'),
-        [cleanChessPieceUnicode('♙')]: cleanChessPieceUnicode('♟'),
-    };
+    const whitePieceMap = createWhitePieceMapBySymbol();
 
     const processChar = (char: string): React.ReactNode => {
         const cleanChar = cleanChessPieceUnicode(char);
-        const whitePieces = Object.keys(whitePieceMap);
 
-        if (whitePieces.includes(cleanChar)) {
+        if ("♔♕♖♗♘♙".includes(cleanChar)) {
             return (
                 <span
                     key={Math.random()}

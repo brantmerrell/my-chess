@@ -16,10 +16,3 @@
     height: 100%;
     border-radius: 0.5rem;
 }
-
-/* Force consistent monospace font for chess pieces in SVG */
-.chord-diagram text {
-    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace !important;
-    font-weight: 500 !important;
-    font-variant-numeric: tabular-nums !important;
-}
