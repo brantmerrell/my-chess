@@ -8,9 +8,14 @@ import {
     fetchLiChessDailyPuzzle,
 } from "../reducers/puzzles/puzzles.actions";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
+import { BootstrapTheme } from "./ThemeSelector";
 import "./SelectPosition.css";
 
-const SelectPosition: React.FC = () => {
+interface SelectPositionProps {
+    theme: BootstrapTheme;
+}
+
+const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
     const dispatch = useAppDispatch();
     const selectedSetup = useSelector(
         (state: RootState) => state.selectedSetup
@@ -33,7 +38,7 @@ const SelectPosition: React.FC = () => {
             <select
                 aria-label="Position Selection"
                 id="position-selector"
-                className="dropdown-toggle position-select btn btn-secondary"
+                className={`dropdown-toggle position-select btn btn-secondary position-select--${theme}`}
                 value={selectedSetup}
                 onChange={handleOptionChange}
             >

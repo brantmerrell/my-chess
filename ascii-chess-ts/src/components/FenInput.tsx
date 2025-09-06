@@ -1,23 +1,26 @@
 import React from "react";
 import "./FenInput.css";
+import { BootstrapTheme } from "./ThemeSelector";
 
 interface FenInputProps {
     fen: string;
     onFenChange: (fen: string) => void;
     onSubmitFen: () => void;
+    theme: BootstrapTheme;
 }
 
 const FenInput: React.FC<FenInputProps> = ({
     fen,
     onFenChange,
     onSubmitFen,
+    theme,
 }) => {
     return (
         <div className="fen-layout">
             <div className="fen-controls">
                 <input
                     id="edit-string"
-                    className="text-secondary"
+                    className={`text-secondary fen-input--${theme}`}
                     type="text"
                     value={fen}
                     onChange={(e) => onFenChange(e.target.value)}

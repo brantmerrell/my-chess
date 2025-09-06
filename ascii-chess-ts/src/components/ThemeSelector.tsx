@@ -8,7 +8,8 @@ export type BootstrapTheme =
     | "journal"
     | "solar"
     | "superhero"
-    | "minty";
+    | "minty"
+    | "quartz";
 
 interface ThemeSelectorProps {
     currentTheme: BootstrapTheme;
@@ -21,7 +22,8 @@ const THEME_OPTIONS = [
     { value: "journal", label: "Journal" },
     { value: "solar", label: "Solar" },
     { value: "superhero", label: "Superhero" },
-    { value: "minty", label: "Minty" }
+    { value: "minty", label: "Minty" },
+    { value: "quartz", label: "Quartz" }
 ] as const;
 
 // TODO

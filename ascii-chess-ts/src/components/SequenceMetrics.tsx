@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 import { ChessGame } from "../chess/chessGame";
 import { Line } from "react-chartjs-2";
+import { Position } from "../types/chess";
 
 ChartJS.register(
     LineElement,
@@ -22,12 +23,15 @@ ChartJS.register(
 
 interface SequenceMetricsProps {
     fenHistory: string[];
+    positions?: Position[];
 }
 
 // TODO
 // Add centipawn advantage (API/service dependent)
-const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory }) => {
-    const labels = fenHistory.map((_, index) => `Move ${index}`);
+const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory, positions }) => {
+    const labels = positions ?
+        positions.map(pos => pos.san || `${pos.ply}`) :
+        fenHistory.map((_, index) => `${index}`);
     const pieceData = fenHistory.map(ChessGame.countPiecesFromFen);
     const mobilityData = fenHistory.map(ChessGame.calculateMobilityFromFen);
     const data = {
@@ -39,6 +43,7 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory }) => {
                 borderColor: "rgba(75, 192, 192, 1)",
                 fill: false,
                 yAxisID: "y1",
+                hidden: true,
             },
             {
                 label: "White Piece Count",
@@ -62,7 +67,7 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory }) => {
                 yAxisID: 'y1',
             },
             {
-                label: "Black Mobility", 
+                label: "Black Mobility",
                 data: mobilityData.map(data => data.black),
                 borderColor: "rgba(255, 165, 0, 1)",
                 fill: false,
@@ -129,7 +134,7 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({ fenHistory }) => {
             tooltip: {
                 callbacks: {
                     title: (context: any) => {
-                        return `Move ${context[0].dataIndex}`;
+                        return `Ply ${context[0].dataIndex}`;
                     },
                     afterBody: (context: any) => {
                         const moveIndex = context[0].dataIndex;

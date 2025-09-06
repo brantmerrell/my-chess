@@ -276,7 +276,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             case "history":
                 return <HistoryTable displayMode={displayMode} />;
             case "fencount":
-                return <SequenceMetrics fenHistory={fenHistory} />;
+                return <SequenceMetrics fenHistory={fenHistory} positions={chessGameState.positions} />;
             //case "historicalArc":
             //    return <HistoricalArcView displayMode={displayMode} />;
             default:
@@ -338,11 +338,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 theme={theme}
             >
                 <div className="setup-controls">
-                    <SelectPosition />
+                    <SelectPosition theme={theme} />
                     <FenInput
                         fen={fen}
                         onFenChange={setFen}
                         onSubmitFen={submitFen}
+                        theme={theme}
                     />
                 </div>
             </Accordion>
