@@ -3,6 +3,7 @@ import "./ArcView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
+import { cleanChessPieceUnicode } from "../utils";
 
 interface ArcViewProps {
     linksData: LinksResponse | null;
@@ -39,12 +40,12 @@ const ArcView: React.FC<ArcViewProps> = ({ linksData, processedEdges, displayMod
     };
 
     const whitePieceMap: { [key: string]: string } = {
-        'K': '♚', // White king -> Black king symbol
-        'Q': '♛', // White queen -> Black queen symbol
-        'R': '♜', // White rook -> Black rook symbol
-        'B': '♝', // White bishop -> Black bishop symbol
-        'N': '♞', // White knight -> Black knight symbol
-        'P': '♟'  // White pawn -> Black pawn symbol
+        'K': cleanChessPieceUnicode('♚'),
+        'Q': cleanChessPieceUnicode('♛'),
+        'R': cleanChessPieceUnicode('♜'),
+        'B': cleanChessPieceUnicode('♝'),
+        'N': cleanChessPieceUnicode('♞'),
+        'P': cleanChessPieceUnicode('♟') 
     };
 
     const getPieceDisplay = (piece: string): string => {

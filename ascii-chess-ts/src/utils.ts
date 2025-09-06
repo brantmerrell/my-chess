@@ -57,3 +57,24 @@ export function findIndexOfSquare(fen: string, square: string): number {
     return rankIndex + fileIndex;
 }
 
+/**
+ * Removes unicode variation selectors and other invisible characters from chess piece symbols.
+ * Handles cases where unicode characters may include variation selectors (like U+FE0E) that
+ * make single characters behave as multiple characters and cause layout issues.
+ */
+export function cleanChessPieceUnicode(char: string): string {
+    if (!char || char.length === 0) return char;
+
+    // Remove variation selectors (U+FE0E, U+FE0F) and other combining characters
+    // These are invisible characters that can attach to chess pieces
+    return char.replace(/[\uFE0E\uFE0F\u200D\u200C]/g, '');
+}
+
+/**
+ * Safely processes a string character by character, handling unicode correctly
+ * and cleaning any invisible characters from chess pieces.
+ */
+export function processUnicodeChars(text: string): string[] {
+    return Array.from(text).map(char => cleanChessPieceUnicode(char));
+}
+

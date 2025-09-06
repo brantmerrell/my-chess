@@ -16,3 +16,10 @@
     height: 100%;
     flex: 1;
 }
+
+/* Force consistent monospace font for chess pieces in SVG */
+.graph-view text {
+    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace !important;
+    font-weight: 500 !important;
+    font-variant-numeric: tabular-nums !important;
+}

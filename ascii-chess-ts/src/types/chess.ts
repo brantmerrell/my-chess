@@ -1,3 +1,5 @@
+import { cleanChessPieceUnicode } from '../utils';
+
 export interface Position {
     ply: number;
     san: string;
@@ -8,16 +10,16 @@ export interface Position {
 export type PieceDisplayMode = "letters" | "symbols" | "masked";
 
 export const PIECE_SYMBOLS = {
-    K: "♔",
-    Q: "♕",
-    R: "♖",
-    B: "♗",
-    N: "♘",
-    P: "♙",
-    k: "♚",
-    q: "♛",
-    r: "♜",
-    b: "♝",
-    n: "♞",
-    p: "♟︎",
+    K: cleanChessPieceUnicode("♔"),
+    Q: cleanChessPieceUnicode("♕"),
+    R: cleanChessPieceUnicode("♖"),
+    B: cleanChessPieceUnicode("♗"),
+    N: cleanChessPieceUnicode("♘"),
+    P: cleanChessPieceUnicode("♙"),
+    k: cleanChessPieceUnicode("♚"),
+    q: cleanChessPieceUnicode("♛"),
+    r: cleanChessPieceUnicode("♜"),
+    b: cleanChessPieceUnicode("♝"),
+    n: cleanChessPieceUnicode("♞"),
+    p: cleanChessPieceUnicode("♟︎"),
 };

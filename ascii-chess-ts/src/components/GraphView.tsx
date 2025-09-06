@@ -3,6 +3,7 @@ import "./GraphView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
+import { cleanChessPieceUnicode } from "../utils";
 
 interface GraphViewProps {
     linksData: LinksResponse | null;
@@ -18,12 +19,12 @@ const GraphView: React.FC<GraphViewProps> = ({
     const svgRef = useRef<SVGSVGElement>(null);
 
     const whitePieceMap: { [key: string]: string } = {
-        K: "♚",
-        Q: "♛",
-        R: "♜",
-        B: "♝",
-        N: "♞",
-        P: "♟",
+        K: cleanChessPieceUnicode("♚"),
+        Q: cleanChessPieceUnicode("♛"),
+        R: cleanChessPieceUnicode("♜"),
+        B: cleanChessPieceUnicode("♝"),
+        N: cleanChessPieceUnicode("♞"),
+        P: cleanChessPieceUnicode("♟"),
     };
     const getNodeStyle = (color: string) => {
         return {

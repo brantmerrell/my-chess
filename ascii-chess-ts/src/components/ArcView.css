@@ -31,3 +31,10 @@
     border-radius: 0.5rem;
     border: 1px solid #4b5563;
 }
+
+/* Force consistent monospace font for chess pieces in SVG */
+.arc-view-svg text {
+    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace !important;
+    font-weight: 500 !important;
+    font-variant-numeric: tabular-nums !important;
+}

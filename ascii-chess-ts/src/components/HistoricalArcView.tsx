@@ -7,6 +7,7 @@ import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 import { fetchLinks } from "../services/connector";
 import { useMoveHistory } from "../hooks/useMoveHistory";
+import { cleanChessPieceUnicode } from "../utils";
 
 interface HistoricalArcViewProps {
     displayMode: PieceDisplayMode;
@@ -69,12 +70,12 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
     }, [fenHistory]);
 
     const whitePieceMap: { [key: string]: string } = {
-        K: "♚",
-        Q: "♛",
-        R: "♜",
-        B: "♝",
-        N: "♞",
-        P: "♟",
+        K: cleanChessPieceUnicode("♚"),
+        Q: cleanChessPieceUnicode("♛"),
+        R: cleanChessPieceUnicode("♜"),
+        B: cleanChessPieceUnicode("♝"),
+        N: cleanChessPieceUnicode("♞"),
+        P: cleanChessPieceUnicode("♟"),
     };
 
     const getPieceDisplay = (piece: string): string => {
