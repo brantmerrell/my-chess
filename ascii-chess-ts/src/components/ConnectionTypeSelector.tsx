@@ -19,7 +19,7 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
     return (
         <Selector
             id="connection-type-selector"
-            label="Connection Type"
+            label={<span><u>C</u>onnection Type</span>}
             value={connectionType}
             onChange={onConnectionTypeChange}
             options={CONNECTION_TYPE_OPTIONS}

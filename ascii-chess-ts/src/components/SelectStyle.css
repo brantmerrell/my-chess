@@ -36,5 +36,16 @@ select.select-control.btn {
     padding-right: 3rem !important;
 }
 
+select.select-control.btn:focus {
+    outline: 3px solid #ffd700 !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+    transform: scale(1.05);
+    z-index: 10;
+    position: relative;
+}
+
 
 

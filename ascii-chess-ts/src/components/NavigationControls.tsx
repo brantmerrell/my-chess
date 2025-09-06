@@ -40,17 +40,17 @@ const NavigationControls: React.FC = () => {
                     onClick={handleGoToStart}
                     disabled={!canGoBackward}
                     className="nav-button start-button"
-                    title="Go to start"
+                    title="Go to start (^)"
                 >
-                    ⏮
+                    ⏮ <span className="keybinding">^</span>
                 </button>
                 <button
                     onClick={handleBackward}
                     disabled={!canGoBackward}
                     className="nav-button backward-button"
-                    title="Previous move"
+                    title="Previous move (h)"
                 >
-                    ◀
+                    ◀ <span className="keybinding">h</span>
                 </button>
                 <span className="position-indicator">
                     {currentPositionIndex + 0} / {positions.length - 1}
@@ -59,17 +59,17 @@ const NavigationControls: React.FC = () => {
                     onClick={handleForward}
                     disabled={!canGoForward}
                     className="nav-button forward-button"
-                    title="Next move"
+                    title="Next move (l)"
                 >
-                    ▶
+                    ▶ <span className="keybinding">l</span>
                 </button>
                 <button
                     onClick={handleGoToEnd}
                     disabled={!canGoForward}
                     className="nav-button end-button"
-                    title="Go to end"
+                    title="Go to end ($)"
                 >
-                    ⏭
+                    ⏭ <span className="keybinding">$</span>
                 </button>
             </div>
         </div>

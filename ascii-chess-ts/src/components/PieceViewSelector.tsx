@@ -20,7 +20,7 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
     return (
         <Selector
             id="piece-view-selector"
-            label="Piece View"
+            label={<span><u>P</u>iece View</span>}
             value={displayMode}
             onChange={onDisplayModeChange}
             options={PIECE_VIEW_OPTIONS}

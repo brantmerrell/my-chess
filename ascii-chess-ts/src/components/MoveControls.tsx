@@ -45,44 +45,67 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
     return (
         <div className="moves-layout">
             <div className="moves-forward">
-                <select
-                    id="selectedMove"
-                    value={selectedMove}
-                    onChange={(e) => setSelectedMove(e.target.value)}
-                    disabled={!isAtLatestPosition}
-                    aria-label="Move Selection"
-                    title={
-                        !isAtLatestPosition
-                            ? "Navigate to latest position to make moves"
-                            : "Select a move"
-                    }
-                >
-                    <option value="">
-                        {isAtLatestPosition
-                            ? "Moves"
-                            : "Navigate to latest position"}
-                    </option>
-                    {isAtLatestPosition &&
-                        moves.map((move, index) => (
-                            <option key={index} value={move}>
-                                {move}
-                            </option>
-                        ))}
-                </select>
-                <input
-                    id="move"
-                    type="text"
-                    value={selectedMove}
-                    onChange={(e) => setSelectedMove(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    disabled={!isAtLatestPosition}
-                    aria-label="Move Input"
-                    title={
-                        !isAtLatestPosition
-                            ? "Navigate to latest position to make moves"
-                            : "Enter a move"
-                    }
-                />
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <select
+                        id="selectedMove"
+                        value={selectedMove}
+                        onChange={(e) => setSelectedMove(e.target.value)}
+                        disabled={!isAtLatestPosition}
+                        aria-label="Move Selection"
+                        title={
+                            !isAtLatestPosition
+                                ? "Navigate to latest position to make moves"
+                                : "Select a move (M)"
+                        }
+                        onKeyDown={(e) => {
+                            if (e.key === ' ' || e.key === 'Enter') {
+                                e.preventDefault();
+                                // Try showPicker() if available, otherwise simulate click
+                                const selectElement = e.currentTarget as HTMLSelectElement;
+                                if ('showPicker' in selectElement && typeof selectElement.showPicker === 'function') {
+                                    try {
+                                        selectElement.showPicker();
+                                    } catch (error) {
+                                        // Fallback to click if showPicker fails
+                                        selectElement.click();
+                                    }
+                                } else {
+                                    selectElement.click();
+                                }
+                            }
+                        }}
+                    >
+                        <option value="">
+                            {isAtLatestPosition
+                                ? "Moves"
+                                : "Navigate to latest position"}
+                        </option>
+                        {isAtLatestPosition &&
+                            moves.map((move, index) => (
+                                <option key={index} value={move}>
+                                    {move}
+                                </option>
+                            ))}
+                    </select>
+                    <span className="keybinding" style={{ position: 'absolute', right: '25px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '0.8em', opacity: 0.6 }}>M</span>
+                </div>
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <input
+                        id="move"
+                        type="text"
+                        value={selectedMove}
+                        onChange={(e) => setSelectedMove(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        disabled={!isAtLatestPosition}
+                        aria-label="Move Input"
+                        title={
+                            !isAtLatestPosition
+                                ? "Navigate to latest position to make moves"
+                                : "Enter a move (m)"
+                        }
+                        placeholder={isAtLatestPosition ? "Move (m)" : ""}
+                    />
+                </div>
                 <button
                     id="submitMove"
                     onClick={handleMoveSubmit}
@@ -107,10 +130,10 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                         ? "Navigate to latest position to undo moves"
                         : !hasHistory
                           ? "No moves to undo"
-                          : "Undo last move"
+                          : "Undo last move (u)"
                 }
             >
-                Undo Move
+                Undo Move <span className="keybinding">u</span>
             </button>
 
             {undoMessage && (

@@ -8,7 +8,7 @@ interface SelectorOption {
 
 interface SelectorProps<T extends string> {
     id: string;
-    label: string;
+    label: React.ReactNode;
     value: T;
     onChange: (value: T) => void;
     options: readonly SelectorOption[];
@@ -36,7 +36,24 @@ function Selector<T extends string>({
                     value={value}
                     onChange={(e) => onChange(e.target.value as T)}
                     className="select-control btn btn-info"
-                    aria-label={ariaLabel || `${label} Selection`}
+                    aria-label={ariaLabel || `${typeof label === 'string' ? label : 'Selector'} Selection`}
+                    onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            // Try showPicker() if available, otherwise simulate click
+                            const selectElement = e.currentTarget as HTMLSelectElement;
+                            if ('showPicker' in selectElement && typeof selectElement.showPicker === 'function') {
+                                try {
+                                    selectElement.showPicker();
+                                } catch (error) {
+                                    // Fallback to click if showPicker fails
+                                    selectElement.click();
+                                }
+                            } else {
+                                selectElement.click();
+                            }
+                        }
+                    }}
                 >
                     {options.map(({ value: optionValue, label: optionLabel }) => (
                         <option key={optionValue} value={optionValue}>

@@ -36,7 +36,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
     return (
         <Selector
             id="theme-selector"
-            label="Theme"
+            label={<span><u>T</u>heme</span>}
             value={currentTheme}
             onChange={onThemeChange}
             options={THEME_OPTIONS}

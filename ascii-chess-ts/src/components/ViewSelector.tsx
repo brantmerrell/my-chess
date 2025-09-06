@@ -33,7 +33,7 @@ export const PositionalViewSelector: React.FC<PositionalViewSelectorProps> = ({
     return (
         <Selector
             id="positional-view-selector"
-            label="Positional View"
+            label={<span>Pos<u>i</u>tional View</span>}
             value={selectedView}
             onChange={onViewChange}
             options={POSITIONAL_VIEW_OPTIONS}
@@ -48,7 +48,7 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
     return (
         <Selector
             id="historical-view-selector"
-            label="Historical View"
+            label={<span>Hist<u>o</u>rical View</span>}
             value={selectedView}
             onChange={onViewChange}
             options={HISTORICAL_VIEW_OPTIONS}
@@ -85,6 +85,13 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({
                     onChange={(e) => onViewChange(e.target.value as ViewType)}
                     className="select-control btn btn-info"
                     aria-label="Game View Selection"
+                    onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            // Simulate a click to open the dropdown
+                            e.currentTarget.click();
+                        }
+                    }}
                 >
                     <option value="board">Board</option>
                     <option value="graph">Graph</option>

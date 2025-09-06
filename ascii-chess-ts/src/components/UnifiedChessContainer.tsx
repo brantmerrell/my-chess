@@ -9,6 +9,7 @@ import FenInput from "./FenInput";
 import GraphView from "./GraphView";
 import HistoricalArcView from "./HistoricalArcView";
 import HistoryTable from "./HistoryTable";
+import KeybindingIndicators from "./KeybindingIndicators";
 import MoveControls from "./MoveControls";
 import NavigationControls from "./NavigationControls";
 import PieceViewSelector from "./PieceViewSelector";
@@ -55,6 +56,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
     const [showViewControls, setShowViewControls] = React.useState<boolean>(false);
     const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
+    const [showKeybindings, setShowKeybindings] = React.useState<boolean>(true);
 
     const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
         useChessGame(displayMode);
@@ -143,13 +145,24 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     const { positions } = chessGameState;
                     dispatch(goToPosition(positions.length - 1));
                     break;
-                case "g":
+                case "i":
+                case "I":
                     e.preventDefault();
-                    const gameViewSelector = document.querySelector(
-                        "#game-view-selector"
+                    const positionalViewSelector = document.querySelector(
+                        "#positional-view-selector"
                     ) as HTMLSelectElement;
-                    if (gameViewSelector) {
-                        gameViewSelector.focus();
+                    if (positionalViewSelector) {
+                        positionalViewSelector.focus();
+                    }
+                    break;
+                case "o":
+                case "O":
+                    e.preventDefault();
+                    const historicalViewSelector = document.querySelector(
+                        "#historical-view-selector"
+                    ) as HTMLSelectElement;
+                    if (historicalViewSelector) {
+                        historicalViewSelector.focus();
                     }
                     break;
                 case "p":
@@ -193,12 +206,27 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         themeSelector.focus();
                     }
                     break;
+                case "?":
+                    setShowKeybindings(!showKeybindings);
+                    break;
+                case "r":
+                case "R":
+                    setShowViewControls(!showViewControls);
+                    break;
+                case "e":
+                case "E":
+                    setShowFenControls(!showFenControls);
+                    break;
+                case "v":
+                case "V":
+                    setShowMoveControls(!showMoveControls);
+                    break;
             }
         };
 
         window.addEventListener("keydown", handleGlobalKeyDown);
         return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-    }, [dispatch, submitUndoMove, chessGameState]);
+    }, [dispatch, submitUndoMove, chessGameState, showKeybindings, showViewControls, showFenControls, showMoveControls]);
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -305,7 +333,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 </div>
             )}
             <Accordion
-                title="Appearance"
+                title={<span>Appea<u>r</u>ance</span>}
                 isExpanded={showViewControls}
                 onToggle={() => setShowViewControls(!showViewControls)}
                 theme={theme}
@@ -332,7 +360,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 </div>
             </Accordion>
             <Accordion
-                title="Setup"
+                title={<span>S<u>e</u>tup</span>}
                 isExpanded={showFenControls}
                 onToggle={() => setShowFenControls(!showFenControls)}
                 theme={theme}
@@ -356,7 +384,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 </div>
             </div>
             <Accordion
-                title="Moves"
+                title={<span>Mo<u>v</u>es</span>}
                 isExpanded={showMoveControls}
                 onToggle={() => setShowMoveControls(!showMoveControls)}
                 theme={theme}
@@ -365,6 +393,29 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 <NavigationControls />
                 <MoveControls displayMode={displayMode} />
             </Accordion>
+            {showKeybindings && <KeybindingIndicators />}
+            {!showKeybindings && (
+                <div 
+                    className="help-hint"
+                    style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        color: 'white',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        fontSize: '0.8em',
+                        zIndex: 999,
+                        opacity: 0.7,
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => setShowKeybindings(true)}
+                    title="Click or press ? to show keyboard shortcuts"
+                >
+                    Press ? for shortcuts
+                </div>
+            )}
         </div>
     );
 };

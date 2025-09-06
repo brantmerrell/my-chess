@@ -3,7 +3,7 @@ import { BootstrapTheme } from "./ThemeSelector";
 import "./Accordion.css";
 
 interface AccordionProps {
-    title: string;
+    title: React.ReactNode;
     isExpanded: boolean;
     onToggle: () => void;
     children: React.ReactNode;
@@ -25,7 +25,7 @@ const Accordion: React.FC<AccordionProps> = ({
                 className={`accordion-header accordion-header--${theme}`}
                 onClick={onToggle}
                 aria-expanded={isExpanded}
-                aria-controls={`accordion-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+                aria-controls={`accordion-content-${typeof title === 'string' ? title.replace(/\s+/g, '-').toLowerCase() : 'accordion'}`}
             >
                 <span className={`accordion-chevron ${isExpanded ? 'expanded' : ''}`}>
                     ▶
@@ -35,7 +35,7 @@ const Accordion: React.FC<AccordionProps> = ({
                 </span>
             </button>
             <div
-                id={`accordion-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+                id={`accordion-content-${typeof title === 'string' ? title.replace(/\s+/g, '-').toLowerCase() : 'accordion'}`}
                 className={`accordion-content ${isExpanded ? 'expanded' : 'collapsed'}`}
             >
                 {children}

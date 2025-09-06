@@ -41,6 +41,13 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
                 className={`dropdown-toggle position-select btn btn-secondary position-select--${theme}`}
                 value={selectedSetup}
                 onChange={handleOptionChange}
+                onKeyDown={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        // Simulate a click to open the dropdown
+                        e.currentTarget.click();
+                    }
+                }}
             >
                 <option value={SetupOptions.STANDARD}>
                     Standard Starting Position

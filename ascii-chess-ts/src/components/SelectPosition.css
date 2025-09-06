@@ -30,8 +30,14 @@ body {
 }
 
 .position-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 1px #2b6cb0;
+    outline: 3px solid #ffd700 !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+    transform: scale(1.02);
+    z-index: 10;
+    position: relative;
 }
 
 .position-select:hover {

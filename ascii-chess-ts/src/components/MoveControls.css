@@ -36,9 +36,11 @@
 }
 
 #selectedMove:focus {
-    outline: none;
+    outline: 3px solid #ffd700;
+    outline-offset: 2px;
     border-color: #2b6cb0;
-    box-shadow: 0 0 0 1px #2b6cb0;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+    background-color: #fff3cd !important;
 }
 
 #selectedMove:disabled {
@@ -62,9 +64,11 @@
 }
 
 #move:focus {
-    outline: none;
+    outline: 3px solid #ffd700;
+    outline-offset: 2px;
     border-color: #2b6cb0;
-    box-shadow: 0 0 0 1px #2b6cb0;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+    background-color: #fff3cd !important;
 }
 
 #move:disabled {
@@ -119,6 +123,34 @@
     transition: background-color 0.2s, opacity 0.2s;
     width: 100px;
     margin-left: calc(180px + 80px + 1rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+#undo .keybinding {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.75em;
+    font-family: monospace;
+    opacity: 0.8;
+}
+
+#undo:focus {
+    outline: 3px solid #ffd700;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+    background-color: #dc3545 !important;
+    transform: scale(1.05);
+}
+
+#submitMove:focus {
+    outline: 3px solid #ffd700;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+    transform: scale(1.05);
 }
 
 #undo:hover:not(:disabled) {
