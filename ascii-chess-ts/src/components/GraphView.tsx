@@ -34,6 +34,8 @@ const getEdgeStyle = (edgeType: string) => {
             return { color: "darkgreen", marker: "url(#arrowheadGreen)" };
         case "adjacency":
             return { color: "blue", marker: "url(#arrowheadBlue)" };
+        case "king_can_move":
+            return { color: "green", marker: "url(#arrowheadGreen)" };
         default:
             return { color: "gray", marker: "url(#arrowheadGray)" };
     }
@@ -128,10 +130,13 @@ const getEdgeStyle = (edgeType: string) => {
             .attr("stroke-width", 2)
             .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
+        // Filter out phantom nodes from visual rendering
+        const visibleNodes = nodes.filter(d => d.piece_type !== "phantom");
+
         const node = g
             .append("g")
             .selectAll<SVGGElement, SimulationNode>("g")
-            .data(nodes)
+            .data(visibleNodes)
             .join("g")
             .call(
                 d3

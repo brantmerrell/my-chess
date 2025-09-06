@@ -78,6 +78,70 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
             }
         )
 
+    # Add threat edges from attacking pieces to king squares and phantom nodes
+    # Only include threats that are relevant to the king box visualization
+    king_squares = set()
+    phantom_squares_set = set()
+    
+    # Collect king squares and phantom squares for scope limiting
+    for node in nodes:
+        if node["piece_type"] == "phantom":
+            phantom_squares_set.add(node["square"])
+        else:
+            target_piece = board.piece_at(chess.parse_square(node["square"]))
+            if target_piece and target_piece.symbol().lower() == 'k':
+                king_squares.add(node["square"])
+    
+    for node in nodes:
+        square_name = node["square"]
+        square = chess.parse_square(square_name)
+        
+        # For phantom nodes, only get threats from ENEMY pieces
+        if node["piece_type"] == "phantom":
+            # Need to determine which king this phantom square belongs to
+            # Check which king is adjacent to this phantom square
+            phantom_king_color = None
+            for king_color in [chess.WHITE, chess.BLACK]:
+                king_data = get_king_box_data(board, king_color)
+                for square_info in king_data["squares"]:
+                    if square_info["square"] == square_name and square_info["status"] == "open":
+                        phantom_king_color = king_color
+                        break
+                if phantom_king_color is not None:
+                    break
+            
+            # Only show threats from enemy pieces to this phantom square
+            if phantom_king_color is not None:
+                attackers = board.attackers(not phantom_king_color, square)
+                # Only include attackers that are also in our nodes (scope limiting)
+                for attacker_square in attackers:
+                    attacker_square_name = chess.square_name(attacker_square)
+                    if any(n["square"] == attacker_square_name for n in nodes):
+                        edges.append(
+                            {
+                                "type": "threat",
+                                "source": attacker_square_name,
+                                "target": square_name,
+                            }
+                        )
+        else:
+            # For actual pieces, only show threats TO KINGS (not other pieces)
+            target_piece = board.piece_at(square)
+            if target_piece and target_piece.symbol().lower() == 'k':
+                # Get attackers of the opposite color
+                attackers = board.attackers(not target_piece.color, square)
+                # Only include attackers that are also in our nodes (scope limiting)
+                for attacker_square in attackers:
+                    attacker_square_name = chess.square_name(attacker_square)
+                    if any(n["square"] == attacker_square_name for n in nodes):
+                        edges.append(
+                            {
+                                "type": "threat",
+                                "source": attacker_square_name,
+                                "target": square_name,
+                            }
+                        )
+
     return {"nodes": nodes, "edges": edges}
 
 
@@ -140,7 +204,7 @@ def get_king_box_data(board: chess.Board, color: chess.Color) -> Dict:
 
         # Check the status of the square
         if square == king_square:
-            # King's current position
+            # King's current position - use same logic as empty squares
             if board.is_attacked_by(not color, square):
                 status = "blocked-by-threat"  # King is in check
             else:
@@ -153,24 +217,12 @@ def get_king_box_data(board: chess.Board, color: chess.Color) -> Dict:
                 # Enemy piece - always blocked by threat
                 status = "blocked-by-threat"
         else:
-            # Square is empty - check if it's safe for the king
-            # Temporarily move the king to check if the square would be safe
-            # We need to check if moving there would put the king in check
-            temp_board = board.copy()
-
-            # Create a move from king's current position to the target square
-            move = chess.Move(king_square, square)
-
-            # Check if the move is legal (which includes not moving into check)
-            if move in temp_board.legal_moves:
-                status = "open"
+            # Square is empty - check if it's safe for the king using attackers method
+            # This approach works regardless of whose turn it is, similar to links endpoint
+            if board.is_attacked_by(not color, square):
+                status = "blocked-by-threat"
             else:
-                # Either the move is blocked or would put king in check
-                if temp_board.is_attacked_by(not color, square):
-                    status = "blocked-by-threat"
-                else:
-                    # This shouldn't happen for adjacent squares, but just in case
-                    status = "blocked-by-threat"
+                status = "open"
 
         square_info = {"square": square_name, "status": status}
 
