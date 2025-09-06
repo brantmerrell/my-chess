@@ -9,7 +9,7 @@
 
 .navigation-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr 80px 1fr 1fr;
+    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
     grid-template-areas: "start back position forward end";
     align-items: center;
     gap: 4px;

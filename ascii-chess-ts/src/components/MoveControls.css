@@ -3,14 +3,31 @@
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
-    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 10px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .moves-forward {
-    display: flex;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+    grid-template-areas: "dropdown dropdown position submit submit";
     align-items: center;
-    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.moves-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+    grid-template-areas: ". . . undo undo";
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Move Selection Dropdown */
@@ -28,12 +45,16 @@
     background-position: right 0.5rem center;
     background-size: 16px 12px;
     padding-right: 3.5rem;
-    width: 180px;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     transition: opacity 0.2s, background-color 0.2s;
 }
+
 
 #selectedMove:focus {
     outline: 3px solid #ffd700;
@@ -52,6 +73,7 @@
 
 /* Move Input */
 #move {
+    grid-area: position;
     height: 38px;
     padding: 0 10px;
     border-radius: 5px;
@@ -59,7 +81,9 @@
     background-color: white;
     font-family: monospace;
     font-size: 14px;
-    width: 80px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
     transition: opacity 0.2s, background-color 0.2s;
 }
 
@@ -84,6 +108,7 @@
 
 /* Submit Move Button */
 #submitMove {
+    grid-area: submit;
     height: 38px;
     padding: 0 12px;
     color: white;
@@ -93,7 +118,9 @@
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s, opacity 0.2s;
-    width: 100px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 #submitMove:hover:not(:disabled) {
@@ -112,6 +139,7 @@
 
 /* Undo Button */
 #undo {
+    grid-area: undo;
     height: 38px;
     padding: 0 15px;
     color: white;
@@ -121,8 +149,9 @@
     cursor: pointer;
     white-space: nowrap;
     transition: background-color 0.2s, opacity 0.2s;
-    width: 100px;
-    margin-left: calc(180px + 80px + 1rem);
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;

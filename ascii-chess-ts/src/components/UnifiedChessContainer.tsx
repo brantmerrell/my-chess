@@ -173,7 +173,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         pieceViewSelector.focus();
                     }
                     break;
-                case "c":
+                case "n":
+                case "N":
                     const connectionSelector = document.querySelector(
                         "#connection-type-selector"
                     ) as HTMLSelectElement;
@@ -181,7 +182,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         connectionSelector.focus();
                     }
                     break;
-                case "M":
+                case "c":
+                case "C":
+                    e.preventDefault(); // Prevent default alphabetical selection
                     const selectedMove = document.querySelector(
                         "#selectedMove"
                     ) as HTMLSelectElement;
@@ -189,6 +192,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                         selectedMove.focus();
                     }
                     break;
+                case "M":
                 case "m":
                     e.preventDefault();
                     const move = document.querySelector(

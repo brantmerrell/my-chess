@@ -45,7 +45,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
     return (
         <div className="moves-layout">
             <div className="moves-forward">
-                <div style={{ position: 'relative', display: 'inline-block' }}>
+                <div style={{ position: 'relative', width: '100%', gridArea: 'dropdown', margin: 0, padding: 0, boxSizing: 'border-box' }}>
                     <select
                         id="selectedMove"
                         value={selectedMove}
@@ -55,7 +55,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                         title={
                             !isAtLatestPosition
                                 ? "Navigate to latest position to make moves"
-                                : "Select a move (M)"
+                                : "Select a move (c)"
                         }
                         onKeyDown={(e) => {
                             if (e.key === ' ' || e.key === 'Enter') {
@@ -77,7 +77,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                     >
                         <option value="">
                             {isAtLatestPosition
-                                ? "Moves"
+                                ? "Sele(c)t"
                                 : "Navigate to latest position"}
                         </option>
                         {isAtLatestPosition &&
@@ -87,25 +87,22 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                                 </option>
                             ))}
                     </select>
-                    <span className="keybinding" style={{ position: 'absolute', right: '25px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '0.8em', opacity: 0.6 }}>M</span>
                 </div>
-                <div style={{ position: 'relative', display: 'inline-block' }}>
-                    <input
-                        id="move"
-                        type="text"
-                        value={selectedMove}
-                        onChange={(e) => setSelectedMove(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        disabled={!isAtLatestPosition}
-                        aria-label="Move Input"
-                        title={
-                            !isAtLatestPosition
-                                ? "Navigate to latest position to make moves"
-                                : "Enter a move (m)"
-                        }
-                        placeholder={isAtLatestPosition ? "Move (m)" : ""}
-                    />
-                </div>
+                <input
+                    id="move"
+                    type="text"
+                    value={selectedMove}
+                    onChange={(e) => setSelectedMove(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={!isAtLatestPosition}
+                    aria-label="Move Input"
+                    title={
+                        !isAtLatestPosition
+                            ? "Navigate to latest position to make moves"
+                            : "Enter a move (M)"
+                    }
+                    placeholder={isAtLatestPosition ? "(M)ove" : ""}
+                />
                 <button
                     id="submitMove"
                     onClick={handleMoveSubmit}
@@ -120,21 +117,23 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
                     Submit Move
                 </button>
             </div>
-            <button
-                id="undo"
-                onClick={handleUndoMove}
-                disabled={!isAtLatestPosition || !hasHistory}
-                className={`btn ${isAtLatestPosition && hasHistory ? "btn-danger" : "btn-secondary"}`}
-                title={
-                    !isAtLatestPosition
-                        ? "Navigate to latest position to undo moves"
-                        : !hasHistory
-                          ? "No moves to undo"
-                          : "Undo last move (u)"
-                }
-            >
-                Undo Move <span className="keybinding">u</span>
-            </button>
+            <div className="moves-buttons">
+                <button
+                    id="undo"
+                    onClick={handleUndoMove}
+                    disabled={!isAtLatestPosition || !hasHistory}
+                    className={`btn ${isAtLatestPosition && hasHistory ? "btn-danger" : "btn-secondary"}`}
+                    title={
+                        !isAtLatestPosition
+                            ? "Navigate to latest position to undo moves"
+                            : !hasHistory
+                              ? "No moves to undo"
+                              : "Undo last move (u)"
+                    }
+                >
+                    Undo Move <span className="keybinding">u</span>
+                </button>
+            </div>
 
             {undoMessage && (
                 <div
