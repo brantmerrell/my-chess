@@ -26,7 +26,6 @@ const GraphView: React.FC<GraphViewProps> = ({
             stroke: color === "white" ? "white" : "black",
         };
     };
-
 const getEdgeStyle = (edgeType: string) => {
     switch (edgeType) {
         case "threat":
@@ -193,10 +192,10 @@ const getEdgeStyle = (edgeType: string) => {
     }, [linksData, processedEdges, displayMode]);
 
     return (
-        <VisualizationContainer>
+        <VisualizationContainer className="graph-view-container">
             <svg
                 ref={svgRef}
-                className="visualization-svg"
+                className="visualization-svg graph-view"
             />
         </VisualizationContainer>
     );

@@ -116,7 +116,7 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ nodes, edges }) => {
     }, [nodes, edges]);
 
     return (
-        <div className="chord-diagram-container">
+        <div className="visualization-container visualization-container--fixed-height chord-diagram-container">
             <svg
                 ref={svgRef}
                 className="chord-diagram"

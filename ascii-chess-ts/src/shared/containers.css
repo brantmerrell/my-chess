@@ -1,0 +1,135 @@
+.visualization-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.visualization-container--fixed-height {
+    height: 465px;
+}
+
+.visualization-container--auto-height {
+    min-height: 200px;
+}
+
+.visualization-content {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.visualization-header {
+    padding: 1rem;
+    border-bottom: 1px solid #374151;
+    background-color: #111827;
+    border-radius: 0.5rem 0.5rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.visualization-header h3 {
+    margin: 0;
+    color: #e5e7eb;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.visualization-container--padded {
+    padding: 1rem;
+    gap: 1rem;
+    align-items: center;
+}
+
+.visualization-svg-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+}
+
+.visualization-svg {
+    background-color: #374151;
+    border-radius: 0.5rem;
+    border: 1px solid #4b5563;
+    height: 350px;
+    width: 100%;
+}
+
+.board-container {
+}
+
+.inline-visualization-container {
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 800px;
+}
+
+.container-with-border-bottom {
+    border-bottom: 1px solid #374151;
+}
+
+.container-top-radius-only {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.container-full-width {
+    width: 100%;
+}
+
+.container-centered {
+    margin: 0 auto;
+}
+
+.visualization-segment {
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #374151;
+}
+
+.visualization-container svg text {
+    background-image: none !important;
+    text-shadow: none !important;
+    min-height: unset !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+
+@media (max-width: 768px) {
+    .visualization-container--fixed-height {
+        height: 400px;
+    }
+    
+    .visualization-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .visualization-container--padded {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+}

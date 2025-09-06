@@ -1,14 +1,6 @@
 .chord-diagram-container {
-    width: 100%;
-    max-width: 800px;
-    height: 465px;
-    background-color: #1f2937;
-    border-radius: 0.5rem;
-    border: 1px solid #374151;
-    display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
 }
 
 .chord-diagram {

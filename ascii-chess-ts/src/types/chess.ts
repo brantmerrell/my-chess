@@ -21,5 +21,5 @@ export const PIECE_SYMBOLS = {
     r: cleanChessPieceUnicode("♜"),
     b: cleanChessPieceUnicode("♝"),
     n: cleanChessPieceUnicode("♞"),
-    p: cleanChessPieceUnicode("♟︎"),
+    p: cleanChessPieceUnicode("♟"),
 };
