@@ -32,7 +32,7 @@ import { useChessGame } from "../hooks/useChessGame";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
 
-type PositionalViewType = "board" | "graph" | "arc" | "chord";
+type PositionalViewType = "graph" | "board" | "arc" | "chord";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
 
 interface UnifiedChessContainerProps {
@@ -48,7 +48,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const { theme, setTheme } = useTheme();
   const dispatch = useAppDispatch();
   const [selectedPositionalView, setSelectedPositionalView] =
-    React.useState<PositionalViewType>("board");
+    React.useState<PositionalViewType>("graph");
   const [selectedHistoricalView, setSelectedHistoricalView] =
     React.useState<HistoricalViewType>("history");
   const [connectionType, setConnectionType] =
@@ -62,6 +62,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     React.useState<boolean>(false);
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
+  const [showGrid, setShowGrid] = React.useState<boolean>(false);
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
@@ -294,6 +295,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             linksData={linksData}
             processedEdges={processedEdges}
             displayMode={displayMode}
+            showGrid={showGrid}
           />
         );
       case "arc":
@@ -380,6 +382,18 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             onConnectionTypeChange={setConnectionType}
           />
           <ThemeSelector currentTheme={theme} onThemeChange={setTheme} />
+          {selectedPositionalView === "graph" && (
+            <div className="grid-toggle-container">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={showGrid}
+                  onChange={(e) => setShowGrid(e.target.checked)}
+                />
+                Show Grid
+              </label>
+            </div>
+          )}
         </div>
       </Accordion>
       <Accordion

@@ -10,12 +10,14 @@ interface GraphViewProps {
   linksData: LinksResponse | null;
   processedEdges: ProcessedEdge[];
   displayMode: PieceDisplayMode;
+  showGrid?: boolean;
 }
 
 const GraphView: React.FC<GraphViewProps> = ({
   linksData,
   processedEdges,
   displayMode,
+  showGrid = false,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -59,6 +61,35 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("viewBox", `0 0 ${width} ${height}`);
 
     const g = svg.append("g");
+
+    const margin = 50;
+    const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+
+    if (showGrid) {
+      const gridLines = g.append("g").attr("class", "grid");
+
+      for (let i = 0; i <= 8; i++) {
+        gridLines
+          .append("line")
+          .attr("x1", margin + i * gridSize)
+          .attr("y1", margin)
+          .attr("x2", margin + i * gridSize)
+          .attr("y2", margin + 8 * gridSize)
+          .attr("stroke", "#e0e0e0")
+          .attr("stroke-width", 1)
+          .attr("opacity", 0.5);
+
+        gridLines
+          .append("line")
+          .attr("x1", margin)
+          .attr("y1", margin + i * gridSize)
+          .attr("x2", margin + 8 * gridSize)
+          .attr("y2", margin + i * gridSize)
+          .attr("stroke", "#e0e0e0")
+          .attr("stroke-width", 1)
+          .attr("opacity", 0.5);
+      }
+    }
 
     type SimulationNode = LinkNode & d3.SimulationNodeDatum;
     type SimulationLink = {
@@ -298,7 +329,7 @@ const GraphView: React.FC<GraphViewProps> = ({
 
       phantomMarkers.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
     });
-  }, [linksData, processedEdges, displayMode]);
+  }, [linksData, processedEdges, displayMode, showGrid]);
 
   return (
     <VisualizationContainer className="graph-view-container">

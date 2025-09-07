@@ -1,7 +1,7 @@
 import React from "react";
 import Selector from "./Selector";
 
-type PositionalViewType = "board" | "graph" | "arc" | "chord";
+type PositionalViewType = "graph" | "board" | "arc" | "chord";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
 
 interface PositionalViewSelectorProps {
