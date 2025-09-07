@@ -2,11 +2,7 @@ import { useSelector } from "react-redux";
 import React from "react";
 import { useAppDispatch } from "../app/hooks";
 import { RootState } from "../app/store";
-import { SetupOptions } from "../models/SetupOptions";
-import {
-    fetchChessComDailyPuzzle,
-    fetchLiChessDailyPuzzle,
-} from "../reducers/puzzles/puzzles.actions";
+import { CHESS_SETUPS, getSetupById, getSetupsByCategory } from "../models/SetupOptions";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
 import { BootstrapTheme } from "./ThemeSelector";
 import "./SelectPosition.css";
@@ -24,12 +20,12 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
     const handleOptionChange = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
-        dispatch(setSelectedSetup(event.target.value));
-        if (event.target.value === SetupOptions.CHESS_COM_DAILY_PUZZLE) {
-            dispatch(fetchChessComDailyPuzzle());
-        }
-        if (event.target.value === SetupOptions.LICHESS_DAILY_PUZZLE) {
-            dispatch(fetchLiChessDailyPuzzle());
+        const setupId = event.target.value;
+        const setup = getSetupById(setupId);
+
+        if (setup) {
+            dispatch(setSelectedSetup(setupId));
+            setup.load(dispatch);
         }
     };
 
@@ -44,20 +40,27 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
                 onKeyDown={(e) => {
                     if (e.key === ' ' || e.key === 'Enter') {
                         e.preventDefault();
-                        // Simulate a click to open the dropdown
                         e.currentTarget.click();
                     }
                 }}
             >
-                <option value={SetupOptions.STANDARD}>
-                    Standard Starting Position
-                </option>
-                <option value={SetupOptions.LICHESS_DAILY_PUZZLE}>
-                    Daily Lichess Puzzle
-                </option>
-                <option value={SetupOptions.CHESS_COM_DAILY_PUZZLE}>
-                    Daily Chess.com Puzzle
-                </option>
+                {/* Regular setups (no category) */}
+                {CHESS_SETUPS.filter(setup => !setup.category).map(setup => (
+                    <option key={setup.id} value={setup.id}>
+                        {setup.displayName}
+                    </option>
+                ))}
+
+                {/* Categorized setups */}
+                {Array.from(new Set(CHESS_SETUPS.map(s => s.category).filter(Boolean))).map(category => (
+                    <optgroup key={category} label={category}>
+                        {getSetupsByCategory(category!).map(setup => (
+                            <option key={setup.id} value={setup.id}>
+                                {setup.displayName}
+                            </option>
+                        ))}
+                    </optgroup>
+                ))}
             </select>
         </div>
     );

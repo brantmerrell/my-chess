@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ChessGame } from "../../chess/chessGame";
 import { Position } from "../../types/chess";
+import { STANDARD_FEN } from "../../models/SetupOptions";
 
 export interface ChessGameState {
     fen: string;
@@ -16,7 +17,7 @@ interface LoadFenPayload {
 }
 
 const initialGameState: ChessGameState = {
-    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    fen: STANDARD_FEN,
     moves: [],
     history: [],
     positions: [
@@ -24,7 +25,7 @@ const initialGameState: ChessGameState = {
             ply: 0,
             san: "-",
             uci: "-",
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            fen: STANDARD_FEN,
         },
     ],
     currentPositionIndex: 0,

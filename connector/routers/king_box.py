@@ -87,7 +87,6 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
         attackers = board.attackers(chess.WHITE, sq) | board.attackers(chess.BLACK, sq)
         for attacker_square in attackers:
             threatening_pieces.add(attacker_square)
-            print(f"DEBUG: Found attacker at {chess.square_name(attacker_square)} threatening phantom {square}")
 
     # Check for pieces threatening kings
     for color in [chess.WHITE, chess.BLACK]:
@@ -96,7 +95,6 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
             attackers = board.attackers(not color, king_square)
             for attacker_square in attackers:
                 threatening_pieces.add(attacker_square)
-                print(f"DEBUG: Found attacker at {chess.square_name(attacker_square)} threatening king at {chess.square_name(king_square)}")
 
     # Add threatening pieces to nodes if not already present
     existing_squares = {node["square"] for node in nodes}
@@ -105,7 +103,6 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
         if square_name not in existing_squares:
             piece = board.piece_at(threat_square)
             if piece:
-                print(f"DEBUG: Adding threatening piece {piece.symbol()} at {square_name} to nodes")
                 nodes.append(
                     {
                         "square": square_name,
