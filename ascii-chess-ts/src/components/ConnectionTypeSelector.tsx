@@ -8,6 +8,7 @@ interface ConnectionTypeSelectorProps {
 }
 
 const CONNECTION_TYPE_OPTIONS = [
+  { value: "none", label: "None" },
   { value: "links", label: "Links" },
   { value: "adjacencies", label: "Adjacencies" },
   { value: "king_box", label: "King Box" },

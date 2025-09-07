@@ -52,7 +52,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [selectedHistoricalView, setSelectedHistoricalView] =
     React.useState<HistoricalViewType>("history");
   const [connectionType, setConnectionType] =
-    React.useState<ConnectionType>("links");
+    React.useState<ConnectionType>("none");
   const [linksData, setLinksData] = React.useState<LinksResponse | null>(null);
   const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
     [],
@@ -247,7 +247,28 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const fetchData = async () => {
       try {
         let fetchedData;
-        if (connectionType === "links") {
+        if (connectionType === "none") {
+          // For "none" type, create nodes from current position but no edges
+          const game = new ChessGame(currentPosition, displayMode);
+          const nodes: any[] = [];
+          
+          // Iterate through all squares to find pieces
+          for (let rank = 1; rank <= 8; rank++) {
+            for (let file = 0; file < 8; file++) {
+              const square = String.fromCharCode(97 + file) + rank; // a1, b1, etc.
+              const piece = (game as any).game.get(square);
+              if (piece) {
+                nodes.push({
+                  square: square,
+                  piece_type: piece.type.toUpperCase(),
+                  color: piece.color === 'b' ? 'white' : 'black',
+                });
+              }
+            }
+          }
+          
+          fetchedData = { nodes, edges: [] };
+        } else if (connectionType === "links") {
           fetchedData = await fetchLinks(chessGameState.fen);
         } else if (connectionType === "adjacencies") {
           fetchedData = await fetchAdjacencies(chessGameState.fen);
@@ -280,7 +301,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     };
 
     fetchData();
-  }, [chessGameState.fen, connectionType]);
+  }, [chessGameState.fen, connectionType, currentPosition, displayMode]);
   const getCurrentBoard = () => {
     const game = new ChessGame(currentPosition, displayMode);
     return game.asciiView();
