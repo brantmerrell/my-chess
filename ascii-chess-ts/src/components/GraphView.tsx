@@ -29,19 +29,19 @@ const GraphView: React.FC<GraphViewProps> = ({
 const getEdgeStyle = (edgeType: string) => {
     switch (edgeType) {
         case "threat":
-            return { color: "darkred", marker: "url(#arrowheadRed)" };
+            return { color: "crimson", marker: "url(#arrowheadRed)" };
         case "protection":
-            return { color: "darkgreen", marker: "url(#arrowheadGreen)" };
+            return { color: "forestgreen", marker: "url(#arrowheadGreen)" };
         case "adjacency":
             return { color: "blue", marker: "url(#arrowheadBlue)" };
         case "king_can_move":
             return { color: "green", marker: "url(#arrowheadGreen)" };
         case "king_blocked_ally":
-            return { color: "orange", marker: "url(#arrowheadGray)" };
+            return { color: "dimgray", marker: "" };
         case "king_blocked_threat":
-            return { color: "red", marker: "url(#arrowheadRed)" };
+            return { color: "dimgray", marker: "" };
         default:
-            return { color: "gray", marker: "url(#arrowheadGray)" };
+            return { color: "dimgray", marker: "url(#arrowheadGray)" };
     }
 };
 
@@ -117,8 +117,8 @@ const getEdgeStyle = (edgeType: string) => {
             .append("path")
             .attr("fill", (d) => {
                 switch (d) {
-                    case "arrowheadRed": return "darkred";
-                    case "arrowheadGreen": return "darkgreen";
+                    case "arrowheadRed": return "crimson";
+                    case "arrowheadGreen": return "forestgreen";
                     case "arrowheadBlue": return "blue";
                     default: return "gray";
                 }
@@ -164,13 +164,34 @@ const getEdgeStyle = (edgeType: string) => {
         node.append("circle")
             .attr("r", 18)
             .attr("fill", (d) => getNodeStyle(d.color).background)
-            .attr("stroke", (d) => getNodeStyle(d.color).stroke)
-            .attr("stroke-width", 3);
+            .attr("stroke", (d) => {
+                const isKing = d.piece_type.toLowerCase() === 'k';
+                const isInCheck = isKing && links.some(link =>
+                    link.type === "threat" && link.target.square === d.square
+                );
+
+                return isInCheck ? "crimson" : getNodeStyle(d.color).stroke;
+            })
+            .attr("stroke-width", (d) => {
+                const isKing = d.piece_type.toLowerCase() === 'k';
+                const isInCheck = isKing && links.some(link =>
+                    link.type === "threat" && link.target.square === d.square
+                );
+
+                return isInCheck ? 3 : 3;
+            });
 
         node.append("text")
             .attr("text-anchor", "middle")
             .attr("dy", ".3em")
-            .attr("fill", (d) => getNodeStyle(d.color).fill)
+            .attr("fill", (d) => {
+                const isKing = d.piece_type.toLowerCase() === 'k';
+                const isInCheck = isKing && links.some(link =>
+                    link.type === "threat" && link.target.square === d.square
+                );
+
+                return isInCheck ? "crimson" : getNodeStyle(d.color).fill;
+            })
             .each(function (d) {
                 const textElement = d3.select(this);
 
@@ -182,6 +203,14 @@ const getEdgeStyle = (edgeType: string) => {
                     .attr("font-family", "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace")
                     .attr("font-weight", "500")
                     .attr("font-variant-numeric", "tabular-nums")
+                    .attr("fill", () => {
+                        const isKing = d.piece_type.toLowerCase() === 'k';
+                        const isInCheck = isKing && links.some(link =>
+                            link.type === "threat" && link.target.square === d.square
+                        );
+
+                        return isInCheck ? "red" : getNodeStyle(d.color).fill;
+                    })
                     .text(getPieceDisplay(d.piece_type, d.color, displayMode));
 
                 textElement
@@ -194,17 +223,37 @@ const getEdgeStyle = (edgeType: string) => {
 
         const phantomMarkers = g
             .append("g")
-            .selectAll<SVGCircleElement, SimulationNode>("circle.phantom-marker")
-            .data(nodes.filter(d => {
-                return d.piece_type === "phantom" &&
-                       links.some(link => link.type === "threat" && link.target.square === d.square);
-            }))
-            .join("circle")
+            .selectAll<SVGTextElement, SimulationNode>("text.phantom-marker")
+            .data(nodes.filter(d => d.piece_type === "phantom"))
+            .join("text")
             .attr("class", "phantom-marker")
-            .attr("r", 6)
-            .attr("fill", "red")
-            .attr("stroke", "darkred")
-            .attr("stroke-width", 2)
+            .attr("text-anchor", "middle")
+            .attr("dy", ".35em")
+            .attr("font-size", "24px")
+            .attr("font-family", "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace")
+            .attr("font-weight", "500")
+            .text("⊡")
+            .attr("fill", (d) => {
+                const kingBlockedEdge = links.find(link =>
+                    link.type === "king_blocked_threat" && link.target.square === d.square
+                );
+                const directThreat = links.some(link =>
+                    link.type === "threat" && link.target.square === d.square
+                );
+
+                return (kingBlockedEdge || directThreat) ? "dimgray" : "lightblue";
+            })
+            .attr("stroke", (d) => {
+                const kingBlockedEdge = links.find(link =>
+                    link.type === "king_blocked_threat" && link.target.square === d.square
+                );
+                const directThreat = links.some(link =>
+                    link.type === "threat" && link.target.square === d.square
+                );
+
+                return (kingBlockedEdge || directThreat) ? "gray" : "gray";
+            })
+            .attr("stroke-width", 1)
             .attr("opacity", 0.8);
 
         simulation.on("tick", () => {
@@ -216,8 +265,8 @@ const getEdgeStyle = (edgeType: string) => {
             node.attr("transform", (d) => `translate(${d.x},${d.y})`);
 
             phantomMarkers
-                .attr("cx", (d) => d.x!)
-                .attr("cy", (d) => d.y!);
+                .attr("x", (d) => d.x!)
+                .attr("y", (d) => d.y!);
         });
     }, [linksData, processedEdges, displayMode]);
 

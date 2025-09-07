@@ -372,7 +372,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 theme={theme}
             >
                 <div className="setup-controls">
-                    <SelectPosition theme={theme} />
+                    <SelectPosition theme={theme} setFen={setFen} />
                     <FenInput
                         fen={fen}
                         onFenChange={setFen}

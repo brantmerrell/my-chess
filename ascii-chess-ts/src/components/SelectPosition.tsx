@@ -2,16 +2,17 @@ import { useSelector } from "react-redux";
 import React from "react";
 import { useAppDispatch } from "../app/hooks";
 import { RootState } from "../app/store";
-import { CHESS_SETUPS, getSetupById, getSetupsByCategory } from "../models/SetupOptions";
+import { CHESS_SETUPS, getSetupById, getSetupsByCategory, StaticPositionSetup } from "../models/SetupOptions";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
 import { BootstrapTheme } from "./ThemeSelector";
 import "./SelectPosition.css";
 
 interface SelectPositionProps {
     theme: BootstrapTheme;
+    setFen: (fen: string) => void;
 }
 
-const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
+const SelectPosition: React.FC<SelectPositionProps> = ({ theme, setFen }) => {
     const dispatch = useAppDispatch();
     const selectedSetup = useSelector(
         (state: RootState) => state.selectedSetup
@@ -25,7 +26,12 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme }) => {
 
         if (setup) {
             dispatch(setSelectedSetup(setupId));
-            setup.load(dispatch);
+
+            if (setup instanceof StaticPositionSetup) {
+                setFen(setup.getFen());
+            } else {
+                setup.load(dispatch);
+            }
         }
     };
 

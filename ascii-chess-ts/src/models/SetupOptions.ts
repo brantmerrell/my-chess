@@ -25,8 +25,11 @@ export class StaticPositionSetup extends ChessSetup {
   }
 
   load(dispatch: AppDispatch): void {
-    const { loadFen } = require('../app/store');
-    dispatch(loadFen({ fen: this.fen }));
+    // No-op: StaticPositionSetup is handled by the component via setFen()
+  }
+
+  getFen(): string {
+    return this.fen;
   }
 }
 

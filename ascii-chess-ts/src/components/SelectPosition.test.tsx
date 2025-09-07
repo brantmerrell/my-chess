@@ -4,9 +4,10 @@ import { store } from "../app/store";
 import SelectPosition from "../components/SelectPosition";
 
 test("renders SelectPosition component", () => {
+    const mockSetFen = jest.fn();
     render(
         <Provider store={store}>
-            <SelectPosition theme="cyborg" />
+            <SelectPosition theme="cyborg" setFen={mockSetFen} />
         </Provider>
     );
 
@@ -14,9 +15,10 @@ test("renders SelectPosition component", () => {
 });
 
 test("changes selected setup on option change", () => {
+    const mockSetFen = jest.fn();
     render(
         <Provider store={store}>
-            <SelectPosition theme="cyborg" />
+            <SelectPosition theme="cyborg" setFen={mockSetFen} />
         </Provider>
     );
 

@@ -37,7 +37,6 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
                 and square_info["square"] != king_square
             ):
                 # Create edges for all valid squares around the king
-                # If the square is empty (no piece), add it as a phantom node
                 if "piece_type" not in square_info:
                     phantom_squares.add(square_info["square"])
 

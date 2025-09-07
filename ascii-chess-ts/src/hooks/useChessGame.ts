@@ -4,7 +4,7 @@ import { RootState } from "../app/store";
 import { initialFen } from "../constants/env";
 import { ChessComPuzzleModel } from "../models/ChessComPuzzleModel";
 import { LiChessPuzzleModel } from "../models/LiChessPuzzleModel";
-import { SetupOptions } from "../models/SetupOptions";
+import { SetupOptions, getSetupById, StaticPositionSetup } from "../models/SetupOptions";
 import { PieceDisplayMode } from "../types/chess";
 import { Position } from "../types/chess";
 import { useMoveHistory } from "./useMoveHistory";
@@ -34,19 +34,26 @@ export const useChessGame = (displayMode: PieceDisplayMode) => {
     useEffect(() => {
         let newFen = initialFen;
         let newSetupHistory;
-        switch (selectedSetup) {
-            case SetupOptions.LICHESS_DAILY_PUZZLE:
-                if (liChessPuzzle?.initialPuzzleFEN) {
-                    newFen = liChessPuzzle.initialPuzzleFEN;
-                    newSetupHistory = liChessPuzzle.setupHistory;
-                }
-                break;
-            case SetupOptions.CHESS_COM_DAILY_PUZZLE:
-                if (chessComPuzzle?.initialPuzzleFEN) {
-                    newFen = chessComPuzzle.initialPuzzleFEN;
-                }
-                break;
+
+        const setup = getSetupById(selectedSetup);
+        if (setup instanceof StaticPositionSetup) {
+            newFen = setup.getFen();
+        } else {
+            switch (selectedSetup) {
+                case SetupOptions.LICHESS_DAILY_PUZZLE:
+                    if (liChessPuzzle?.initialPuzzleFEN) {
+                        newFen = liChessPuzzle.initialPuzzleFEN;
+                        newSetupHistory = liChessPuzzle.setupHistory;
+                    }
+                    break;
+                case SetupOptions.CHESS_COM_DAILY_PUZZLE:
+                    if (chessComPuzzle?.initialPuzzleFEN) {
+                        newFen = chessComPuzzle.initialPuzzleFEN;
+                    }
+                    break;
+            }
         }
+
         setLocalFen(newFen);
         setPendingSetupHistory(newSetupHistory);
     }, [selectedSetup, liChessPuzzle, chessComPuzzle]);
@@ -70,6 +77,3 @@ export const useChessGame = (displayMode: PieceDisplayMode) => {
         submitUndoMove: undoLastMove,
     };
 };
-
-
-
