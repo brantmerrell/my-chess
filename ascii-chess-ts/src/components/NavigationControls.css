@@ -1,114 +1,114 @@
 .navigation-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 10px 0;
-    max-width: 400px;
-    margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .navigation-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
-    grid-template-areas: "start back position forward end";
-    align-items: center;
-    gap: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+  grid-template-areas: "start back position forward end";
+  align-items: center;
+  gap: 4px;
 }
 
 .nav-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .nav-button .keybinding {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-size: 0.75em;
-    font-family: monospace;
-    opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  font-family: monospace;
+  opacity: 0.8;
 }
 
 .nav-button:focus {
-    outline: 3px solid #ffd700;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
-    background: #0056b3 !important;
-    transform: scale(1.1);
-    z-index: 10;
-    position: relative;
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  background: #0056b3 !important;
+  transform: scale(1.1);
+  z-index: 10;
+  position: relative;
 }
 
 .start-button {
-    grid-area: start;
+  grid-area: start;
 }
 
 .backward-button {
-    grid-area: back;
+  grid-area: back;
 }
 
 .forward-button {
-    grid-area: forward;
+  grid-area: forward;
 }
 
 .end-button {
-    grid-area: end;
+  grid-area: end;
 }
 
 .nav-button:hover:not(:disabled) {
-    background: #0056b3;
+  background: #0056b3;
 }
 
 .nav-button:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.5;
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .position-indicator {
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    grid-area: position;
-    padding: 8px 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  grid-area: position;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 /* Theme-specific styles */
 .navigation-controls {
-    padding: 10px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 @media (max-width: 768px) {
-    .navigation-buttons {
-        gap: 4px;
-    }
+  .navigation-buttons {
+    gap: 4px;
+  }
 
-    .nav-button {
-        padding: 6px 8px;
-        font-size: 14px;
-        min-width: 32px;
-        height: 32px;
-    }
+  .nav-button {
+    padding: 6px 8px;
+    font-size: 14px;
+    min-width: 32px;
+    height: 32px;
+  }
 
-    .position-indicator {
-        font-size: 12px;
-        margin: 0 4px;
-        min-width: 50px;
-    }
+  .position-indicator {
+    font-size: 12px;
+    margin: 0 4px;
+    min-width: 50px;
+  }
 }

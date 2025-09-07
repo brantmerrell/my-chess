@@ -1,234 +1,240 @@
 .moves-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 10px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .moves-forward {
-    display: grid;
-    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
-    grid-template-areas: "dropdown dropdown position submit submit";
-    align-items: center;
-    gap: 4px;
-    width: 100%;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+  grid-template-areas: "dropdown dropdown position submit submit";
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .moves-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr 120px 1fr 1fr;
-    grid-template-areas: ". . . undo undo";
-    align-items: center;
-    gap: 4px;
-    width: 100%;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+  grid-template-areas: ". . . undo undo";
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Move Selection Dropdown */
 #selectedMove {
-    height: 38px;
-    padding: 0 10px;
-    border-radius: 5px;
-    border: 1px solid #4a5568;
-    background-color: white;
-    font-family: monospace;
-    font-size: 14px;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 16px 12px;
-    padding-right: 2.5rem;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    transition: opacity 0.2s, background-color 0.2s;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 5px;
+  border: 1px solid #4a5568;
+  background-color: white;
+  font-family: monospace;
+  font-size: 14px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 16px 12px;
+  padding-right: 2.5rem;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
 }
 
-
 #selectedMove:focus {
-    outline: 3px solid #ffd700;
-    outline-offset: 2px;
-    border-color: #2b6cb0;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
-    background-color: #fff3cd !important;
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  border-color: #2b6cb0;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  background-color: #fff3cd !important;
 }
 
 #selectedMove:disabled {
-    background-color: #f7fafc;
-    color: #a0aec0;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background-color: #f7fafc;
+  color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Move Input */
 #move {
-    grid-area: position;
-    height: 38px;
-    padding: 0 10px;
-    border-radius: 5px;
-    border: 1px solid #4a5568;
-    background-color: white;
-    font-family: monospace;
-    font-size: 14px;
-    width: 100%;
-    margin: 0;
-    box-sizing: border-box;
-    transition: opacity 0.2s, background-color 0.2s;
+  grid-area: position;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 5px;
+  border: 1px solid #4a5568;
+  background-color: white;
+  font-family: monospace;
+  font-size: 14px;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
 }
 
 #move:focus {
-    outline: 3px solid #ffd700;
-    outline-offset: 2px;
-    border-color: #2b6cb0;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
-    background-color: #fff3cd !important;
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  border-color: #2b6cb0;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  background-color: #fff3cd !important;
 }
 
 #move:disabled {
-    background-color: #f7fafc;
-    color: #a0aec0;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background-color: #f7fafc;
+  color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 #move:disabled::placeholder {
-    color: #cbd5e0;
+  color: #cbd5e0;
 }
 
 /* Submit Move Button */
 #submitMove {
-    grid-area: submit;
-    height: 38px;
-    padding: 0 12px;
-    color: white;
-    font-size: 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.2s, opacity 0.2s;
-    width: 100%;
-    margin: 0;
-    box-sizing: border-box;
+  grid-area: submit;
+  height: 38px;
+  padding: 0 12px;
+  color: white;
+  font-size: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 #submitMove:hover:not(:disabled) {
-    background-color: #006400;
+  background-color: #006400;
 }
 
 #submitMove:active:not(:disabled) {
-    background-color: #004d00;
+  background-color: #004d00;
 }
 
 #submitMove:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Undo Button */
 #undo {
-    grid-area: undo;
-    height: 38px;
-    padding: 0 15px;
-    color: white;
-    font-size: 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.2s, opacity 0.2s;
-    width: 100%;
-    margin: 0;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+  grid-area: undo;
+  height: 38px;
+  padding: 0 15px;
+  color: white;
+  font-size: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 #undo .keybinding {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-size: 0.75em;
-    font-family: monospace;
-    opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  font-family: monospace;
+  opacity: 0.8;
 }
 
 #undo:focus {
-    outline: 3px solid #ffd700;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
-    background-color: #dc3545 !important;
-    transform: scale(1.05);
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  background-color: #dc3545 !important;
+  transform: scale(1.05);
 }
 
 #submitMove:focus {
-    outline: 3px solid #ffd700;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
-    transform: scale(1.05);
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  transform: scale(1.05);
 }
 
 #undo:hover:not(:disabled) {
-    background-color: #8b0000;
+  background-color: #8b0000;
 }
 
 #undo:active:not(:disabled) {
-    background-color: #660000;
+  background-color: #660000;
 }
 
 #undo:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    opacity: 0.6;
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Error Messages */
 .move-error,
 .undo-message {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    padding: 0.5rem;
-    border-radius: 4px;
-    background-color: #fee;
-    border: 1px solid #fcc;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #fee;
+  border: 1px solid #fcc;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .moves-layout {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .moves-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .moves-forward {
-        flex-wrap: wrap;
-        min-width: auto;
-    }
+  .moves-forward {
+    flex-wrap: wrap;
+    min-width: auto;
+  }
 
-    #selectedMove,
-    #move,
-    #submitMove,
-    #undo {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    
-    #undo {
-        margin-left: 0;
-    }
+  #selectedMove,
+  #move,
+  #submitMove,
+  #undo {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  #undo {
+    margin-left: 0;
+  }
 }
-

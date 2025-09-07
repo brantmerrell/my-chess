@@ -1,46 +1,46 @@
 .accordion {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .accordion-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-    text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  text-align: left;
 }
 
 .accordion-header:hover {
-    background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .accordion-header:focus {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
 }
 
 .accordion-chevron {
-    transition: transform 0.2s ease;
-    font-size: 0.75rem;
-    color: #007bff;
+  transition: transform 0.2s ease;
+  font-size: 0.75rem;
+  color: #007bff;
 }
 
 .accordion-chevron.expanded {
-    transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .accordion-title {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 /* Theme-specific title colors */
@@ -51,7 +51,7 @@
 .accordion-title--vapor,
 .accordion-title--solar,
 .accordion-title--quartz {
-    color: #e2e8f0; /* Light text for dark themes */
+  color: #e2e8f0; /* Light text for dark themes */
 }
 
 .accordion-title--cerulean,
@@ -69,7 +69,7 @@
 .accordion-title--spacelab,
 .accordion-title--united,
 .accordion-title--yeti {
-    color: #1a202c; /* Dark text for light themes */
+  color: #1a202c; /* Dark text for light themes */
 }
 
 /* Header theme-specific styling */
@@ -80,7 +80,7 @@
 .accordion-header--vapor,
 .accordion-header--solar,
 .accordion-header--quartz {
-    color: #e2e8f0;
+  color: #e2e8f0;
 }
 
 .accordion-header--cerulean,
@@ -98,22 +98,24 @@
 .accordion-header--spacelab,
 .accordion-header--united,
 .accordion-header--yeti {
-    color: #1a202c;
+  color: #1a202c;
 }
 
 .accordion-content {
-    overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-    width: 100%;
-    box-sizing: border-box;
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease,
+    padding 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .accordion-content.collapsed {
-    max-height: 0;
-    padding: 0 1rem;
+  max-height: 0;
+  padding: 0 1rem;
 }
 
 .accordion-content.expanded {
-    max-height: 500px;
-    padding: 0 1rem 1rem 1rem;
+  max-height: 500px;
+  padding: 0 1rem 1rem 1rem;
 }

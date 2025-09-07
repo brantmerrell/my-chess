@@ -2,41 +2,40 @@ import axios from "axios";
 
 let apiBaseUrl: string;
 if (window.location.hostname === "localhost") {
-    apiBaseUrl = "http://localhost:8000";
+  apiBaseUrl = "http://localhost:8000";
 } else {
-    apiBaseUrl = ``;
+  apiBaseUrl = ``;
 }
 
 // should the apiBaseURL fetch functions be in a connector/connector.service.ts?
 export const fetchLinks = async (inputString: string) => {
-    try {
-        const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}`;
-        const response = await axios.get(url);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching links:", error);
-    }
+  try {
+    const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching links:", error);
+  }
 };
 
 // Add new function for adjacencies
 export const fetchAdjacencies = async (inputString: string) => {
-    try {
-        const url = `${apiBaseUrl}/adjacencies/?fen_string=${encodeURIComponent(inputString)}`;
-        const response = await axios.get(url);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching adjacencies:", error);
-    }
+  try {
+    const url = `${apiBaseUrl}/adjacencies/?fen_string=${encodeURIComponent(inputString)}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching adjacencies:", error);
+  }
 };
 
 // Add new function for king_box
 export const fetchKingBox = async (inputString: string) => {
-    try {
-        const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}`;
-        const response = await axios.get(url);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching king_box:", error);
-    }
+  try {
+    const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching king_box:", error);
+  }
 };
-

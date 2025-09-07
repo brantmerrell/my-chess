@@ -1,13 +1,16 @@
-.arc-view-container {}
-
-.arc-view-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 60px;
+.arc-view-container {
 }
 
-.arc-view-svg-container {}
+.arc-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 60px;
+}
 
-.arc-view-svg {}
+.arc-view-svg-container {
+}
+
+.arc-view-svg {
+}

@@ -1,53 +1,53 @@
 .keybinding-indicators {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 0.85em;
-    z-index: 1000;
-    max-width: 250px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  z-index: 1000;
+  max-width: 250px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
 }
 
 .keybinding-indicators:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 .keybinding-header {
-    font-weight: bold;
-    margin-bottom: 8px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .keybinding-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .keybinding-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .keybinding-key {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: monospace;
-    min-width: 30px;
-    text-align: center;
-    display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  min-width: 30px;
+  text-align: center;
+  display: inline-block;
 }
 
 .keybinding-description {
-    margin-left: 10px;
-    flex: 1;
-    text-align: left;
+  margin-left: 10px;
+  flex: 1;
+  text-align: left;
 }

@@ -6,3 +6,6 @@
 package-lock.json
 node_modules/
 __pycache__/
+.env
+**/build/
+*.mermaid

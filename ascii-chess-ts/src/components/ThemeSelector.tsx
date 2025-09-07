@@ -3,45 +3,49 @@ import Selector from "./Selector";
 
 // I think BootstrapTheme should be called BootswatchTheme
 export type BootstrapTheme =
-    | "cyborg"
-    | "vapor"
-    | "journal"
-    | "solar"
-    | "superhero"
-    | "minty"
-    | "quartz";
+  | "cyborg"
+  | "vapor"
+  | "journal"
+  | "solar"
+  | "superhero"
+  | "minty"
+  | "quartz";
 
 interface ThemeSelectorProps {
-    currentTheme: BootstrapTheme;
-    onThemeChange: (theme: BootstrapTheme) => void;
+  currentTheme: BootstrapTheme;
+  onThemeChange: (theme: BootstrapTheme) => void;
 }
 
 const THEME_OPTIONS = [
-    { value: "cyborg", label: "Cyborg" },
-    { value: "vapor", label: "Vapor" },
-    { value: "journal", label: "Journal" },
-    { value: "solar", label: "Solar" },
-    { value: "superhero", label: "Superhero" },
-    { value: "minty", label: "Minty" },
-    { value: "quartz", label: "Quartz" }
+  { value: "cyborg", label: "Cyborg" },
+  { value: "vapor", label: "Vapor" },
+  { value: "journal", label: "Journal" },
+  { value: "solar", label: "Solar" },
+  { value: "superhero", label: "Superhero" },
+  { value: "minty", label: "Minty" },
+  { value: "quartz", label: "Quartz" },
 ] as const;
 
 // TODO
 // Quartz bootwatch theme
 // LiChess themes
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({
-    currentTheme,
-    onThemeChange,
+  currentTheme,
+  onThemeChange,
 }) => {
-    return (
-        <Selector
-            id="theme-selector"
-            label={<span><u>T</u>heme</span>}
-            value={currentTheme}
-            onChange={onThemeChange}
-            options={THEME_OPTIONS}
-        />
-    );
+  return (
+    <Selector
+      id="theme-selector"
+      label={
+        <span>
+          <u>T</u>heme
+        </span>
+      }
+      value={currentTheme}
+      onChange={onThemeChange}
+      options={THEME_OPTIONS}
+    />
+  );
 };
 
 export default ThemeSelector;

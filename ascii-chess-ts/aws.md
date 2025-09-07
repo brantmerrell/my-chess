@@ -1,9 +1,11 @@
 ## Load environment variables
+
 ```bash
 export $(cat ../.env | xargs)
 ```
 
 ## Authenticate with ECR
+
 ```bash
 aws ecr get-login-password \
     --region ${AWS_REGION} \
@@ -45,6 +47,7 @@ aws ecs describe-services \
 ```
 
 ## Watch for new task status
+
 ```bash
 aws ecs list-tasks \
     --cluster my-chess \
@@ -52,4 +55,3 @@ aws ecs list-tasks \
     --profile ${AWS_PROFILE} \
     --region ${AWS_REGION} > list-asciichessts-tasks.json
 ```
-

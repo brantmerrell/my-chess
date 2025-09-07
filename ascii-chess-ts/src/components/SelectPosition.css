@@ -1,62 +1,61 @@
 body {
-    .start-fen {
-        margin: 5px;
-        height: 38px;
-        border-radius: 5px;
-        width: 485px;
-    }
+  .start-fen {
+    margin: 5px;
+    height: 38px;
+    border-radius: 5px;
+    width: 485px;
+  }
 }
 .position-layout {
-    padding: 0px;
-    display: flex;
-    margin: 5px auto;
-    width: 100%;
+  padding: 0px;
+  display: flex;
+  margin: 5px auto;
+  width: 100%;
 }
 
 .position-select {
-    width: 500px;
-    text-align: center;
-    height: 38px;
-    padding: 0 10px;
-    border-radius: 5px;
-    background-position: right 0.75rem center;
+  width: 500px;
+  text-align: center;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 5px;
+  background-position: right 0.75rem center;
 }
 
 /* Theme-specific fixes for Quartz theme dropdown text alignment */
 .position-select--quartz {
-    height: 44px !important;
-    line-height: 44px;
-    padding: 0 10px;
+  height: 44px !important;
+  line-height: 44px;
+  padding: 0 10px;
 }
 
 .position-select:focus {
-    outline: 3px solid #ffd700 !important;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
-    background-color: #fff3cd !important;
-    color: #856404 !important;
-    transform: scale(1.02);
-    z-index: 10;
-    position: relative;
+  outline: 3px solid #ffd700 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  transform: scale(1.02);
+  z-index: 10;
+  position: relative;
 }
 
 .position-select:hover {
 }
 
 .position-select option {
-    padding: 8px;
+  padding: 8px;
 }
 
 /* Remove default arrow in IE */
 .position-select::-ms-expand {
-    display: none;
+  display: none;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .position-layout {
-        margin: 5px 0;
-        max-width: 400px;
-    }
+  .position-layout {
+    margin: 5px 0;
+    max-width: 400px;
+  }
 }
-

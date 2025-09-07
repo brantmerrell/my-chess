@@ -1,42 +1,44 @@
 /* Shared styles for all visualization containers */
 .visualization-container {
-    width: 100%;
-    height: 500px;
-    max-width: 800px;
-    background-color: #1f2937;
-    border-radius: 0.5rem;
-    border: 1px solid #374151;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
+  width: 100%;
+  height: 500px;
+  max-width: 800px;
+  background-color: #1f2937;
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Shared SVG container styles */
 .visualization-svg {
-    width: 100%;
-    height: 100%;
-    flex: 1;
+  width: 100%;
+  height: 100%;
+  flex: 1;
 }
 
 /* Common SVG text styling - ensures consistent chess piece rendering */
 .visualization-svg text {
-    font-family: "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono", monospace !important;
-    font-weight: 500 !important;
-    font-variant-numeric: tabular-nums !important;
+  font-family:
+    "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono",
+    monospace !important;
+  font-weight: 500 !important;
+  font-variant-numeric: tabular-nums !important;
 }
 
 /* Variation for containers that need different layouts */
 .visualization-container--centered {
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .visualization-container--flex-column {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 .visualization-container--with-padding {
-    padding: 1rem;
-    justify-content: center;
+  padding: 1rem;
+  justify-content: center;
 }

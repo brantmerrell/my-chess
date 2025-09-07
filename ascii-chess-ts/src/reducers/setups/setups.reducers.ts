@@ -4,14 +4,14 @@ import { AnyAction } from "redux";
 const initialState = "";
 
 export const selectedSetupReducer = (
-    state = initialState,
-    action: AnyAction
+  state = initialState,
+  action: AnyAction,
 ) => {
-    switch (action.type) {
-        case SET_SELECTED_SETUP:
-            const newState = action.payload;
-            return newState;
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case SET_SELECTED_SETUP:
+      const newState = action.payload;
+      return newState;
+    default:
+      return state;
+  }
 };
