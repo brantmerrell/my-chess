@@ -12,7 +12,7 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
     """
     nodes = []
     edges = []
-    phantom_squares = set()  # Track phantom nodes we need to create
+    phantom_squares = set()  # Track phantom nodes to create
 
     # Get all pieces on board as nodes
     for square in chess.SQUARES:
@@ -37,6 +37,10 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
                 and square_info["square"] != king_square
             ):
                 # Create edges for all valid squares around the king
+                # If the square is empty (no piece), add it as a phantom node
+                if "piece_type" not in square_info:
+                    phantom_squares.add(square_info["square"])
+
                 if square_info["status"] == "open":
                     # This is where the king CAN move
                     edge_type = "king_can_move"
@@ -47,9 +51,6 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
                             "target": square_info["square"],
                         }
                     )
-                    # If the square is empty (no piece), add it as a phantom node
-                    if "piece_type" not in square_info:
-                        phantom_squares.add(square_info["square"])
                 elif square_info["status"] == "blocked-by-ally":
                     edge_type = "king_blocked_ally"
                 elif square_info["status"] == "blocked-by-threat":
@@ -78,11 +79,46 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
             }
         )
 
+    # Add as nodes all pieces that threaten kings or phantom squares
+    threatening_pieces = set()
+
+    for square in phantom_squares:
+        sq = chess.parse_square(square)
+        attackers = board.attackers(chess.WHITE, sq) | board.attackers(chess.BLACK, sq)
+        for attacker_square in attackers:
+            threatening_pieces.add(attacker_square)
+            print(f"DEBUG: Found attacker at {chess.square_name(attacker_square)} threatening phantom {square}")
+
+    # Check for pieces threatening kings
+    for color in [chess.WHITE, chess.BLACK]:
+        king_square = board.king(color)
+        if king_square:
+            attackers = board.attackers(not color, king_square)
+            for attacker_square in attackers:
+                threatening_pieces.add(attacker_square)
+                print(f"DEBUG: Found attacker at {chess.square_name(attacker_square)} threatening king at {chess.square_name(king_square)}")
+
+    # Add threatening pieces to nodes if not already present
+    existing_squares = {node["square"] for node in nodes}
+    for threat_square in threatening_pieces:
+        square_name = chess.square_name(threat_square)
+        if square_name not in existing_squares:
+            piece = board.piece_at(threat_square)
+            if piece:
+                print(f"DEBUG: Adding threatening piece {piece.symbol()} at {square_name} to nodes")
+                nodes.append(
+                    {
+                        "square": square_name,
+                        "piece_type": piece.symbol(),
+                        "color": "white" if piece.color else "black",
+                    }
+                )
+
     # Add threat edges from attacking pieces to king squares and phantom nodes
     # Only include threats that are relevant to the king box visualization
     king_squares = set()
     phantom_squares_set = set()
-    
+
     # Collect king squares and phantom squares for scope limiting
     for node in nodes:
         if node["piece_type"] == "phantom":
@@ -91,39 +127,43 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
             target_piece = board.piece_at(chess.parse_square(node["square"]))
             if target_piece and target_piece.symbol().lower() == 'k':
                 king_squares.add(node["square"])
-    
+
     for node in nodes:
         square_name = node["square"]
         square = chess.parse_square(square_name)
-        
-        # For phantom nodes, only get threats from ENEMY pieces
+
+        # For phantom nodes, only get threats from enemy pieces
         if node["piece_type"] == "phantom":
             # Need to determine which king this phantom square belongs to
             # Check which king is adjacent to this phantom square
             phantom_king_color = None
             for king_color in [chess.WHITE, chess.BLACK]:
                 king_data = get_king_box_data(board, king_color)
+                # Check if this phantom square is in the king's box (regardless of status)
                 for square_info in king_data["squares"]:
-                    if square_info["square"] == square_name and square_info["status"] == "open":
+                    if square_info["square"] == square_name and "piece_type" not in square_info:
+                        # It's an empty square in this king's box
                         phantom_king_color = king_color
                         break
                 if phantom_king_color is not None:
                     break
-            
+
             # Only show threats from enemy pieces to this phantom square
             if phantom_king_color is not None:
                 attackers = board.attackers(not phantom_king_color, square)
-                # Only include attackers that are also in our nodes (scope limiting)
+                # Include ALL attackers, not just those in nodes (so queen can threaten phantom squares)
                 for attacker_square in attackers:
                     attacker_square_name = chess.square_name(attacker_square)
-                    if any(n["square"] == attacker_square_name for n in nodes):
-                        edges.append(
-                            {
-                                "type": "threat",
-                                "source": attacker_square_name,
-                                "target": square_name,
-                            }
-                        )
+                    print(f"DEBUG: Creating threat edge from {attacker_square_name} to phantom {square_name}")
+                    edges.append(
+                        {
+                            "type": "threat",
+                            "source": attacker_square_name,
+                            "target": square_name,
+                        }
+                    )
+            else:
+                pass
         else:
             # For actual pieces, only show threats TO KINGS (not other pieces)
             target_piece = board.piece_at(square)
@@ -217,9 +257,12 @@ def get_king_box_data(board: chess.Board, color: chess.Color) -> Dict:
                 # Enemy piece - always blocked by threat
                 status = "blocked-by-threat"
         else:
-            # Square is empty - check if it's safe for the king using attackers method
-            # This approach works regardless of whose turn it is, similar to links endpoint
-            if board.is_attacked_by(not color, square):
+            # Square is empty - check if it's safe for the king
+            temp_board = board.copy()
+            temp_board.set_piece_at(king_square, None)  # Remove king from current position
+            temp_board.set_piece_at(square, chess.Piece(chess.KING, color))  # Place king at new position
+
+            if temp_board.is_attacked_by(not color, square):
                 status = "blocked-by-threat"
             else:
                 status = "open"

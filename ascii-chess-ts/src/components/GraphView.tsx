@@ -36,6 +36,10 @@ const getEdgeStyle = (edgeType: string) => {
             return { color: "blue", marker: "url(#arrowheadBlue)" };
         case "king_can_move":
             return { color: "green", marker: "url(#arrowheadGreen)" };
+        case "king_blocked_ally":
+            return { color: "orange", marker: "url(#arrowheadGray)" };
+        case "king_blocked_threat":
+            return { color: "red", marker: "url(#arrowheadRed)" };
         default:
             return { color: "gray", marker: "url(#arrowheadGray)" };
     }
@@ -130,7 +134,6 @@ const getEdgeStyle = (edgeType: string) => {
             .attr("stroke-width", 2)
             .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
-        // Filter out phantom nodes from visual rendering
         const visibleNodes = nodes.filter(d => d.piece_type !== "phantom");
 
         const node = g
@@ -189,6 +192,21 @@ const getEdgeStyle = (edgeType: string) => {
                     .text(d.square);
             });
 
+        const phantomMarkers = g
+            .append("g")
+            .selectAll<SVGCircleElement, SimulationNode>("circle.phantom-marker")
+            .data(nodes.filter(d => {
+                return d.piece_type === "phantom" &&
+                       links.some(link => link.type === "threat" && link.target.square === d.square);
+            }))
+            .join("circle")
+            .attr("class", "phantom-marker")
+            .attr("r", 6)
+            .attr("fill", "red")
+            .attr("stroke", "darkred")
+            .attr("stroke-width", 2)
+            .attr("opacity", 0.8);
+
         simulation.on("tick", () => {
             link.attr("x1", (d) => d.source.x!)
                 .attr("y1", (d) => d.source.y!)
@@ -196,6 +214,10 @@ const getEdgeStyle = (edgeType: string) => {
                 .attr("y2", (d) => d.target.y!);
 
             node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+            phantomMarkers
+                .attr("cx", (d) => d.x!)
+                .attr("cy", (d) => d.y!);
         });
     }, [linksData, processedEdges, displayMode]);
 
