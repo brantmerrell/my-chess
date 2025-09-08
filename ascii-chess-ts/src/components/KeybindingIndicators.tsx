@@ -5,6 +5,8 @@ const KeybindingIndicators: React.FC = () => {
   const keybindings = [
     { key: "j", description: "Scroll down" },
     { key: "k", description: "Scroll up" },
+    { key: "+", description: "Increase container height" },
+    { key: "-", description: "Decrease container height" },
     { key: "f", description: "Focus position selector" },
     { key: "F", description: "Focus FEN input" },
     { key: "?", description: "Toggle shortcuts panel" },

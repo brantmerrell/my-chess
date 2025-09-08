@@ -118,21 +118,27 @@
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "positional historical";
   gap: 2rem;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding-bottom: 8px; /* Space for resize handle */
 }
 
 .positional-section {
   grid-area: positional;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
+  height: 100%;
+  min-height: 0; /* Important for flex children */
   box-sizing: border-box;
 }
 
 .positional-section .view-container {
   width: 100%;
+  flex: 1;
+  min-height: 0; /* Allow shrinking */
   overflow: auto;
   box-sizing: border-box;
   display: flex;
@@ -142,13 +148,18 @@
 
 .historical-section {
   grid-area: historical;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
+  min-height: 0; /* Important for flex children */
   box-sizing: border-box;
 }
 
 .historical-section .view-container {
   width: 100%;
+  flex: 1;
+  min-height: 0; /* Allow shrinking */
   overflow: auto;
   box-sizing: border-box;
   display: flex;
@@ -165,16 +176,19 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    height: auto;
   }
 
   .positional-section {
     order: 1;
     width: 100%;
+    min-height: 300px;
   }
 
   .historical-section {
     order: 2;
     width: 100%;
+    min-height: 300px;
   }
 
   .view-controls-grid {

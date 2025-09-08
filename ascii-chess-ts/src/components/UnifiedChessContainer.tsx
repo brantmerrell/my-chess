@@ -18,6 +18,7 @@ import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./SelectPosition";
 import ThemeSelector from "./ThemeSelector";
 import { PositionalViewSelector, HistoricalViewSelector } from "./ViewSelector";
+import VerticalResizer, { VerticalResizerHandle } from "./VerticalResizer";
 import { ChessGame } from "../chess/chessGame";
 import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
@@ -47,6 +48,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [notification, setNotification] = React.useState<string>("");
   const { theme, setTheme } = useTheme();
   const dispatch = useAppDispatch();
+  const verticalResizerRef = React.useRef<VerticalResizerHandle>(null);
   const [selectedPositionalView, setSelectedPositionalView] =
     React.useState<PositionalViewType>("graph");
   const [selectedHistoricalView, setSelectedHistoricalView] =
@@ -130,6 +132,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "f":
+          e.preventDefault(); // Prevent alphabetical selection in dropdown
           console.log("f");
           const positionSelector = document.querySelector(
             "#position-selector",
@@ -229,6 +232,21 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "V":
           setShowMoveControls(!showMoveControls);
           break;
+        case "+":
+        case "=": // Also handle = key (which is typically the same key as + without shift)
+          e.preventDefault();
+          verticalResizerRef.current?.increaseHeight();
+          break;
+        case "-":
+          e.preventDefault();
+          verticalResizerRef.current?.decreaseHeight();
+          break;
+        case "w":
+        case "W":
+          if (selectedPositionalView === "graph") {
+            setShowGrid(!showGrid);
+          }
+          break;
       }
     };
 
@@ -242,6 +260,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     showViewControls,
     showFenControls,
     showMoveControls,
+    showGrid,
+    selectedPositionalView,
   ]);
   React.useEffect(() => {
     const fetchData = async () => {
@@ -390,7 +410,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                   checked={showGrid}
                   onChange={(e) => setShowGrid(e.target.checked)}
                 />
-                Show Grid
+                Sho<u>w</u> Grid
               </label>
             </div>
           )}
@@ -416,14 +436,21 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           />
         </div>
       </Accordion>
-      <div className="main-content">
-        <div className="positional-section">
-          <div className="view-container">{renderPositionalView()}</div>
+      <VerticalResizer
+        ref={verticalResizerRef}
+        initialHeight={500}
+        minHeight={300}
+        maxHeight={window.innerHeight * 0.8}
+      >
+        <div className="main-content">
+          <div className="positional-section">
+            <div className="view-container">{renderPositionalView()}</div>
+          </div>
+          <div className="historical-section">
+            <div className="view-container">{renderHistoricalView()}</div>
+          </div>
         </div>
-        <div className="historical-section">
-          <div className="view-container">{renderHistoricalView()}</div>
-        </div>
-      </div>
+      </VerticalResizer>
       <Accordion
         title={
           <span>

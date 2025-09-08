@@ -1,0 +1,76 @@
+.vertical-resizer-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.vertical-resizer-content {
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.vertical-resizer-handle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  background: transparent;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.vertical-resizer-handle:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.vertical-resizer-handle.dragging {
+  background: rgba(0, 123, 255, 0.1);
+  border-bottom-color: #007bff;
+}
+
+.vertical-resizer-grip {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vertical-resizer-grip::before {
+  content: "⋮";
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  line-height: 1;
+  transform: rotate(90deg);
+}
+
+.vertical-resizer-handle:hover .vertical-resizer-grip::before {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.vertical-resizer-handle.dragging .vertical-resizer-grip::before {
+  color: #007bff;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1000px) {
+  .vertical-resizer-container {
+    height: auto !important;
+  }
+
+  .vertical-resizer-handle {
+    display: none;
+  }
+}
