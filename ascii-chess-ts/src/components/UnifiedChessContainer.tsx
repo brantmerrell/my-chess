@@ -24,6 +24,7 @@ import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
 import { PieceDisplayMode } from "../types/chess";
 import { RootState, goBackward, goForward, goToPosition } from "../app/store";
+import { setSelectedSetup } from "../reducers/setups/setups.actions";
 import {
   fetchLinks,
   fetchAdjacencies,
@@ -82,6 +83,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     setNotification(message);
     setTimeout(() => setNotification(""), 3000);
   };
+
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (
@@ -124,6 +126,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "F":
           e.preventDefault();
+          if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const fenInput = document.querySelector(
             "#edit-string",
           ) as HTMLInputElement;
@@ -134,6 +137,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "f":
           e.preventDefault(); // Prevent alphabetical selection in dropdown
           console.log("f");
+          if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const positionSelector = document.querySelector(
             "#position-selector",
           ) as HTMLSelectElement;
@@ -157,6 +161,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "i":
         case "I":
           e.preventDefault();
+          if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const positionalViewSelector = document.querySelector(
             "#positional-view-selector",
           ) as HTMLSelectElement;
@@ -167,6 +172,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "o":
         case "O":
           e.preventDefault();
+          if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const historicalViewSelector = document.querySelector(
             "#historical-view-selector",
           ) as HTMLSelectElement;
@@ -175,6 +181,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "p":
+          if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const pieceViewSelector = document.querySelector(
             "#piece-view-selector",
           ) as HTMLSelectElement;
@@ -184,6 +191,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "n":
         case "N":
+          if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const connectionSelector = document.querySelector(
             "#connection-type-selector",
           ) as HTMLSelectElement;
@@ -194,6 +202,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "c":
         case "C":
           e.preventDefault(); // Prevent default alphabetical selection
+          if (!showMoveControls) setShowMoveControls(true); // Open Moves accordion
           const selectedMove = document.querySelector(
             "#selectedMove",
           ) as HTMLSelectElement;
@@ -204,12 +213,14 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "M":
         case "m":
           e.preventDefault();
+          if (!showMoveControls) setShowMoveControls(true); // Open Moves accordion
           const move = document.querySelector("#move") as HTMLInputElement;
           if (move) {
             move.focus();
           }
           break;
         case "t":
+          if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const themeSelector = document.querySelector(
             "#theme-selector",
           ) as HTMLSelectElement;
@@ -427,12 +438,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         theme={theme}
       >
         <div className="setup-controls">
-          <SelectPosition theme={theme} setFen={setFen} />
+          <SelectPosition
+            theme={theme}
+            setFen={setFen}
+          />
           <FenInput
             fen={fen}
+            theme={theme}
             onFenChange={setFen}
             onSubmitFen={submitFen}
-            theme={theme}
           />
         </div>
       </Accordion>
