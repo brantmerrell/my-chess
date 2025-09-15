@@ -105,18 +105,21 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "j":
+          e.preventDefault();
           window.scrollBy({
             top: 100,
             behavior: "smooth",
           });
           break;
         case "k":
+          e.preventDefault();
           window.scrollBy({
             top: -100,
             behavior: "smooth",
           });
           break;
         case "u":
+          e.preventDefault();
           if (
             chessGameState.currentPositionIndex ===
             chessGameState.positions.length - 1
@@ -183,6 +186,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "p":
+          e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const pieceViewSelector = document.querySelector(
             "#piece-view-selector",
@@ -193,6 +197,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "n":
         case "N":
+          e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const connectionSelector = document.querySelector(
             "#connection-type-selector",
@@ -222,6 +227,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "t":
+          e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const themeSelector = document.querySelector(
             "#theme-selector",
@@ -235,14 +241,17 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "r":
         case "R":
+          e.preventDefault();
           setShowViewControls(!showViewControls);
           break;
         case "e":
         case "E":
+          e.preventDefault();
           setShowFenControls(!showFenControls);
           break;
         case "v":
         case "V":
+          e.preventDefault();
           setShowMoveControls(!showMoveControls);
           break;
         case "+":
@@ -256,6 +265,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "w":
         case "W":
+          e.preventDefault();
           if (selectedPositionalView === "graph") {
             setShowGrid(!showGrid);
           }
