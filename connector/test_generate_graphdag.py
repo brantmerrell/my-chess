@@ -14,7 +14,7 @@ client = TestClient(app)
 
 def test_graphdag():
     print("Testing graphdag endpoint...")
-    with open("expectation_1.json", "r") as f:
+    with open("graphdag_input_0.json", "r") as f:
         input_data = json.load(f)
     with open("graphdag.txt", "r") as f:
         expected_ascii_art = f.read().strip()
@@ -27,7 +27,7 @@ def test_graphdag():
 
 def test_graphdag_nc3():
     print("Testing graphdag endpoint...")
-    with open("latest.json", "r") as f:
+    with open("graphdag_input_1.json", "r") as f:
         input_data = json.load(f)
     response = client.put("/graphdag", json=input_data)
     actual_ascii_art = response.json().get("ascii_art", "").strip()

@@ -1,15 +1,28 @@
 version: '3.0'
 services:
+  # API Service - api.chess.jbm.eco (direct public access on port 8000)
   connector:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-connector:latest
     ports:
       - "8000:8000"
-                                   
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+
+  # UI Service - chess.jbm.eco (direct public access on port 80)
   asciichessts:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my-chess-asciichessts:latest
     ports:
-      - "3838:80"
+      - "80:80"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
 
 x-aws-vpc: "${AWS_VPC_ID}"
 x-aws-subnets: ["${AWS_SUBNET_ID_1}", "${AWS_SUBNET_ID_2}"]
 x-aws-securitygroup: ["${AWS_SECURITY_GROUP_ID}"]
+x-aws-assign-public-ip: "ENABLED"

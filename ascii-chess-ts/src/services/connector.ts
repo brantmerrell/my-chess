@@ -4,7 +4,7 @@ let apiBaseUrl: string;
 if (window.location.hostname === "localhost") {
   apiBaseUrl = "http://localhost:8000";
 } else {
-  apiBaseUrl = ``;
+  apiBaseUrl = "https://dps5qxitjmfx3.cloudfront.net";
 }
 
 // should the apiBaseURL fetch functions be in a connector/connector.service.ts?

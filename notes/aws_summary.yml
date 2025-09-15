@@ -1,12 +1,12 @@
-generated_at: '2025-06-15T16:39:57.550560'
-data_directory: aws_inventory_20250615
+generated_at: '2025-09-14T13:39:25.036691'
+data_directory: aws_inventory_20250914
 EC2 Instances:
   i-09cc8187f5f366634:
     name: foo.jbm.eco
     type: t2.micro
-    state: stopped
+    state: terminated
     zone: us-west-2c
-    vpc_id: vpc-fae8de82
+    vpc_id: null
   i-083d7372688b8631b:
     name: jbm.eco
     type: t2.micro
@@ -33,47 +33,10 @@ ECR Repositories:
     uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess-connector
   my-chess-prototype-shiny:
     uri: 505731006192.dkr.ecr.us-west-2.amazonaws.com/my-chess-prototype-shiny
-Load Balancers (raw):
-- Name: chess-lb
-  DNSName: chess-lb-689103240.us-west-2.elb.amazonaws.com
-  Type: application
-  Scheme: internet-facing
-  VpcId: vpc-fae8de82
-  LoadBalancerArn: arn:aws:elasticloadbalancing:us-west-2:505731006192:loadbalancer/app/chess-lb/ac2d3406379c47e1
 Target Groups:
   chess-api:
     protocol: HTTP
     port: 8000
-    vpc: vpc-fae8de82
-    health_check:
-      path: /
-      port: traffic-port
-      protocol: HTTP
-      timeout: 5
-      interval: 30
-  chess-connector:
-    protocol: HTTP
-    port: 8000
-    vpc: vpc-fae8de82
-    health_check:
-      path: /health
-      port: traffic-port
-      protocol: HTTP
-      timeout: 20
-      interval: 60
-  chess-connector-https:
-    protocol: HTTP
-    port: 8000
-    vpc: vpc-fae8de82
-    health_check:
-      path: /links/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201
-      port: traffic-port
-      protocol: HTTP
-      timeout: 5
-      interval: 30
-  chess-ui:
-    protocol: HTTP
-    port: 80
     vpc: vpc-fae8de82
     health_check:
       path: /

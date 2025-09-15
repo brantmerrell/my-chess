@@ -7,10 +7,10 @@ client = TestClient(app)
 
 def test_links():
     print("Testing links endpoint...")
-    with open("expectation_1.json", "r") as f:
+    with open("links_0.json", "r") as f:
         expected_data = json.load(f)
 
-    # Using the same FEN string you used to generate expectation_1.json:
+    # Using the same FEN string you used to generate links_0.json:
     response = client.get(
         "/links/?fen_string=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     )
