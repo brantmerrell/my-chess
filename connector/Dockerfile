@@ -6,15 +6,25 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install pre-built diagon .deb package
-RUN wget https://github.com/ArthurSonzogni/Diagon/releases/download/v1.1.158/diagon-1.1.156-Linux.deb && \
-    dpkg -i diagon-1.1.156-Linux.deb || apt-get install -f -y && \
-    diagon --version && \
-    rm diagon-1.1.156-Linux.deb
+# Build diagon from source for any architecture
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    g++ \
+    && git clone https://github.com/ArthurSonzogni/Diagon.git \
+    && cd Diagon \
+    && cmake . \
+    && make \
+    && make install \
+    && cd .. \
+    && rm -rf Diagon \
+    && apt-get remove -y git cmake g++ \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
