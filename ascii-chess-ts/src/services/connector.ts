@@ -4,7 +4,7 @@ let apiBaseUrl: string;
 if (window.location.hostname === "localhost") {
   apiBaseUrl = "http://localhost:8000";
 } else {
-  apiBaseUrl = "https://dps5qxitjmfx3.cloudfront.net";
+  apiBaseUrl = "https://ascii-chess-connector-3fac027ebe4d.herokuapp.com";
 }
 
 export const fetchLinks = async (inputString: string) => {
