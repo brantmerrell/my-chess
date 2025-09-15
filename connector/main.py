@@ -5,6 +5,7 @@ from routers.adjacencies import router as adjacencies_router
 from routers.links import router as links_router
 from routers.graphdag import router as graphdag_router
 from routers.king_box import router as king_box_router
+from routers.none import router as none_router
 
 app = FastAPI()
 
@@ -20,6 +21,7 @@ app.include_router(adjacencies_router)
 app.include_router(links_router)
 app.include_router(graphdag_router)
 app.include_router(king_box_router)
+app.include_router(none_router)
 
 
 @app.get("/health")

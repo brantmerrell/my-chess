@@ -39,3 +39,14 @@ export const fetchKingBox = async (inputString: string) => {
     console.error("Error fetching king_box:", error);
   }
 };
+
+// Add new function for none
+export const fetchNone = async (inputString: string) => {
+  try {
+    const url = `${apiBaseUrl}/none/?fen_string=${encodeURIComponent(inputString)}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching none:", error);
+  }
+};

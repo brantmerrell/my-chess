@@ -29,6 +29,7 @@ import {
   fetchLinks,
   fetchAdjacencies,
   fetchKingBox,
+  fetchNone,
 } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
 import { useSelector } from "react-redux";
@@ -55,7 +56,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [selectedHistoricalView, setSelectedHistoricalView] =
     React.useState<HistoricalViewType>("history");
   const [connectionType, setConnectionType] =
-    React.useState<ConnectionType>("links");
+    React.useState<ConnectionType>("none");
   const [linksData, setLinksData] = React.useState<LinksResponse | null>(null);
   const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
     [],
@@ -284,6 +285,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           fetchedData = await fetchAdjacencies(chessGameState.fen);
         } else if (connectionType === "king_box") {
           fetchedData = await fetchKingBox(chessGameState.fen);
+        } else if (connectionType === "none") {
+          fetchedData = await fetchNone(chessGameState.fen);
         }
         if (fetchedData && fetchedData.nodes && fetchedData.edges) {
           setLinksData(fetchedData);
