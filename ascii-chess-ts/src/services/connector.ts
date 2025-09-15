@@ -7,7 +7,6 @@ if (window.location.hostname === "localhost") {
   apiBaseUrl = "https://dps5qxitjmfx3.cloudfront.net";
 }
 
-// should the apiBaseURL fetch functions be in a connector/connector.service.ts?
 export const fetchLinks = async (inputString: string) => {
   try {
     const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}`;
@@ -18,7 +17,6 @@ export const fetchLinks = async (inputString: string) => {
   }
 };
 
-// Add new function for adjacencies
 export const fetchAdjacencies = async (inputString: string) => {
   try {
     const url = `${apiBaseUrl}/adjacencies/?fen_string=${encodeURIComponent(inputString)}`;
@@ -29,7 +27,6 @@ export const fetchAdjacencies = async (inputString: string) => {
   }
 };
 
-// Add new function for king_box
 export const fetchKingBox = async (inputString: string) => {
   try {
     const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}`;
@@ -40,7 +37,6 @@ export const fetchKingBox = async (inputString: string) => {
   }
 };
 
-// Add new function for none
 export const fetchNone = async (inputString: string) => {
   try {
     const url = `${apiBaseUrl}/none/?fen_string=${encodeURIComponent(inputString)}`;
@@ -48,5 +44,15 @@ export const fetchNone = async (inputString: string) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching none:", error);
+  }
+};
+
+export const fetchGraphdag = async (edges: any[]) => {
+  try {
+    const url = `${apiBaseUrl}/graphdag`;
+    const response = await axios.put(url, { edges });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching graphdag:", error);
   }
 };

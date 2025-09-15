@@ -1,7 +1,7 @@
 import React from "react";
 import Selector from "./Selector";
 
-type PositionalViewType = "graph" | "board" | "arc" | "chord";
+type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
 
 interface PositionalViewSelectorProps {
@@ -15,10 +15,11 @@ interface HistoricalViewSelectorProps {
 }
 
 const POSITIONAL_VIEW_OPTIONS = [
-  { value: "board", label: "Board" },
   { value: "graph", label: "Graph" },
+  { value: "board", label: "Board" },
   { value: "arc", label: "Arc" },
   { value: "chord", label: "Chord" },
+  { value: "graphdag", label: "GraphDAG" },
 ] as const;
 
 const HISTORICAL_VIEW_OPTIONS = [

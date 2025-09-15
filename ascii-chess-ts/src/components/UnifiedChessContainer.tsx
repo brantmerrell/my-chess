@@ -7,6 +7,7 @@ import ConnectionTypeSelector from "./ConnectionTypeSelector";
 import SequenceMetrics from "./SequenceMetrics";
 import FenInput from "./FenInput";
 import GraphView from "./GraphView";
+import GraphDagView from "./GraphDagView";
 import HistoricalArcView from "./HistoricalArcView";
 import HistoryTable from "./HistoryTable";
 import KeybindingIndicators from "./KeybindingIndicators";
@@ -35,7 +36,7 @@ import { useChessGame } from "../hooks/useChessGame";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
 
-type PositionalViewType = "graph" | "board" | "arc" | "chord";
+type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
 
 interface UnifiedChessContainerProps {
@@ -344,6 +345,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         return (
           <ChordDiagram nodes={linksData?.nodes || []} edges={processedEdges} />
         );
+      case "graphdag":
+        return <GraphDagView edges={processedEdges} theme={theme} />;
       default:
         return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
     }
