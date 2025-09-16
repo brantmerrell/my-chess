@@ -5,6 +5,7 @@
 *svg
 package-lock.json
 node_modules/
+deploy/
 __pycache__/
 .env
 **/build/
