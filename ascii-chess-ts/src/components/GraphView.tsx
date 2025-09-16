@@ -11,6 +11,7 @@ interface GraphViewProps {
   processedEdges: ProcessedEdge[];
   displayMode: PieceDisplayMode;
   showGrid?: boolean;
+  onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => void;
 }
 
 const GraphView: React.FC<GraphViewProps> = ({
@@ -18,6 +19,7 @@ const GraphView: React.FC<GraphViewProps> = ({
   processedEdges,
   displayMode,
   showGrid = false,
+  onMoveAttempt,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -219,18 +221,44 @@ const GraphView: React.FC<GraphViewProps> = ({
         d3
           .drag<SVGGElement, SimulationNode>()
           .on("start", (event, d) => {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
+            if (showGrid && onMoveAttempt) {
+              (d as any).startSquare = d.square;
+            } else {
+              if (!event.active) simulation.alphaTarget(0.3).restart();
+              d.fx = d.x;
+              d.fy = d.y;
+            }
           })
           .on("drag", (event, d) => {
-            d.fx = event.x;
-            d.fy = event.y;
+            if (showGrid && onMoveAttempt) {
+              d.fx = event.x;
+              d.fy = event.y;
+            } else {
+              d.fx = event.x;
+              d.fy = event.y;
+            }
           })
           .on("end", (event, d) => {
-            if (!event.active) simulation.alphaTarget(0);
-            delete d.fx;
-            delete d.fy;
+            if (showGrid && onMoveAttempt) {
+              const targetSquare = screenToSquare(event.x, event.y, width, height);
+              const startSquare = (d as any).startSquare;
+
+              if (targetSquare && startSquare && targetSquare !== startSquare) {
+                const uciMove = startSquare + targetSquare;
+                onMoveAttempt(startSquare, targetSquare, uciMove);
+              }
+
+              const gridCoords = squareToCoords(d.square);
+              const [originalX, originalY] = gridToScreen(gridCoords, width, height);
+              d.fx = originalX;
+              d.fy = originalY;
+
+              delete (d as any).startSquare;
+            } else {
+              if (!event.active) simulation.alphaTarget(0);
+              delete d.fx;
+              delete d.fy;
+            }
           }),
       );
 
@@ -361,7 +389,7 @@ const GraphView: React.FC<GraphViewProps> = ({
 
       phantomMarkers.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
     });
-  }, [linksData, processedEdges, displayMode, showGrid]);
+  }, [linksData, processedEdges, displayMode, showGrid, onMoveAttempt]);
 
   return (
     <VisualizationContainer className="graph-view-container">
@@ -387,6 +415,27 @@ const gridToScreen = (
     margin + coords[0] * gridSize + gridSize / 2,
     margin + coords[1] * gridSize + gridSize / 2,
   ];
+};
+
+const screenToSquare = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): string | null => {
+  const margin = 50;
+  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+
+  const gridX = Math.round((x - margin - gridSize / 2) / gridSize);
+  const gridY = Math.round((y - margin - gridSize / 2) / gridSize);
+
+  if (gridX < 0 || gridX > 7 || gridY < 0 || gridY > 7) {
+    return null;
+  }
+
+  const file = String.fromCharCode("a".charCodeAt(0) + gridX);
+  const rank = 8 - gridY;
+  return file + rank;
 };
 
 export default GraphView;

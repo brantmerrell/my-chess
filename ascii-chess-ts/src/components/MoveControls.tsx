@@ -7,18 +7,33 @@ import "./MoveControls.css";
 
 interface MoveControlsProps {
   displayMode: PieceDisplayMode;
+  externalMoveInput?: string;
+  externalMoveDropdown?: string;
+  onExternalMoveInputChange?: (value: string) => void;
+  onExternalMoveDropdownChange?: (value: string) => void;
 }
 
-const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
+const MoveControls: React.FC<MoveControlsProps> = ({
+  displayMode,
+  externalMoveInput,
+  externalMoveDropdown,
+  onExternalMoveInputChange,
+  onExternalMoveDropdownChange,
+}) => {
   const {
     moves,
-    selectedMove,
+    selectedMove: internalSelectedMove,
     errorMessage,
     undoMessage,
-    setSelectedMove,
+    setSelectedMove: setInternalSelectedMove,
     makeSelectedMove,
     undoLastMove,
   } = useMoveHistory(displayMode);
+
+  const selectedMove = externalMoveDropdown !== undefined ? externalMoveDropdown : internalSelectedMove;
+  const moveInput = externalMoveInput !== undefined ? externalMoveInput : selectedMove;
+  const setSelectedMove = onExternalMoveDropdownChange || setInternalSelectedMove;
+  const setMoveInput = onExternalMoveInputChange || setInternalSelectedMove;
 
   const { currentPositionIndex, positions } = useSelector(
     (state: RootState) => state.chessGame,
@@ -28,12 +43,12 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
 
   const handleMoveSubmit = () => {
     if (!isAtLatestPosition) return;
-    makeSelectedMove(selectedMove);
+    makeSelectedMove(moveInput);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && isAtLatestPosition) {
-      makeSelectedMove(selectedMove);
+      makeSelectedMove(moveInput);
     }
   };
 
@@ -101,8 +116,8 @@ const MoveControls: React.FC<MoveControlsProps> = ({ displayMode }) => {
         <input
           id="move"
           type="text"
-          value={selectedMove}
-          onChange={(e) => setSelectedMove(e.target.value)}
+          value={moveInput}
+          onChange={(e) => setMoveInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={!isAtLatestPosition}
           aria-label="Move Input"

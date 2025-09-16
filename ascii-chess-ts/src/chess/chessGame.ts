@@ -108,6 +108,10 @@ export class ChessGame {
     return this.game.moves();
   }
 
+  public getVerboseMoves() {
+    return this.game.moves({ verbose: true });
+  }
+
   private convertPieces(ascii: string): string {
     if (this.displayMode === "letters") return ascii;
     const lines = ascii.split("\n");

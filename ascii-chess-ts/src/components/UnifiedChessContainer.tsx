@@ -24,7 +24,13 @@ import { ChessGame } from "../chess/chessGame";
 import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
 import { PieceDisplayMode } from "../types/chess";
-import { RootState, goBackward, goForward, goToPosition } from "../app/store";
+import {
+  RootState,
+  goBackward,
+  goForward,
+  goToPosition,
+  makeMove,
+} from "../app/store";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
 import {
   fetchLinks,
@@ -60,7 +66,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     React.useState<ConnectionType>("none");
   const [linksData, setLinksData] = React.useState<LinksResponse | null>(null);
   const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
-    [],
+    []
   );
   const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
   const [showViewControls, setShowViewControls] =
@@ -68,6 +74,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
+  const [moveInput, setMoveInput] = React.useState<string>("");
+  const [moveDropdownValue, setMoveDropdownValue] = React.useState<string>("");
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
@@ -84,6 +92,33 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const showNotification = (message: string) => {
     setNotification(message);
     setTimeout(() => setNotification(""), 3000);
+  };
+
+  const handleMoveAttempt = (
+    fromSquare: string,
+    toSquare: string,
+    uciMove: string
+  ) => {
+    try {
+      const game = new ChessGame(chessGameState.fen, displayMode);
+      const verboseMoves = game.getVerboseMoves();
+
+      const matchingMove = verboseMoves.find(
+        (move: any) => move.from === fromSquare && move.to === toSquare
+      );
+
+      if (matchingMove) {
+        dispatch(makeMove(matchingMove.san));
+        setMoveInput("");
+        setMoveDropdownValue("");
+      } else {
+        setMoveInput(uciMove);
+        setMoveDropdownValue("");
+      }
+    } catch (error) {
+      setMoveInput(uciMove);
+      setMoveDropdownValue("");
+    }
   };
 
   useEffect(() => {
@@ -133,7 +168,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const fenInput = document.querySelector(
-            "#edit-string",
+            "#edit-string"
           ) as HTMLInputElement;
           if (fenInput) {
             fenInput.focus();
@@ -144,7 +179,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           console.log("f");
           if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const positionSelector = document.querySelector(
-            "#position-selector",
+            "#position-selector"
           ) as HTMLSelectElement;
           if (positionSelector) {
             positionSelector.focus();
@@ -168,7 +203,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const positionalViewSelector = document.querySelector(
-            "#positional-view-selector",
+            "#positional-view-selector"
           ) as HTMLSelectElement;
           if (positionalViewSelector) {
             positionalViewSelector.focus();
@@ -179,7 +214,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const historicalViewSelector = document.querySelector(
-            "#historical-view-selector",
+            "#historical-view-selector"
           ) as HTMLSelectElement;
           if (historicalViewSelector) {
             historicalViewSelector.focus();
@@ -189,7 +224,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const pieceViewSelector = document.querySelector(
-            "#piece-view-selector",
+            "#piece-view-selector"
           ) as HTMLSelectElement;
           if (pieceViewSelector) {
             pieceViewSelector.focus();
@@ -200,7 +235,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const connectionSelector = document.querySelector(
-            "#connection-type-selector",
+            "#connection-type-selector"
           ) as HTMLSelectElement;
           if (connectionSelector) {
             connectionSelector.focus();
@@ -211,7 +246,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault(); // Prevent default alphabetical selection
           if (!showMoveControls) setShowMoveControls(true); // Open Moves accordion
           const selectedMove = document.querySelector(
-            "#selectedMove",
+            "#selectedMove"
           ) as HTMLSelectElement;
           if (selectedMove) {
             selectedMove.focus();
@@ -230,7 +265,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           if (!showViewControls) setShowViewControls(true); // Open Appearance accordion
           const themeSelector = document.querySelector(
-            "#theme-selector",
+            "#theme-selector"
           ) as HTMLSelectElement;
           if (themeSelector) {
             themeSelector.focus();
@@ -341,6 +376,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             processedEdges={processedEdges}
             displayMode={displayMode}
             showGrid={showGrid}
+            onMoveAttempt={handleMoveAttempt}
           />
         );
       case "arc":
@@ -382,7 +418,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   };
 
   const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(
-    selectedPositionalView,
+    selectedPositionalView
   );
 
   return (
@@ -455,10 +491,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         theme={theme}
       >
         <div className="setup-controls">
-          <SelectPosition
-            theme={theme}
-            setFen={setFen}
-          />
+          <SelectPosition theme={theme} setFen={setFen} />
           <FenInput
             fen={fen}
             theme={theme}
@@ -494,7 +527,13 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         className="move-controls-disclosure"
       >
         <NavigationControls />
-        <MoveControls displayMode={displayMode} />
+        <MoveControls
+          displayMode={displayMode}
+          externalMoveInput={moveInput}
+          externalMoveDropdown={moveDropdownValue}
+          onExternalMoveInputChange={setMoveInput}
+          onExternalMoveDropdownChange={setMoveDropdownValue}
+        />
       </Accordion>
       {showKeybindings && <KeybindingIndicators />}
       {!showKeybindings && (
