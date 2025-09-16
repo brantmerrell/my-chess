@@ -67,7 +67,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     React.useState<boolean>(false);
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
-  const [showGrid, setShowGrid] = React.useState<boolean>(false);
+  const [showGrid, setShowGrid] = React.useState<boolean>(true);
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
@@ -371,6 +371,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           <SequenceMetrics
             fenHistory={fenHistory}
             positions={chessGameState.positions}
+            currentPositionIndex={chessGameState.currentPositionIndex}
           />
         );
       //case "historicalArc":

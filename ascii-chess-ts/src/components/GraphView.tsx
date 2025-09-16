@@ -35,15 +35,15 @@ const GraphView: React.FC<GraphViewProps> = ({
       case "protection":
         return { color: "forestgreen", marker: "url(#arrowheadGreen)" };
       case "adjacency":
-        return { color: "blue", marker: "url(#arrowheadBlue)" };
+        return { color: "dodgerblue", marker: "url(#arrowheadBlue)" };
       case "king_can_move":
         return { color: "green", marker: "url(#arrowheadGreen)" };
       case "king_blocked_ally":
         return { color: "dimgray", marker: "" };
       case "king_blocked_threat":
-        return { color: "dimgray", marker: "" };
+        return { color: "darkgoldenrod", marker: "" };
       default:
-        return { color: "dimgray", marker: "url(#arrowheadGray)" };
+        return { color: "darkgoldenrod", marker: "url(#arrowheadGray)" };
     }
   };
 
@@ -88,6 +88,38 @@ const GraphView: React.FC<GraphViewProps> = ({
           .attr("stroke", "#e0e0e0")
           .attr("stroke-width", 1)
           .attr("opacity", 0.5);
+      }
+
+      // Add coordinate labels
+      const coordinates = g.append("g").attr("class", "coordinates");
+
+      // Add file labels (a-h) at the bottom
+      for (let i = 0; i < 8; i++) {
+        const file = String.fromCharCode("a".charCodeAt(0) + i);
+        coordinates
+          .append("text")
+          .attr("x", margin + i * gridSize + gridSize / 2)
+          .attr("y", margin + 8 * gridSize + 25)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("font-family", "monospace")
+          .attr("fill", "#666")
+          .text(file);
+      }
+
+      // Add rank labels (8-1) on the left
+      for (let i = 0; i < 8; i++) {
+        const rank = 8 - i;
+        coordinates
+          .append("text")
+          .attr("x", margin - 20)
+          .attr("y", margin + i * gridSize + gridSize / 2)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .attr("font-size", "18px")
+          .attr("font-family", "monospace")
+          .attr("fill", "#666")
+          .text(rank);
       }
     }
 
@@ -160,7 +192,7 @@ const GraphView: React.FC<GraphViewProps> = ({
           case "arrowheadGreen":
             return "forestgreen";
           case "arrowheadBlue":
-            return "blue";
+            return "dodgerblue";
           default:
             return "gray";
         }
@@ -301,7 +333,7 @@ const GraphView: React.FC<GraphViewProps> = ({
           (link) => link.type === "threat" && link.target.square === d.square,
         );
 
-        return kingBlockedEdge || directThreat ? "dimgray" : "lightblue";
+        return kingBlockedEdge || directThreat ? "darkgoldenrod" : "lightblue";
       })
       .attr("stroke", (d) => {
         const kingBlockedEdge = links.find(

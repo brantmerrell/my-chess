@@ -51,7 +51,21 @@ const SelectPosition: React.FC<SelectPositionProps> = ({
         onKeyDown={(e) => {
           if (e.key === " " || e.key === "Enter") {
             e.preventDefault();
-            e.currentTarget.click();
+            // Try showPicker() if available, otherwise simulate click
+            const selectElement = e.currentTarget as HTMLSelectElement;
+            if (
+              "showPicker" in selectElement &&
+              typeof selectElement.showPicker === "function"
+            ) {
+              try {
+                selectElement.showPicker();
+              } catch (error) {
+                // Fallback to click if showPicker fails
+                selectElement.click();
+              }
+            } else {
+              selectElement.click();
+            }
           }
         }}
       >

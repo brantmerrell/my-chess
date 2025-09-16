@@ -12,6 +12,7 @@
     "axios": "^1.6.8",
     "bootswatch": "^5.3.2",
     "chart.js": "^4.4.6",
+    "chartjs-plugin-annotation": "^3.1.0",
     "chess.js": "^1.0.0-beta.6",
     "d3": "^7.9.0",
     "react": "^18.2.0",

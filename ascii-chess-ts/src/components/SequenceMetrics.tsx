@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 import { ChessGame } from "../chess/chessGame";
 import { Line } from "react-chartjs-2";
 import { Position } from "../types/chess";
@@ -19,11 +20,13 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
+  annotationPlugin,
 );
 
 interface SequenceMetricsProps {
   fenHistory: string[];
   positions?: Position[];
+  currentPositionIndex?: number;
 }
 
 // TODO
@@ -31,6 +34,7 @@ interface SequenceMetricsProps {
 const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
   fenHistory,
   positions,
+  currentPositionIndex = 0,
 }) => {
   const labels = positions
     ? positions.map((pos) => pos.san || `${pos.ply}`)
@@ -131,6 +135,28 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
       },
     },
     plugins: {
+      annotation: {
+        annotations: {
+          currentPosition: {
+            type: "line" as const,
+            xMin: currentPositionIndex,
+            xMax: currentPositionIndex,
+            borderColor: "rgba(255, 99, 132, 0.8)",
+            borderWidth: 2,
+            borderDash: [5, 5],
+            label: {
+              enabled: true,
+              content: `Ply ${currentPositionIndex}`,
+              position: "start" as const,
+              backgroundColor: "rgba(255, 99, 132, 0.8)",
+              color: "white",
+              font: {
+                size: 11,
+              },
+            },
+          },
+        },
+      },
       legend: {
         labels: {
           color: "white",
