@@ -3,8 +3,11 @@ import "./GraphView.css";
 import * as d3 from "d3";
 import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
 import { PieceDisplayMode } from "../types/chess";
-import { getPieceDisplay } from "../utils/chessDisplay";
 import VisualizationContainer from "./VisualizationContainer";
+import { squareToCoords, gridToScreen, screenToSquare } from "../utils/graphCoordinates";
+import { getEdgeStyle } from "../utils/graphStyles";
+import { renderGrid, renderCoordinates } from "./GraphGrid";
+import { renderNodes, renderPhantomMarkers } from "./GraphNodes";
 
 interface GraphViewProps {
   linksData: LinksResponse | null;
@@ -23,31 +26,6 @@ const GraphView: React.FC<GraphViewProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const getNodeStyle = (color: string) => {
-    return {
-      background: color === "white" ? "black" : "white",
-      fill: color === "white" ? "white" : "black",
-      stroke: color === "white" ? "white" : "black",
-    };
-  };
-  const getEdgeStyle = (edgeType: string) => {
-    switch (edgeType) {
-      case "threat":
-        return { color: "crimson", marker: "url(#arrowheadRed)" };
-      case "protection":
-        return { color: "forestgreen", marker: "url(#arrowheadGreen)" };
-      case "adjacency":
-        return { color: "dodgerblue", marker: "url(#arrowheadBlue)" };
-      case "king_can_move":
-        return { color: "green", marker: "url(#arrowheadGreen)" };
-      case "king_blocked_ally":
-        return { color: "dimgray", marker: "" };
-      case "king_blocked_threat":
-        return { color: "darkgoldenrod", marker: "" };
-      default:
-        return { color: "darkgoldenrod", marker: "url(#arrowheadGray)" };
-    }
-  };
 
   useEffect(() => {
     if (!linksData || !processedEdges || !svgRef.current) return;
@@ -68,61 +46,8 @@ const GraphView: React.FC<GraphViewProps> = ({
     const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
 
     if (showGrid) {
-      const gridLines = g.append("g").attr("class", "grid");
-
-      for (let i = 0; i <= 8; i++) {
-        gridLines
-          .append("line")
-          .attr("x1", margin + i * gridSize)
-          .attr("y1", margin)
-          .attr("x2", margin + i * gridSize)
-          .attr("y2", margin + 8 * gridSize)
-          .attr("stroke", "#e0e0e0")
-          .attr("stroke-width", 1)
-          .attr("opacity", 0.5);
-
-        gridLines
-          .append("line")
-          .attr("x1", margin)
-          .attr("y1", margin + i * gridSize)
-          .attr("x2", margin + 8 * gridSize)
-          .attr("y2", margin + i * gridSize)
-          .attr("stroke", "#e0e0e0")
-          .attr("stroke-width", 1)
-          .attr("opacity", 0.5);
-      }
-
-      // Add coordinate labels
-      const coordinates = g.append("g").attr("class", "coordinates");
-
-      // Add file labels (a-h) at the bottom
-      for (let i = 0; i < 8; i++) {
-        const file = String.fromCharCode("a".charCodeAt(0) + i);
-        coordinates
-          .append("text")
-          .attr("x", margin + i * gridSize + gridSize / 2)
-          .attr("y", margin + 8 * gridSize + 25)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "18px")
-          .attr("font-family", "monospace")
-          .attr("fill", "#666")
-          .text(file);
-      }
-
-      // Add rank labels (8-1) on the left
-      for (let i = 0; i < 8; i++) {
-        const rank = 8 - i;
-        coordinates
-          .append("text")
-          .attr("x", margin - 20)
-          .attr("y", margin + i * gridSize + gridSize / 2)
-          .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "middle")
-          .attr("font-size", "18px")
-          .attr("font-family", "monospace")
-          .attr("fill", "#666")
-          .text(rank);
-      }
+      renderGrid(g, width, height);
+      renderCoordinates(g, width, height);
     }
 
     type SimulationNode = LinkNode & d3.SimulationNodeDatum;
@@ -215,181 +140,62 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
     const visibleNodes = nodes.filter((d) => d.piece_type !== "phantom");
+    const phantomNodes = nodes.filter((d) => d.piece_type === "phantom");
 
-    const node = g
-      .append("g")
-      .selectAll<SVGGElement, SimulationNode>("g")
-      .data(visibleNodes)
-      .join("g")
-      .call(
-        d3
-          .drag<SVGGElement, SimulationNode>()
-          .on("start", (event, d) => {
-            if (showGrid && onMoveAttempt) {
-              (d as any).startSquare = d.square;
-              d.fx = d.x;
-              d.fy = d.y;
-            } else {
-              if (!event.active) simulation.alphaTarget(0.3).restart();
-              d.fx = d.x;
-              d.fy = d.y;
-            }
-          })
-          .on("drag", function(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-            d.x = event.x;
-            d.y = event.y;
-
-            if (showGrid && onMoveAttempt) {
-              d3.select(this).attr("transform", `translate(${event.x},${event.y})`);
-            }
-          })
-          .on("end", (event, d) => {
-            if (showGrid && onMoveAttempt) {
-              const targetSquare = screenToSquare(event.x, event.y, width, height);
-              const startSquare = (d as any).startSquare;
-              let moveWasValid = false;
-
-              if (targetSquare && startSquare && targetSquare !== startSquare) {
-                const uciMove = startSquare + targetSquare;
-                moveWasValid = onMoveAttempt(startSquare, targetSquare, uciMove);
-              }
-
-              if (!moveWasValid) {
-                const gridCoords = squareToCoords(d.square);
-                const [originalX, originalY] = gridToScreen(gridCoords, width, height);
-                d.fx = originalX;
-                d.fy = originalY;
-              } else {
-                delete d.fx;
-                delete d.fy;
-              }
-
-              delete (d as any).startSquare;
-            } else {
-              if (!event.active) simulation.alphaTarget(0);
-              delete d.fx;
-              delete d.fy;
-            }
-          }),
-      );
-
-    node
-      .append("circle")
-      .attr("r", 18)
-      .attr("fill", (d) => getNodeStyle(d.color).background)
-      .attr("stroke", (d) => {
-        const isKing = d.piece_type.toLowerCase() === "k";
-        const isInCheck =
-          isKing &&
-          links.some(
-            (link) => link.type === "threat" && link.target.square === d.square,
-          );
-
-        return isInCheck ? "crimson" : getNodeStyle(d.color).stroke;
+    const dragBehavior = d3
+      .drag<SVGGElement, SimulationNode>()
+      .on("start", (event, d) => {
+        if (showGrid && onMoveAttempt) {
+          (d as any).startSquare = d.square;
+          d.fx = d.x;
+          d.fy = d.y;
+        } else {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
       })
-      .attr("stroke-width", (d) => {
-        const isKing = d.piece_type.toLowerCase() === "k";
-        const isInCheck =
-          isKing &&
-          links.some(
-            (link) => link.type === "threat" && link.target.square === d.square,
-          );
+      .on("drag", function(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+        d.x = event.x;
+        d.y = event.y;
 
-        return isInCheck ? 3 : 3;
+        if (showGrid && onMoveAttempt) {
+          d3.select(this).attr("transform", `translate(${event.x},${event.y})`);
+        }
+      })
+      .on("end", (event, d) => {
+        if (showGrid && onMoveAttempt) {
+          const targetSquare = screenToSquare(event.x, event.y, width, height);
+          const startSquare = (d as any).startSquare;
+          let moveWasValid = false;
+
+          if (targetSquare && startSquare && targetSquare !== startSquare) {
+            const uciMove = startSquare + targetSquare;
+            moveWasValid = onMoveAttempt(startSquare, targetSquare, uciMove);
+          }
+
+          if (!moveWasValid) {
+            const gridCoords = squareToCoords(d.square);
+            const [originalX, originalY] = gridToScreen(gridCoords, width, height);
+            d.fx = originalX;
+            d.fy = originalY;
+          } else {
+            delete d.fx;
+            delete d.fy;
+          }
+
+          delete (d as any).startSquare;
+        } else {
+          if (!event.active) simulation.alphaTarget(0);
+          delete d.fx;
+          delete d.fy;
+        }
       });
 
-    node
-      .append("text")
-      .attr("text-anchor", "middle")
-      .attr("dy", ".3em")
-      .attr("fill", (d) => {
-        const isKing = d.piece_type.toLowerCase() === "k";
-        const isInCheck =
-          isKing &&
-          links.some(
-            (link) => link.type === "threat" && link.target.square === d.square,
-          );
-
-        return isInCheck ? "crimson" : getNodeStyle(d.color).fill;
-      })
-      .each(function (d) {
-        const textElement = d3.select(this);
-
-        textElement
-          .append("tspan")
-          .attr("x", 0)
-          .attr("dy", 0)
-          .attr("font-size", "24px")
-          .attr(
-            "font-family",
-            "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace",
-          )
-          .attr("font-weight", "500")
-          .attr("font-variant-numeric", "tabular-nums")
-          .attr("fill", () => {
-            const isKing = d.piece_type.toLowerCase() === "k";
-            const isInCheck =
-              isKing &&
-              links.some(
-                (link) =>
-                  link.type === "threat" && link.target.square === d.square,
-              );
-
-            return isInCheck ? "red" : getNodeStyle(d.color).fill;
-          })
-          .text(getPieceDisplay(d.piece_type, d.color, displayMode));
-
-        textElement
-          .append("tspan")
-          .attr("x", 0)
-          .attr("dy", "1.2em")
-          .attr("font-size", "10px")
-          .text(d.square);
-      });
-
-    const phantomMarkers = g
-      .append("g")
-      .selectAll<SVGTextElement, SimulationNode>("text.phantom-marker")
-      .data(nodes.filter((d) => d.piece_type === "phantom"))
-      .join("text")
-      .attr("class", "phantom-marker")
-      .attr("text-anchor", "middle")
-      .attr("dy", ".35em")
-      .attr("font-size", "24px")
-      .attr(
-        "font-family",
-        "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace",
-      )
-      .attr("font-weight", "500")
-      .text("⊡")
-      .attr("fill", (d) => {
-        const kingBlockedEdge = links.find(
-          (link) =>
-            link.type === "king_blocked_threat" &&
-            link.target.square === d.square,
-        );
-        const directThreat = links.some(
-          (link) => link.type === "threat" && link.target.square === d.square,
-        );
-
-        return kingBlockedEdge || directThreat ? "darkgoldenrod" : "lightblue";
-      })
-      .attr("stroke", (d) => {
-        const kingBlockedEdge = links.find(
-          (link) =>
-            link.type === "king_blocked_threat" &&
-            link.target.square === d.square,
-        );
-        const directThreat = links.some(
-          (link) => link.type === "threat" && link.target.square === d.square,
-        );
-
-        return kingBlockedEdge || directThreat ? "gray" : "gray";
-      })
-      .attr("stroke-width", 1)
-      .attr("opacity", 0.8);
+    const node = renderNodes(g, visibleNodes, links, displayMode, dragBehavior);
+    const phantomMarkers = renderPhantomMarkers(g, phantomNodes, links);
 
     if (showGrid) {
       nodes.forEach((node) => {
@@ -431,44 +237,5 @@ const GraphView: React.FC<GraphViewProps> = ({
   );
 };
 
-const squareToCoords = (square: string): [number, number] => {
-  const file = square.charCodeAt(0) - "a".charCodeAt(0);
-  const rank = 8 - parseInt(square[1]);
-  return [file, rank];
-};
-
-const gridToScreen = (
-  coords: [number, number],
-  width: number,
-  height: number,
-): [number, number] => {
-  const margin = 50;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
-  return [
-    margin + coords[0] * gridSize + gridSize / 2,
-    margin + coords[1] * gridSize + gridSize / 2,
-  ];
-};
-
-const screenToSquare = (
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): string | null => {
-  const margin = 50;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
-
-  const gridX = Math.round((x - margin - gridSize / 2) / gridSize);
-  const gridY = Math.round((y - margin - gridSize / 2) / gridSize);
-
-  if (gridX < 0 || gridX > 7 || gridY < 0 || gridY > 7) {
-    return null;
-  }
-
-  const file = String.fromCharCode("a".charCodeAt(0) + gridX);
-  const rank = 8 - gridY;
-  return file + rank;
-};
 
 export default GraphView;
