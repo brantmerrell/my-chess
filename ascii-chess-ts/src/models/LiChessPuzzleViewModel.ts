@@ -25,7 +25,7 @@ export class LiChessPuzzleViewModel {
 
     let movesApplied = 0;
     for (const move of pgnMoves) {
-      if (movesApplied >= this.liChessPuzzleResponse.puzzle.initialPly) {
+      if (movesApplied > this.liChessPuzzleResponse.puzzle.initialPly) {
         break;
       }
       const lastFen = game.toFen();
