@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
-  annotationPlugin,
+  annotationPlugin
 );
 
 interface SequenceMetricsProps {
@@ -29,6 +29,8 @@ interface SequenceMetricsProps {
   currentPositionIndex?: number;
 }
 
+type MetricType = "fen_length" | "piece_count" | "mobility" | "point_count";
+
 // TODO
 // Add centipawn advantage (API/service dependent)
 const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
@@ -36,51 +38,141 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
   positions,
   currentPositionIndex = 0,
 }) => {
+  const [selectedMetric, setSelectedMetric] =
+    React.useState<MetricType>("piece_count");
   const labels = positions
     ? positions.map((pos) => pos.san || `${pos.ply}`)
     : fenHistory.map((_, index) => `${index}`);
   const pieceData = fenHistory.map(ChessGame.countPiecesFromFen);
   const mobilityData = fenHistory.map(ChessGame.calculateMobilityFromFen);
+
+  const piecePointValues: { [key: string]: number } = {
+    k: 0,
+    K: 0,
+    q: 9,
+    Q: 9,
+    r: 5,
+    R: 5,
+    b: 3,
+    B: 3,
+    n: 3,
+    N: 3,
+    p: 1,
+    P: 1,
+  };
+
+  const calculatePointCount = (fen: string) => {
+    const position = fen.split(" ")[0];
+    let whitePoints = 0;
+    let blackPoints = 0;
+
+    for (const char of position) {
+      if (piecePointValues[char] !== undefined) {
+        if (char === char.toUpperCase()) {
+          whitePoints += piecePointValues[char];
+        } else {
+          blackPoints += piecePointValues[char];
+        }
+      }
+    }
+
+    return { white: whitePoints, black: blackPoints };
+  };
+
+  const pointData = fenHistory.map(calculatePointCount);
+
+  const getDatasets = () => {
+    switch (selectedMetric) {
+      case "fen_length":
+        return [
+          {
+            label: "FEN Length",
+            data: fenHistory.map((fen) => fen.length),
+            borderColor: "rgba(255, 215, 0, 1)",
+            fill: false,
+            yAxisID: "y1",
+          },
+        ];
+      case "piece_count":
+        return [
+          {
+            label: "White Pieces",
+            data: pieceData.map((data) => data.white),
+            borderColor: "LightGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Black Pieces",
+            data: pieceData.map((data) => data.black),
+            borderColor: "DarkGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Difference (White - Black)",
+            data: pieceData.map((data) => data.white - data.black),
+            borderColor: "DodgerBlue",
+            fill: false,
+            yAxisID: "y1",
+          },
+        ];
+      case "point_count":
+        return [
+          {
+            label: "White Points",
+            data: pointData.map((data) => data.white),
+            borderColor: "LightGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Black Points",
+            data: pointData.map((data) => data.black),
+            borderColor: "DarkGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Difference (White - Black)",
+            data: pointData.map((data) => data.white - data.black),
+            borderColor: "DodgerBlue",
+            fill: false,
+            yAxisID: "y1",
+          },
+        ];
+      case "mobility":
+        return [
+          {
+            label: "White Mobility",
+            data: mobilityData.map((data) => data.white),
+            borderColor: "LightGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Black Mobility",
+            data: mobilityData.map((data) => data.black),
+            borderColor: "DarkGray",
+            fill: false,
+            yAxisID: "y1",
+          },
+          {
+            label: "Difference (White - Black)",
+            data: mobilityData.map((data) => data.white - data.black),
+            borderColor: "DodgerBlue",
+            fill: false,
+            yAxisID: "y1",
+          },
+        ];
+      default:
+        return [];
+    }
+  };
+
   const data = {
     labels: labels,
-    datasets: [
-      {
-        label: "FEN String Length Over Time",
-        data: fenHistory.map((fen) => fen.length),
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
-        yAxisID: "y1",
-        hidden: true,
-      },
-      {
-        label: "White Piece Count",
-        data: pieceData.map((data) => data.white),
-        borderColor: "rgba(255, 255, 255, 1)",
-        fill: false,
-        yAxisID: "y1",
-      },
-      {
-        label: "Black Piece Count",
-        data: pieceData.map((data) => data.black),
-        borderColor: "rgba(0, 0, 0, 1)",
-        fill: false,
-        yAxisID: "y1",
-      },
-      {
-        label: "White Mobility",
-        data: mobilityData.map((data) => data.white),
-        borderColor: "rgba(255, 206, 86, 1)",
-        fill: false,
-        yAxisID: "y1",
-      },
-      {
-        label: "Black Mobility",
-        data: mobilityData.map((data) => data.black),
-        borderColor: "rgba(255, 165, 0, 1)",
-        fill: false,
-        yAxisID: "y1",
-      },
-    ],
+    datasets: getDatasets(),
   };
 
   const options = {
@@ -100,7 +192,6 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
         },
       },
       y0: {
-        // why is this a decimal when y1 is a count?
         type: "linear" as const,
         display: true,
         position: "right" as const,
@@ -117,7 +208,6 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
         },
       },
       y1: {
-        // why is this a count when y0 is a decimal?
         type: "linear" as const,
         display: true,
         position: "left" as const,
@@ -132,6 +222,14 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
           text: "Count",
           color: "white",
         },
+      },
+    },
+    layout: {
+      padding: 0,
+    },
+    elements: {
+      point: {
+        backgroundColor: "transparent",
       },
     },
     plugins: {
@@ -155,12 +253,18 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
               },
             },
           },
+          zeroLine: {
+            type: "line" as const,
+            yMin: 0,
+            yMax: 0,
+            borderColor: "rgba(255, 255, 255, 0.6)",
+            borderWidth: 1,
+            borderDash: [3, 3],
+          },
         },
       },
       legend: {
-        labels: {
-          color: "white",
-        },
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -169,16 +273,34 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
           },
           afterBody: (context: any) => {
             const moveIndex = context[0].dataIndex;
-            const pieces = pieceData[moveIndex];
-            const mobility = mobilityData[moveIndex];
-            const pieceDifference = pieces.white - pieces.black;
-            const mobilityDifference = mobility.white - mobility.black;
-            return [
-              `Total pieces: ${pieces.white + pieces.black}`,
-              `Piece difference: ${pieceDifference > 0 ? "+" : ""}${pieceDifference}`,
-              `Total mobility: ${mobility.totalMoves}`,
-              `Mobility difference: ${mobilityDifference > 0 ? "+" : ""}${mobilityDifference}`,
-            ];
+
+            switch (selectedMetric) {
+              case "fen_length":
+                return [`FEN Length: ${fenHistory[moveIndex].length}`];
+              case "piece_count":
+                const pieces = pieceData[moveIndex];
+                const pieceDifference = pieces.white - pieces.black;
+                return [
+                  `Total pieces: ${pieces.white + pieces.black}`,
+                  `Piece difference: ${pieceDifference > 0 ? "+" : ""}${pieceDifference}`,
+                ];
+              case "point_count":
+                const points = pointData[moveIndex];
+                const pointDifference = points.white - points.black;
+                return [
+                  `Total points: ${points.white + points.black}`,
+                  `Point difference: ${pointDifference > 0 ? "+" : ""}${pointDifference}`,
+                ];
+              case "mobility":
+                const mobility = mobilityData[moveIndex];
+                const mobilityDifference = mobility.white - mobility.black;
+                return [
+                  `Total mobility: ${mobility.totalMoves}`,
+                  `Mobility difference: ${mobilityDifference > 0 ? "+" : ""}${mobilityDifference}`,
+                ];
+              default:
+                return [];
+            }
           },
         },
       },
@@ -192,6 +314,43 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
         padding: "1rem",
       }}
     >
+      <div style={{ marginBottom: "1rem" }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <span style={{ color: "white", fontSize: "14px", fontWeight: "500" }}>
+            Metric:
+          </span>
+          {[
+            { value: "piece_count", label: "Piece Count" },
+            { value: "point_count", label: "Point Count" },
+            { value: "mobility", label: "Mobility" },
+            { value: "fen_length", label: "FEN Length" },
+          ].map(({ value, label }) => (
+            <label
+              key={value}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "white",
+                fontSize: "14px",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="radio"
+                name="metric"
+                value={value}
+                checked={selectedMetric === value}
+                onChange={(e) =>
+                  setSelectedMetric(e.target.value as MetricType)
+                }
+                style={{ margin: 0 }}
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+      </div>
       <Line data={data} options={options} />
     </div>
   );
