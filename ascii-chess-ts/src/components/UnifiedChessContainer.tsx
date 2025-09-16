@@ -98,7 +98,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     fromSquare: string,
     toSquare: string,
     uciMove: string
-  ) => {
+  ): boolean => {
     try {
       const game = new ChessGame(chessGameState.fen, displayMode);
       const verboseMoves = game.getVerboseMoves();
@@ -111,13 +111,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         dispatch(makeMove(matchingMove.san));
         setMoveInput("");
         setMoveDropdownValue("");
+        return true;
       } else {
         setMoveInput(uciMove);
         setMoveDropdownValue("");
+        return false;
       }
     } catch (error) {
       setMoveInput(uciMove);
       setMoveDropdownValue("");
+      return false;
     }
   };
 
@@ -529,8 +532,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         <NavigationControls />
         <MoveControls
           displayMode={displayMode}
-          externalMoveInput={moveInput}
-          externalMoveDropdown={moveDropdownValue}
+          externalMoveInput={moveInput || undefined}
+          externalMoveDropdown={moveDropdownValue || undefined}
           onExternalMoveInputChange={setMoveInput}
           onExternalMoveDropdownChange={setMoveDropdownValue}
         />

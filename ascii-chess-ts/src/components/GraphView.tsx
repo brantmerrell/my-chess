@@ -11,7 +11,7 @@ interface GraphViewProps {
   processedEdges: ProcessedEdge[];
   displayMode: PieceDisplayMode;
   showGrid?: boolean;
-  onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => void;
+  onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => boolean;
 }
 
 const GraphView: React.FC<GraphViewProps> = ({
@@ -167,7 +167,11 @@ const GraphView: React.FC<GraphViewProps> = ({
           .strength(0),
       )
       .force("charge", d3.forceManyBody().strength(0))
-      .force("collision", d3.forceCollide().radius(25).strength(1));
+      .force("collision", d3.forceCollide().radius(25).strength(showGrid ? 0 : 1));
+
+    if (showGrid) {
+      simulation.stop();
+    }
 
     svg
       .append("defs")
@@ -223,35 +227,44 @@ const GraphView: React.FC<GraphViewProps> = ({
           .on("start", (event, d) => {
             if (showGrid && onMoveAttempt) {
               (d as any).startSquare = d.square;
+              d.fx = d.x;
+              d.fy = d.y;
             } else {
               if (!event.active) simulation.alphaTarget(0.3).restart();
               d.fx = d.x;
               d.fy = d.y;
             }
           })
-          .on("drag", (event, d) => {
+          .on("drag", function(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+            d.x = event.x;
+            d.y = event.y;
+
             if (showGrid && onMoveAttempt) {
-              d.fx = event.x;
-              d.fy = event.y;
-            } else {
-              d.fx = event.x;
-              d.fy = event.y;
+              d3.select(this).attr("transform", `translate(${event.x},${event.y})`);
             }
           })
           .on("end", (event, d) => {
             if (showGrid && onMoveAttempt) {
               const targetSquare = screenToSquare(event.x, event.y, width, height);
               const startSquare = (d as any).startSquare;
+              let moveWasValid = false;
 
               if (targetSquare && startSquare && targetSquare !== startSquare) {
                 const uciMove = startSquare + targetSquare;
-                onMoveAttempt(startSquare, targetSquare, uciMove);
+                moveWasValid = onMoveAttempt(startSquare, targetSquare, uciMove);
               }
 
-              const gridCoords = squareToCoords(d.square);
-              const [originalX, originalY] = gridToScreen(gridCoords, width, height);
-              d.fx = originalX;
-              d.fy = originalY;
+              if (!moveWasValid) {
+                const gridCoords = squareToCoords(d.square);
+                const [originalX, originalY] = gridToScreen(gridCoords, width, height);
+                d.fx = originalX;
+                d.fy = originalY;
+              } else {
+                delete d.fx;
+                delete d.fy;
+              }
 
               delete (d as any).startSquare;
             } else {
@@ -377,6 +390,26 @@ const GraphView: React.FC<GraphViewProps> = ({
       })
       .attr("stroke-width", 1)
       .attr("opacity", 0.8);
+
+    if (showGrid) {
+      nodes.forEach((node) => {
+        const gridCoords = squareToCoords(node.square);
+        const [x, y] = gridToScreen(gridCoords, width, height);
+        node.x = x;
+        node.y = y;
+        node.fx = x;
+        node.fy = y;
+      });
+
+      node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      phantomMarkers.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
+
+      link
+        .attr("x1", (d) => d.source.x!)
+        .attr("y1", (d) => d.source.y!)
+        .attr("x2", (d) => d.target.x!)
+        .attr("y2", (d) => d.target.y!);
+    }
 
     simulation.on("tick", () => {
       link

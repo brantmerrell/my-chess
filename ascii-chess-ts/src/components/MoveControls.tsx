@@ -32,8 +32,30 @@ const MoveControls: React.FC<MoveControlsProps> = ({
 
   const selectedMove = externalMoveDropdown !== undefined ? externalMoveDropdown : internalSelectedMove;
   const moveInput = externalMoveInput !== undefined ? externalMoveInput : selectedMove;
-  const setSelectedMove = onExternalMoveDropdownChange || setInternalSelectedMove;
-  const setMoveInput = onExternalMoveInputChange || setInternalSelectedMove;
+
+  const setSelectedMove = (value: string) => {
+    if (onExternalMoveDropdownChange) {
+      onExternalMoveDropdownChange(value);
+      if (onExternalMoveInputChange) {
+        onExternalMoveInputChange(value);
+      }
+    } else {
+      setInternalSelectedMove(value);
+    }
+  };
+
+  const setMoveInput = (value: string) => {
+    if (onExternalMoveInputChange) {
+      onExternalMoveInputChange(value);
+      if (onExternalMoveDropdownChange && moves.includes(value)) {
+        onExternalMoveDropdownChange(value);
+      } else if (onExternalMoveDropdownChange && !moves.includes(value)) {
+        onExternalMoveDropdownChange("");
+      }
+    } else {
+      setInternalSelectedMove(value);
+    }
+  };
 
   const { currentPositionIndex, positions } = useSelector(
     (state: RootState) => state.chessGame,
@@ -44,11 +66,15 @@ const MoveControls: React.FC<MoveControlsProps> = ({
   const handleMoveSubmit = () => {
     if (!isAtLatestPosition) return;
     makeSelectedMove(moveInput);
+    if (onExternalMoveInputChange) onExternalMoveInputChange("");
+    if (onExternalMoveDropdownChange) onExternalMoveDropdownChange("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && isAtLatestPosition) {
       makeSelectedMove(moveInput);
+      if (onExternalMoveInputChange) onExternalMoveInputChange("");
+      if (onExternalMoveDropdownChange) onExternalMoveDropdownChange("");
     }
   };
 
