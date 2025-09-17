@@ -49,23 +49,10 @@ npm start
 ```
 The frontend is configured to connect to the local backend when running in development mode.
 
-## Deployment
-
-This project is deployed on AWS using ECS. For deployment details and AWS configuration, see:
-- `aws.md` in each application directory
-- `collect_aws_state.py` for AWS resource management
-- `ecs.docker-compose.yml` and `ecs-params.yml` for container orchestration
-
 ## Additional Documentation
 
 For app-specific information, see:
 - `/ascii-chess-ts/README.md` 
 - `/connector/README.md`
 - `/prototype-shiny/README.md`
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request with a clear description of changes
 
