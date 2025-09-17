@@ -16,6 +16,7 @@ export const renderNodes = (
   visibleNodes: SimulationNode[],
   links: SimulationLink[],
   displayMode: PieceDisplayMode,
+  showGrid: boolean,
   dragBehavior: d3.DragBehavior<SVGGElement, SimulationNode, SimulationNode | d3.SubjectPosition>,
 ) => {
   const node = g
@@ -25,30 +26,32 @@ export const renderNodes = (
     .join("g")
     .call(dragBehavior);
 
-  node
-    .append("circle")
-    .attr("r", 18)
-    .attr("fill", (d) => getNodeStyle(d.color).background)
-    .attr("stroke", (d) => {
-      const isKing = d.piece_type.toLowerCase() === "k";
-      const isInCheck =
-        isKing &&
-        links.some(
-          (link) => link.type === "threat" && link.target.square === d.square,
-        );
+  if (displayMode !== "symbols") {
+    node
+      .append("circle")
+      .attr("r", 18)
+      .attr("fill", (d) => getNodeStyle(d.color).background)
+      .attr("stroke", (d) => {
+        const isKing = d.piece_type.toLowerCase() === "k";
+        const isInCheck =
+          isKing &&
+          links.some(
+            (link) => link.type === "threat" && link.target.square === d.square,
+          );
 
-      return isInCheck ? "crimson" : getNodeStyle(d.color).stroke;
-    })
-    .attr("stroke-width", (d) => {
-      const isKing = d.piece_type.toLowerCase() === "k";
-      const isInCheck =
-        isKing &&
-        links.some(
-          (link) => link.type === "threat" && link.target.square === d.square,
-        );
+        return isInCheck ? "crimson" : getNodeStyle(d.color).stroke;
+      })
+      .attr("stroke-width", (d) => {
+        const isKing = d.piece_type.toLowerCase() === "k";
+        const isInCheck =
+          isKing &&
+          links.some(
+            (link) => link.type === "threat" && link.target.square === d.square,
+          );
 
-      return isInCheck ? 3 : 3;
-    });
+        return isInCheck ? 3 : 3;
+      });
+  }
 
   node
     .append("text")
@@ -70,8 +73,20 @@ export const renderNodes = (
       textElement
         .append("tspan")
         .attr("x", 0)
-        .attr("dy", 0)
-        .attr("font-size", "24px")
+        .attr("dy", () => {
+          if (displayMode === "symbols") return 18;
+          if (displayMode === "masked") {
+            return showGrid ? 18 : 8;
+          }
+          return showGrid ? 8 : 0;
+        })
+        .attr("font-size", () => {
+          if (displayMode === "symbols") return "60px";
+          if (displayMode === "masked") {
+            return showGrid ? "36px" : "28px";
+          }
+          return "24px";
+        })
         .attr(
           "font-family",
           "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace",
@@ -90,13 +105,33 @@ export const renderNodes = (
           return isInCheck ? "red" : getNodeStyle(d.color).fill;
         })
         .text(getPieceDisplay(d.piece_type, d.color, displayMode));
-
-      textElement
-        .append("tspan")
-        .attr("x", 0)
-        .attr("dy", "1.2em")
-        .attr("font-size", "10px")
-        .text(d.square);
+      if (!showGrid) {
+        textElement
+          .append("tspan")
+          .attr("x", 0)
+          .attr("dy", () => {
+              if (displayMode === "symbols") return "-2px";
+              if (displayMode === "letters") return "1.2em";
+              if (displayMode === "masked") return "0.2em";
+              return "1.2em";
+          })
+          .attr("font-size", displayMode === "symbols" ? "10px" : "10px")
+          .attr("font-weight", "bold")
+          .attr("fill", () => {
+            if (displayMode === "symbols") {
+              return d.color === "white" ? "black" : "white";
+            }
+            const isKing = d.piece_type.toLowerCase() === "k";
+            const isInCheck =
+              isKing &&
+              links.some(
+                (link) =>
+                  link.type === "threat" && link.target.square === d.square,
+              );
+            return isInCheck ? "red" : getNodeStyle(d.color).fill;
+          })
+          .text(d.square);
+      }
     });
 
   return node;

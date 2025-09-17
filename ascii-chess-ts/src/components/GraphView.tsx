@@ -194,7 +194,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         }
       });
 
-    const node = renderNodes(g, visibleNodes, links, displayMode, dragBehavior);
+    const node = renderNodes(g, visibleNodes, links, displayMode, showGrid, dragBehavior);
     const phantomMarkers = renderPhantomMarkers(g, phantomNodes, links);
 
     if (showGrid) {
