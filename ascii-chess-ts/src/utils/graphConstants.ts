@@ -3,6 +3,10 @@ export const NODE_RADIUS = 18;
 
 export const FONT_SIZES = {
   symbols: {
+    main: "24px",
+    label: "10px"
+  },
+  full: {
     main: "60px",
     label: "10px"
   },
@@ -23,6 +27,12 @@ export const FONT_SIZES = {
 
 export const TEXT_POSITIONING = {
   symbols: {
+    mainDy: 8,
+    mainDyWithGrid: 8,
+    mainDyNoGrid: 0,
+    labelDy: "1.2em"
+  },
+  full: {
     mainDy: 18,
     labelDy: "-2px"
   },

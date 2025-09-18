@@ -7,7 +7,7 @@ export interface Position {
   fen: string;
 }
 
-export type PieceDisplayMode = "letters" | "symbols" | "masked";
+export type PieceDisplayMode = "letters" | "symbols" | "masked" | "full";
 
 export const PIECE_SYMBOLS = {
   K: cleanChessPieceUnicode("♔"),

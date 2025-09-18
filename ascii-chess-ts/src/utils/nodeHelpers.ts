@@ -35,6 +35,10 @@ export const getNodeFontSize = (
     return FONT_SIZES.symbols.main;
   }
 
+  if (displayMode === "full") {
+    return FONT_SIZES.full.main;
+  }
+
   if (displayMode === "masked") {
     return showGrid ? FONT_SIZES.masked.mainWithGrid : FONT_SIZES.masked.mainNoGrid;
   }
@@ -52,8 +56,14 @@ export const getNodeTextPositioning = (
     return positioning.labelDy;
   }
 
+  if (displayMode === "full") {
+    return TEXT_POSITIONING.full.mainDy;
+  }
+
   if (displayMode === "symbols") {
-    return TEXT_POSITIONING.symbols.mainDy;
+    return showGrid
+      ? TEXT_POSITIONING.symbols.mainDyWithGrid
+      : TEXT_POSITIONING.symbols.mainDyNoGrid;
   }
 
   if (displayMode === "masked") {

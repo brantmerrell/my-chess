@@ -9,6 +9,7 @@ interface PieceViewSelectorProps {
 
 const PIECE_VIEW_OPTIONS = [
   { value: "symbols", label: "Unicode" },
+  { value: "full", label: "Full" },
   { value: "letters", label: "Letters" },
   { value: "masked", label: "Asterisk" },
 ] as const;

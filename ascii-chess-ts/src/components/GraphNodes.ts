@@ -37,7 +37,7 @@ export const renderNodes = (
     .join("g")
     .call(dragBehavior);
 
-  if (displayMode !== "symbols") {
+  if (displayMode !== "full") {
     node
       .append("circle")
       .attr("r", NODE_RADIUS)
@@ -85,7 +85,7 @@ export const renderNodes = (
           .attr("font-size", getNodeFontSize(displayMode, showGrid, true))
           .attr("font-weight", "bold")
           .attr("fill", () => {
-            if (displayMode === "symbols") {
+            if (displayMode === "full") {
               return d.color === "white" ? "black" : "white";
             }
             return isInCheck ? "red" : getNodeStyle(d.color).fill;
