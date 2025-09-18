@@ -1,5 +1,5 @@
 import React from "react";
-import Selector from "./Selector";
+import Selector from "../common/Selector";
 
 // I think BootstrapTheme should be called BootswatchTheme
 export type BootstrapTheme =

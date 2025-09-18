@@ -1,15 +1,15 @@
 import { useSelector } from "react-redux";
 import React from "react";
-import { useAppDispatch } from "../app/hooks";
-import { RootState } from "../app/store";
+import { useAppDispatch } from "../../app/hooks";
+import { RootState } from "../../app/store";
 import {
   CHESS_SETUPS,
   getSetupById,
   getSetupsByCategory,
   StaticPositionSetup,
-} from "../models/SetupOptions";
-import { setSelectedSetup } from "../reducers/setups/setups.actions";
-import { BootstrapTheme } from "./ThemeSelector";
+} from "../../models/SetupOptions";
+import { setSelectedSetup } from "../../reducers/setups/setups.actions";
+import { BootstrapTheme } from "../controls/ThemeSelector";
 import "./SelectPosition.css";
 
 interface SelectPositionProps {

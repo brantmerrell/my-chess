@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import "./GraphView.css";
 import * as d3 from "d3";
-import { LinksResponse, ProcessedEdge, LinkNode } from "../types/visualization";
-import { PieceDisplayMode } from "../types/chess";
+import { LinksResponse, ProcessedEdge, LinkNode } from "../../types/visualization";
+import { PieceDisplayMode } from "../../types/chess";
 import VisualizationContainer from "./VisualizationContainer";
-import { squareToCoords, gridToScreen, screenToSquare } from "../utils/graphCoordinates";
-import { getEdgeStyle } from "../utils/graphStyles";
+import { squareToCoords, gridToScreen, screenToSquare } from "../../utils/graphCoordinates";
+import { getEdgeStyle } from "../../utils/graphStyles";
 import { renderGrid, renderCoordinates } from "./GraphGrid";
 import { renderNodes, renderPhantomMarkers } from "./GraphNodes";
 
@@ -57,7 +57,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       type: string;
     };
 
-    const nodes = linksData.nodes.map((node) => {
+    const nodes = linksData.nodes.map((node: LinkNode) => {
       const gridCoords = squareToCoords(node.square);
       const [x, y] = gridToScreen(gridCoords, width, height);
       return {

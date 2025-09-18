@@ -1,8 +1,8 @@
 import React from "react";
 import "./BoardDisplay.css";
-import { BootstrapTheme } from "./ThemeSelector";
-import { processUnicodeChars, cleanChessPieceUnicode } from "../utils";
-import { createWhitePieceMapBySymbol } from "../utils/chessDisplay";
+import { BootstrapTheme } from "../controls/ThemeSelector";
+import { processUnicodeChars, cleanChessPieceUnicode } from "../../utils";
+import { createWhitePieceMapBySymbol } from "../../utils/chessDisplay";
 
 interface BoardDisplayProps {
   board: string;

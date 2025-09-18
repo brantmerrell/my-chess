@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import "./ChordDiagram.css";
-import { LinkNode, ProcessedEdge } from "../types/visualization";
+import { LinkNode, ProcessedEdge } from "../../types/visualization";
 
 interface ChordDiagramProps {
   nodes: LinkNode[];

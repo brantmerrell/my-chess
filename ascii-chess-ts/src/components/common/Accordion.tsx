@@ -1,5 +1,5 @@
 import React from "react";
-import { BootstrapTheme } from "./ThemeSelector";
+import { BootstrapTheme } from "../controls/ThemeSelector";
 import "./Accordion.css";
 
 interface AccordionProps {

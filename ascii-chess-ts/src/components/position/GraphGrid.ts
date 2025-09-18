@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { GRID_MARGIN } from "../utils/graphConstants";
+import { GRID_MARGIN } from "../../utils/graphConstants";
 
 export const renderGrid = (
   g: d3.Selection<SVGGElement, unknown, null, undefined>,

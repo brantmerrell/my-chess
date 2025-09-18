@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
-import { ChessGame } from "../chess/chessGame";
-import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
-import { PieceDisplayMode } from "../types/chess";
-import { fetchLinks } from "../services/connector";
-import { useMoveHistory } from "../hooks/useMoveHistory";
-import { getPieceDisplay } from "../utils/chessDisplay";
+import { RootState } from "../../app/store";
+import { ChessGame } from "../../chess/chessGame";
+import { LinksResponse, ProcessedEdge } from "../../models/LinksResponse";
+import { PieceDisplayMode } from "../../types/chess";
+import { fetchLinks } from "../../services/connector";
+import { useMoveHistory } from "../../hooks/useMoveHistory";
+import { getPieceDisplay } from "../../utils/chessDisplay";
 
 interface HistoricalArcViewProps {
   displayMode: PieceDisplayMode;

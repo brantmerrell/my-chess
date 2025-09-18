@@ -1,6 +1,6 @@
 import React from "react";
-import { ConnectionType } from "../types/visualization";
-import Selector from "./Selector";
+import { ConnectionType } from "../../types/visualization";
+import Selector from "../common/Selector";
 
 interface ConnectionTypeSelectorProps {
   connectionType: ConnectionType;

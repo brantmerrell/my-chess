@@ -1,8 +1,8 @@
 import React from "react";
-import { PieceDisplayMode } from "../types/chess";
-import { useMoveHistory } from "../hooks/useMoveHistory";
+import { PieceDisplayMode } from "../../types/chess";
+import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { useSelector } from "react-redux";
-import { RootState } from "../app/store";
+import { RootState } from "../../app/store";
 import "./MoveControls.css";
 
 interface MoveControlsProps {

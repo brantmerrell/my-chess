@@ -1,14 +1,14 @@
 import * as d3 from "d3";
-import { PieceDisplayMode } from "../types/chess";
-import { LinkNode } from "../types/visualization";
-import { getPieceDisplay } from "../utils/chessDisplay";
-import { getNodeStyle } from "../utils/graphStyles";
+import { PieceDisplayMode } from "../../types/chess";
+import { LinkNode } from "../../types/visualization";
+import { getPieceDisplay } from "../../utils/chessDisplay";
+import { getNodeStyle } from "../../utils/graphStyles";
 import {
   calculateNodeCheckStatus,
   getNodeFontSize,
   getNodeTextPositioning
-} from "../utils/nodeHelpers";
-import { NODE_RADIUS, CHESS_FONT_FAMILY, STROKE_WIDTHS } from "../utils/graphConstants";
+} from "../../utils/nodeHelpers";
+import { NODE_RADIUS, CHESS_FONT_FAMILY, STROKE_WIDTHS } from "../../utils/graphConstants";
 
 type SimulationNode = LinkNode & d3.SimulationNodeDatum;
 type SimulationLink = {

@@ -9,9 +9,9 @@ import {
   Legend,
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
-import { ChessGame } from "../chess/chessGame";
+import { ChessGame } from "../../chess/chessGame";
 import { Line } from "react-chartjs-2";
-import { Position } from "../types/chess";
+import { Position } from "../../types/chess";
 
 ChartJS.register(
   LineElement,

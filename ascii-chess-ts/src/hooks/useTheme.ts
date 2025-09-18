@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { BootstrapTheme } from "../components/ThemeSelector";
+import type { BootstrapTheme } from "../components/controls/ThemeSelector";
 
 export const useTheme = (initialTheme: BootstrapTheme = "solar") => {
   const [theme, setTheme] = useState<BootstrapTheme>(() => {

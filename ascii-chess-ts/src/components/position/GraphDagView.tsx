@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./BoardDisplay.css";
-import { BootstrapTheme } from "./ThemeSelector";
-import { fetchGraphdag } from "../services/connector";
-import { ProcessedEdge } from "../types/visualization";
+import { BootstrapTheme } from "../controls/ThemeSelector";
+import { fetchGraphdag } from "../../services/connector";
+import { ProcessedEdge } from "../../types/visualization";
 
 interface GraphDagViewProps {
   edges: ProcessedEdge[];

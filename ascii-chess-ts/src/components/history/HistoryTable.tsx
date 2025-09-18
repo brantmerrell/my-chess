@@ -1,9 +1,9 @@
 import "./HistoryTable.css";
 import React, { useEffect, useRef } from "react";
-import { PieceDisplayMode } from "../types/chess";
-import { Position } from "../types/chess";
-import { RootState } from "../app/store";
-import { useMoveHistory } from "../hooks/useMoveHistory";
+import { PieceDisplayMode } from "../../types/chess";
+import { Position } from "../../types/chess";
+import { RootState } from "../../app/store";
+import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { useSelector } from "react-redux";
 
 interface HistoryTableProps {

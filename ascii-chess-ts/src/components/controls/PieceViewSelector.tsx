@@ -1,6 +1,6 @@
 import React from "react";
-import { PieceDisplayMode } from "../types/chess";
-import Selector from "./Selector";
+import { PieceDisplayMode } from "../../types/chess";
+import Selector from "../common/Selector";
 
 interface PieceViewSelectorProps {
   displayMode: PieceDisplayMode;

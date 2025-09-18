@@ -1,5 +1,5 @@
 import React from "react";
-import Selector from "./Selector";
+import Selector from "../common/Selector";
 
 type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./ArcView.css";
 import * as d3 from "d3";
-import { LinksResponse, ProcessedEdge } from "../models/LinksResponse";
-import { PieceDisplayMode } from "../types/chess";
-import { getPieceDisplay } from "../utils/chessDisplay";
+import { LinksResponse, ProcessedEdge } from "../../models/LinksResponse";
+import { PieceDisplayMode } from "../../types/chess";
+import { getPieceDisplay } from "../../utils/chessDisplay";
 import VisualizationContainer from "./VisualizationContainer";
 
 interface ArcViewProps {

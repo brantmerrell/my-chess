@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { store } from "../app/store";
-import SelectPosition from "../components/SelectPosition";
+import { store } from "../../app/store";
+import SelectPosition from "./SelectPosition";
 
 test("renders SelectPosition component", () => {
   const mockSetFen = jest.fn();
