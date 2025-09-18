@@ -1,11 +1,12 @@
 import * as d3 from "d3";
+import { GRID_MARGIN } from "../utils/graphConstants";
 
 export const renderGrid = (
   g: d3.Selection<SVGGElement, unknown, null, undefined>,
   width: number,
   height: number,
 ) => {
-  const margin = 50;
+  const margin = GRID_MARGIN;
   const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
 
   const gridLines = g.append("g").attr("class", "grid");
@@ -38,7 +39,7 @@ export const renderCoordinates = (
   width: number,
   height: number,
 ) => {
-  const margin = 50;
+  const margin = GRID_MARGIN;
   const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
   const coordinates = g.append("g").attr("class", "coordinates");
 

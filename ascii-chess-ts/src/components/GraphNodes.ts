@@ -3,6 +3,12 @@ import { PieceDisplayMode } from "../types/chess";
 import { LinkNode } from "../types/visualization";
 import { getPieceDisplay } from "../utils/chessDisplay";
 import { getNodeStyle } from "../utils/graphStyles";
+import {
+  calculateNodeCheckStatus,
+  getNodeFontSize,
+  getNodeTextPositioning
+} from "../utils/nodeHelpers";
+import { NODE_RADIUS, CHESS_FONT_FAMILY, STROKE_WIDTHS } from "../utils/graphConstants";
 
 type SimulationNode = LinkNode & d3.SimulationNodeDatum;
 type SimulationLink = {
@@ -19,6 +25,11 @@ export const renderNodes = (
   showGrid: boolean,
   dragBehavior: d3.DragBehavior<SVGGElement, SimulationNode, SimulationNode | d3.SubjectPosition>,
 ) => {
+  const nodeCheckStatus = new Map<string, boolean>();
+  visibleNodes.forEach(node => {
+    nodeCheckStatus.set(node.square, calculateNodeCheckStatus(node, links));
+  });
+
   const node = g
     .append("g")
     .selectAll<SVGGElement, SimulationNode>("g")
@@ -29,27 +40,15 @@ export const renderNodes = (
   if (displayMode !== "symbols") {
     node
       .append("circle")
-      .attr("r", 18)
+      .attr("r", NODE_RADIUS)
       .attr("fill", (d) => getNodeStyle(d.color).background)
       .attr("stroke", (d) => {
-        const isKing = d.piece_type.toLowerCase() === "k";
-        const isInCheck =
-          isKing &&
-          links.some(
-            (link) => link.type === "threat" && link.target.square === d.square,
-          );
-
+        const isInCheck = nodeCheckStatus.get(d.square) || false;
         return isInCheck ? "crimson" : getNodeStyle(d.color).stroke;
       })
       .attr("stroke-width", (d) => {
-        const isKing = d.piece_type.toLowerCase() === "k";
-        const isInCheck =
-          isKing &&
-          links.some(
-            (link) => link.type === "threat" && link.target.square === d.square,
-          );
-
-        return isInCheck ? 3 : 3;
+        const isInCheck = nodeCheckStatus.get(d.square) || false;
+        return isInCheck ? STROKE_WIDTHS.inCheck : STROKE_WIDTHS.normal;
       });
   }
 
@@ -58,76 +57,37 @@ export const renderNodes = (
     .attr("text-anchor", "middle")
     .attr("dy", ".3em")
     .attr("fill", (d) => {
-      const isKing = d.piece_type.toLowerCase() === "k";
-      const isInCheck =
-        isKing &&
-        links.some(
-          (link) => link.type === "threat" && link.target.square === d.square,
-        );
-
+      const isInCheck = nodeCheckStatus.get(d.square) || false;
       return isInCheck ? "crimson" : getNodeStyle(d.color).fill;
     })
     .each(function (d) {
       const textElement = d3.select(this);
+      const isInCheck = nodeCheckStatus.get(d.square) || false;
 
       textElement
         .append("tspan")
         .attr("x", 0)
-        .attr("dy", () => {
-          if (displayMode === "symbols") return 18;
-          if (displayMode === "masked") {
-            return showGrid ? 18 : 8;
-          }
-          return showGrid ? 8 : 0;
-        })
-        .attr("font-size", () => {
-          if (displayMode === "symbols") return "60px";
-          if (displayMode === "masked") {
-            return showGrid ? "36px" : "28px";
-          }
-          return "24px";
-        })
-        .attr(
-          "font-family",
-          "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace",
-        )
+        .attr("dy", getNodeTextPositioning(displayMode, showGrid, false))
+        .attr("font-size", getNodeFontSize(displayMode, showGrid, false))
+        .attr("font-family", CHESS_FONT_FAMILY)
         .attr("font-weight", "500")
         .attr("font-variant-numeric", "tabular-nums")
         .attr("fill", () => {
-          const isKing = d.piece_type.toLowerCase() === "k";
-          const isInCheck =
-            isKing &&
-            links.some(
-              (link) =>
-                link.type === "threat" && link.target.square === d.square,
-            );
-
           return isInCheck ? "red" : getNodeStyle(d.color).fill;
         })
         .text(getPieceDisplay(d.piece_type, d.color, displayMode));
+
       if (!showGrid) {
         textElement
           .append("tspan")
           .attr("x", 0)
-          .attr("dy", () => {
-              if (displayMode === "symbols") return "-2px";
-              if (displayMode === "letters") return "1.2em";
-              if (displayMode === "masked") return "0.2em";
-              return "1.2em";
-          })
-          .attr("font-size", displayMode === "symbols" ? "10px" : "10px")
+          .attr("dy", getNodeTextPositioning(displayMode, showGrid, true))
+          .attr("font-size", getNodeFontSize(displayMode, showGrid, true))
           .attr("font-weight", "bold")
           .attr("fill", () => {
             if (displayMode === "symbols") {
               return d.color === "white" ? "black" : "white";
             }
-            const isKing = d.piece_type.toLowerCase() === "k";
-            const isInCheck =
-              isKing &&
-              links.some(
-                (link) =>
-                  link.type === "threat" && link.target.square === d.square,
-              );
             return isInCheck ? "red" : getNodeStyle(d.color).fill;
           })
           .text(d.square);
@@ -142,6 +102,18 @@ export const renderPhantomMarkers = (
   phantomNodes: SimulationNode[],
   links: SimulationLink[],
 ) => {
+  const phantomThreatStatus = new Map<string, { kingBlocked: boolean; directThreat: boolean }>();
+
+  phantomNodes.forEach(node => {
+    const kingBlocked = links.some(
+      link => link.type === "king_blocked_threat" && link.target.square === node.square
+    );
+    const directThreat = links.some(
+      link => link.type === "threat" && link.target.square === node.square
+    );
+    phantomThreatStatus.set(node.square, { kingBlocked, directThreat });
+  });
+
   return g
     .append("g")
     .selectAll<SVGTextElement, SimulationNode>("text.phantom-marker")
@@ -151,36 +123,16 @@ export const renderPhantomMarkers = (
     .attr("text-anchor", "middle")
     .attr("dy", ".35em")
     .attr("font-size", "24px")
-    .attr(
-      "font-family",
-      "Noto Sans Mono, Source Code Pro, Consolas, DejaVu Sans Mono, monospace",
-    )
+    .attr("font-family", CHESS_FONT_FAMILY)
     .attr("font-weight", "500")
     .text("⊡")
     .attr("fill", (d) => {
-      const kingBlockedEdge = links.find(
-        (link) =>
-          link.type === "king_blocked_threat" &&
-          link.target.square === d.square,
-      );
-      const directThreat = links.some(
-        (link) => link.type === "threat" && link.target.square === d.square,
-      );
-
-      return kingBlockedEdge || directThreat ? "darkgoldenrod" : "lightblue";
+      const status = phantomThreatStatus.get(d.square);
+      return status && (status.kingBlocked || status.directThreat)
+        ? "darkgoldenrod"
+        : "lightblue";
     })
-    .attr("stroke", (d) => {
-      const kingBlockedEdge = links.find(
-        (link) =>
-          link.type === "king_blocked_threat" &&
-          link.target.square === d.square,
-      );
-      const directThreat = links.some(
-        (link) => link.type === "threat" && link.target.square === d.square,
-      );
-
-      return kingBlockedEdge || directThreat ? "gray" : "gray";
-    })
+    .attr("stroke", "gray")
     .attr("stroke-width", 1)
     .attr("opacity", 0.8);
 };

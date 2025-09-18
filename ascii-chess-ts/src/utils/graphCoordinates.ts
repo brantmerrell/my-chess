@@ -1,7 +1,18 @@
+import { GRID_MARGIN } from './graphConstants';
+
 export const squareToCoords = (square: string): [number, number] => {
+  if (!square || square.length !== 2) {
+    throw new Error(`Invalid square format: ${square}. Expected format like "a1"`);
+  }
+
   const file = square.charCodeAt(0) - "a".charCodeAt(0);
-  const rank = 8 - parseInt(square[1]);
-  return [file, rank];
+  const rank = parseInt(square[1]);
+
+  if (file < 0 || file > 7 || rank < 1 || rank > 8 || isNaN(rank)) {
+    throw new Error(`Invalid square: ${square}. Must be between a1 and h8`);
+  }
+
+  return [file, 8 - rank];
 };
 
 export const gridToScreen = (
@@ -9,7 +20,7 @@ export const gridToScreen = (
   width: number,
   height: number,
 ): [number, number] => {
-  const margin = 50;
+  const margin = GRID_MARGIN;
   const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
   return [
     margin + coords[0] * gridSize + gridSize / 2,
@@ -23,7 +34,7 @@ export const screenToSquare = (
   width: number,
   height: number,
 ): string | null => {
-  const margin = 50;
+  const margin = GRID_MARGIN;
   const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
 
   const gridX = Math.round((x - margin - gridSize / 2) / gridSize);
