@@ -191,22 +191,6 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
           color: "white",
         },
       },
-      y0: {
-        type: "linear" as const,
-        display: true,
-        position: "right" as const,
-        grid: {
-          color: "slateGray",
-        },
-        ticks: {
-          color: "slateGray",
-          drawOnChartArea: false,
-        },
-        title: {
-          display: true,
-          color: "slateGray",
-        },
-      },
       y1: {
         type: "linear" as const,
         display: true,

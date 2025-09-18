@@ -38,13 +38,15 @@ export const renderCoordinates = (
   g: d3.Selection<SVGGElement, unknown, null, undefined>,
   width: number,
   height: number,
+  flipBoard: boolean = false,
 ) => {
   const margin = GRID_MARGIN;
   const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
   const coordinates = g.append("g").attr("class", "coordinates");
 
   for (let i = 0; i < 8; i++) {
-    const file = String.fromCharCode("a".charCodeAt(0) + i);
+    const fileIndex = flipBoard ? 7 - i : i;
+    const file = String.fromCharCode("a".charCodeAt(0) + fileIndex);
     coordinates
       .append("text")
       .attr("x", margin + i * gridSize + gridSize / 2)
@@ -57,7 +59,7 @@ export const renderCoordinates = (
   }
 
   for (let i = 0; i < 8; i++) {
-    const rank = 8 - i;
+    const rank = flipBoard ? i + 1 : 8 - i;
     coordinates
       .append("text")
       .attr("x", margin - 20)

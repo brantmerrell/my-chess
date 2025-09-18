@@ -74,6 +74,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
+  const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
   const [moveInput, setMoveInput] = React.useState<string>("");
   const [moveDropdownValue, setMoveDropdownValue] = React.useState<string>("");
 
@@ -379,6 +380,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             processedEdges={processedEdges}
             displayMode={displayMode}
             showGrid={showGrid}
+            flipBoard={flipBoard}
             onMoveAttempt={handleMoveAttempt}
           />
         );
@@ -478,6 +480,14 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                   onChange={(e) => setShowGrid(e.target.checked)}
                 />
                 Sho<u>w</u> Grid
+              </label>
+              <label style={{ marginLeft: '15px' }}>
+                <input
+                  type="checkbox"
+                  checked={flipBoard}
+                  onChange={(e) => setFlipBoard(e.target.checked)}
+                />
+                Flip Board
               </label>
             </div>
           )}

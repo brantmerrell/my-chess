@@ -14,6 +14,7 @@ interface GraphViewProps {
   processedEdges: ProcessedEdge[];
   displayMode: PieceDisplayMode;
   showGrid?: boolean;
+  flipBoard?: boolean;
   onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => boolean;
 }
 
@@ -22,6 +23,7 @@ const GraphView: React.FC<GraphViewProps> = ({
   processedEdges,
   displayMode,
   showGrid = false,
+  flipBoard = false,
   onMoveAttempt,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -47,7 +49,7 @@ const GraphView: React.FC<GraphViewProps> = ({
 
     if (showGrid) {
       renderGrid(g, width, height);
-      renderCoordinates(g, width, height);
+      renderCoordinates(g, width, height, flipBoard);
     }
 
     type SimulationNode = LinkNode & d3.SimulationNodeDatum;
@@ -59,7 +61,13 @@ const GraphView: React.FC<GraphViewProps> = ({
 
     const nodes = linksData.nodes.map((node: LinkNode) => {
       const gridCoords = squareToCoords(node.square);
-      const [x, y] = gridToScreen(gridCoords, width, height);
+      let [x, y] = gridToScreen(gridCoords, width, height);
+
+      if (flipBoard) {
+        x = width - x;
+        y = height - y;
+      }
+
       return {
         ...node,
         x,
@@ -167,7 +175,15 @@ const GraphView: React.FC<GraphViewProps> = ({
       })
       .on("end", (event, d) => {
         if (showGrid && onMoveAttempt) {
-          const targetSquare = screenToSquare(event.x, event.y, width, height);
+          let targetX = event.x;
+          let targetY = event.y;
+
+          if (flipBoard) {
+            targetX = width - targetX;
+            targetY = height - targetY;
+          }
+
+          const targetSquare = screenToSquare(targetX, targetY, width, height);
           const startSquare = (d as any).startSquare;
           let moveWasValid = false;
 
@@ -178,7 +194,13 @@ const GraphView: React.FC<GraphViewProps> = ({
 
           if (!moveWasValid) {
             const gridCoords = squareToCoords(d.square);
-            const [originalX, originalY] = gridToScreen(gridCoords, width, height);
+            let [originalX, originalY] = gridToScreen(gridCoords, width, height);
+
+            if (flipBoard) {
+              originalX = width - originalX;
+              originalY = height - originalY;
+            }
+
             d.fx = originalX;
             d.fy = originalY;
           } else {
@@ -200,7 +222,13 @@ const GraphView: React.FC<GraphViewProps> = ({
     if (showGrid) {
       nodes.forEach((node) => {
         const gridCoords = squareToCoords(node.square);
-        const [x, y] = gridToScreen(gridCoords, width, height);
+        let [x, y] = gridToScreen(gridCoords, width, height);
+
+        if (flipBoard) {
+          x = width - x;
+          y = height - y;
+        }
+
         node.x = x;
         node.y = y;
         node.fx = x;
@@ -228,7 +256,7 @@ const GraphView: React.FC<GraphViewProps> = ({
 
       phantomMarkers.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
     });
-  }, [linksData, processedEdges, displayMode, showGrid, onMoveAttempt]);
+  }, [linksData, processedEdges, displayMode, showGrid, flipBoard, onMoveAttempt]);
 
   return (
     <VisualizationContainer className="graph-view-container">
