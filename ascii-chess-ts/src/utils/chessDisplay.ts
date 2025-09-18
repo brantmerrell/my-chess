@@ -29,6 +29,7 @@ export const getPieceDisplay = (
 ): string => {
   switch (displayMode) {
     case "symbols":
+    case "full":
       if (color === "white" || (!color && isWhitePiece(piece))) {
         const whitePieceMap = createWhitePieceMapByLetter();
         return whitePieceMap[piece] || piece;
