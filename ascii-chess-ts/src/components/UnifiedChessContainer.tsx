@@ -57,7 +57,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   displayMode,
   setDisplayMode,
 }) => {
-  const [notification, setNotification] = React.useState<string>("");
+  const [notification, setNotification] = React.useState<{
+    message: string;
+    type: 'error' | 'warning' | 'success' | 'info';
+  }>({ message: "", type: "info" });
   const { theme, setTheme } = useTheme();
   const dispatch = useAppDispatch();
   const verticalResizerRef = React.useRef<VerticalResizerHandle>(null);
@@ -94,7 +97,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
-  const { gameState, sendMove, getCurrentPosition } = useLichessGame();
+  const { gameState, sendMove, getCurrentPosition, setNotificationCallback } = useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
 
   React.useEffect(() => {
@@ -115,6 +118,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       }
     }
   }, [gameState.isPlaying, gameState.color, gameState.gameId]);
+
+  const showNotification = React.useCallback((message: string, type: 'error' | 'warning' | 'success' | 'info' = "info") => {
+    setNotification({ message, type });
+  }, []);
+
+  React.useEffect(() => {
+    setNotificationCallback(showNotification);
+    return () => setNotificationCallback(null);
+  }, [setNotificationCallback, showNotification]);
+
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
     const fens = [game.toFen()];
@@ -124,9 +137,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     });
     return fens;
   }, [chessGameState.positions, chessGameState.history]);
-  const showNotification = (message: string) => {
-    setNotification(message);
-    setTimeout(() => setNotification(""), 3000);
+
+  const clearNotification = () => {
+    setNotification({ message: "", type: "info" });
   };
 
   const handlePromotionSelect = (selectedMove: any) => {
@@ -134,16 +147,17 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
     if (gameState.isPlaying && gameState.gameId) {
       const promotion = selectedMove.promotion || '';
+      const uciMove = promotionDialog.fromSquare + promotionDialog.toSquare + promotion;
       sendMove(promotionDialog.fromSquare, promotionDialog.toSquare, promotion).then((success) => {
         console.log('Promotion move send result:', success);
         if (success) {
-          showNotification("Move sent to Lichess");
+          showNotification(`${uciMove} sent to Lichess`, "success");
         } else {
-          showNotification("Failed to send move to Lichess");
+          showNotification(`Failed to send ${uciMove} to Lichess`, "error");
         }
       }).catch((error) => {
         console.error('Error sending promotion move:', error);
-        showNotification("Error sending move to Lichess");
+        showNotification(`Error sending ${uciMove} to Lichess`, "error");
       });
     } else {
       // For analysis mode, update the local board immediately
@@ -210,7 +224,25 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
       if (matchingMoves.length === 0) {
         console.log('No legal moves found for this piece to that square');
-        showNotification("Invalid move");
+
+        if (gameState.isPlaying && !gameState.isMyTurn) {
+          showNotification("It's not your turn", "warning");
+        } else {
+          // Get the current turn from FEN
+          const fenParts = game.toFen().split(' ');
+          const currentTurn = fenParts[1]; // 'w' or 'b'
+          const turnColor = currentTurn === 'w' ? 'white' : 'black';
+
+          // Check if there are any moves for this piece
+          const allMoves = verboseMoves.filter((m: any) => m.from === fromSquare);
+          if (allMoves.length === 0) {
+            // No moves from this square - likely wrong color or empty square
+            showNotification(`It's ${turnColor}'s turn to move`, "warning");
+          } else {
+            // There are moves from this square, but not to the target square
+            showNotification("Invalid move", "error");
+          }
+        }
         return false;
       }
 
@@ -241,16 +273,17 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           const promotion = matchingMove.promotion || '';
 
           // Send move to Lichess asynchronously
+          const uciMove = fromSquare + toSquare + promotion;
           sendMove(fromSquare, toSquare, promotion).then((success) => {
             console.log('Move send result:', success);
             if (success) {
-              showNotification("Move sent to Lichess");
+              showNotification(`${uciMove} sent to Lichess`, "success");
             } else {
-              showNotification("Failed to send move to Lichess");
+              showNotification(`Failed to send ${uciMove} to Lichess`, "error");
             }
           }).catch((error) => {
             console.error('Error sending move:', error);
-            showNotification("Error sending move to Lichess");
+            showNotification(`Error sending ${uciMove} to Lichess`, "error");
           });
 
           // Don't update local board immediately for Lichess games -
@@ -266,6 +299,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
         setMoveInput("");
         setMoveDropdownValue("");
+        // Clear any previous error notifications on successful move
+        clearNotification();
         return true;
       } else {
         setMoveInput(uciMove);
@@ -319,7 +354,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           ) {
             submitUndoMove();
           } else {
-            showNotification("Must be at latest position to undo");
+            showNotification("Must be at latest position to undo", "warning");
           }
           break;
         case "F":
@@ -582,20 +617,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
   return (
     <div className="chess-container">
-      {notification && (
-        <div
-          className="alert alert-warning"
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: 1000,
-            maxWidth: "300px",
-          }}
-        >
-          {notification}
-        </div>
-      )}
       <Accordion
         title={
           <span>
@@ -649,7 +670,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                     color: '#666',
                     fontStyle: 'italic'
                   }}>
-                    (playing as {gameState.color})
                   </span>
                 )}
               </label>
@@ -672,6 +692,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           fen={fen}
           setFen={setFen}
           submitFen={submitFen}
+          notification={notification}
+          clearNotification={clearNotification}
         />
       </Accordion>
       <VerticalResizer

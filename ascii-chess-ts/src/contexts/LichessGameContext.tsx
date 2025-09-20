@@ -38,6 +38,7 @@ interface LichessGameContextType {
   resign: () => Promise<void>;
   getCurrentPosition: () => ChessGame;
   startNewGame: () => void;
+  setNotificationCallback: (callback: ((message: string, type: 'error' | 'warning' | 'success' | 'info') => void) | null) => void;
 }
 
 const LichessGameContext = createContext<LichessGameContextType | null>(null);
@@ -45,6 +46,7 @@ const LichessGameContext = createContext<LichessGameContextType | null>(null);
 export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useDispatch();
   const { username, isAuthenticated } = useLichessAuth();
+  const notificationCallbackRef = useRef<((message: string, type: 'error' | 'warning' | 'success' | 'info') => void) | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     gameId: null,
     gameUrl: null,
@@ -66,6 +68,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     gameInstance: new ChessGame(),
     lastMoveIndex: -1
   });
+  const pendingSentMovesRef = useRef<Set<string>>(new Set());
 
   const parseGameResult = useCallback((data: any, myColor: 'white' | 'black' | null) => {
     const status = data.status;
@@ -86,6 +89,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         reason = 'resign';
         break;
       case 'timeout':
+      case 'outoftime':
         reason = 'timeout';
         break;
       case 'draw':
@@ -102,6 +106,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         reason = 'abort';
         break;
       default:
+        console.warn('[LichessGameContext] Unknown game status:', status);
         reason = 'unknown';
     }
 
@@ -185,6 +190,15 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
           dispatch(makeMove(matchingMove.san));
           cache.processedMoves.push(uciMove);
           cache.lastMoveIndex++;
+
+          if (notificationCallbackRef.current) {
+            if (pendingSentMovesRef.current.has(uciMove)) {
+              pendingSentMovesRef.current.delete(uciMove);
+              notificationCallbackRef.current(`${uciMove} confirmed by Lichess`, 'success');
+            } else {
+              notificationCallbackRef.current(`${uciMove} received from opponent`, 'info');
+            }
+          }
         } else {
           console.error(`[LichessGameContext] No matching move found for UCI ${uciMove} (${from}-${to})`);
 
@@ -217,17 +231,34 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         isWhite
       });
 
+      const isGameActive = data.state.status === 'started';
+      const myColor = isWhite ? 'white' : 'black';
+
+      // Parse game result if the game has already ended
+      let gameResult: GameState['gameResult'] = undefined;
+      let winner: 'white' | 'black' | null = null;
+      if (!isGameActive) {
+        console.log('[LichessGameContext] Game already ended in gameFull:', {
+          status: data.state.status,
+          winner: data.state.winner
+        });
+        gameResult = parseGameResult(data.state, myColor);
+        winner = data.state.winner || null;
+      }
+
       setGameState(prev => ({
         ...prev,
         gameId: data.id,
         gameUrl: `https://lichess.org/${data.id}`,
-        isPlaying: true,
-        color: isWhite ? 'white' : 'black',
+        isPlaying: isGameActive,
+        color: myColor,
         opponentName: isWhite ? (data.black.name || data.black.id) : (data.white.name || data.white.id),
         status: data.state.status === 'started' ? 'playing' : data.state.status,
         // Determine if it's my turn based on whose turn it is in the current position
         // Note: empty moves string means no moves have been made (white's turn)
-        isMyTurn: isWhite === (data.state.moves.trim() === '' ? true : data.state.moves.split(' ').length % 2 === 0)
+        isMyTurn: isWhite === (data.state.moves.trim() === '' ? true : data.state.moves.split(' ').length % 2 === 0),
+        winner: winner,
+        gameResult: gameResult
       }));
 
       // Reset both cache and Redux store for new game
@@ -259,7 +290,13 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
       }));
 
       if (data.status !== 'started') {
-        console.log('[LichessGameContext] Game ended with status:', data.status);
+        console.log('[LichessGameContext] Game ended with full data:', {
+          status: data.status,
+          winner: data.winner,
+          wtime: data.wtime,
+          btime: data.btime,
+          fullData: data
+        });
 
         setGameState(prev => {
           const gameResult = parseGameResult(data, prev.color);
@@ -325,6 +362,8 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
 
     const uciMove = from + to + (promotion || '');
     console.log('[LichessGameContext] Sending UCI move to Lichess:', uciMove);
+
+    pendingSentMovesRef.current.add(uciMove);
 
     try {
       const result = await lichessGame.makeMove(gameState.gameId, uciMove);
@@ -455,6 +494,10 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     return moveCacheRef.current.gameInstance;
   }, []);
 
+  const setNotificationCallback = useCallback((callback: ((message: string, type: 'error' | 'warning' | 'success' | 'info') => void) | null) => {
+    notificationCallbackRef.current = callback;
+  }, []);
+
   // Start a new game - resets game state for a fresh start
   const startNewGame = useCallback(() => {
     console.log('[LichessGameContext] Starting new game - resetting state');
@@ -487,6 +530,8 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
       lastMoveIndex: -1
     };
 
+    pendingSentMovesRef.current.clear();
+
     // Reset Redux store to starting position
     dispatch(loadFen({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }));
   }, [dispatch]);
@@ -503,7 +548,8 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     sendMove,
     resign,
     getCurrentPosition,
-    startNewGame
+    startNewGame,
+    setNotificationCallback
   };
 
   return (

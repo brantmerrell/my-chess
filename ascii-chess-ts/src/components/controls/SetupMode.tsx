@@ -22,12 +22,17 @@ interface SetupModeProps {
   fen: string;
   setFen: (fen: string) => void;
   submitFen: () => void;
+  notification: {
+    message: string;
+    type: 'error' | 'warning' | 'success' | 'info';
+  };
+  clearNotification: () => void;
 }
 
-const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, submitFen }) => {
+const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, submitFen, notification, clearNotification }) => {
   const [mode, setMode] = useState<SetupMode>('analysis');
   const { isAuthenticated, username } = useLichessAuth();
-  const { gameState, createSeek, startNewGame } = useLichessGame();
+  const { gameState, createSeek, startNewGame, resign } = useLichessGame();
 
   const timeControls: TimeControl[] = [
     { minutes: 10, increment: 0, label: '10+0 Rapid', category: 'rapid' },
@@ -52,6 +57,12 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
 
     if (!success) {
       alert('Failed to create game. Please try again.');
+    }
+  };
+
+  const handleResign = async () => {
+    if (window.confirm('Are you sure you want to resign this game?')) {
+      await resign();
     }
   };
 
@@ -132,6 +143,39 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
                     <div className="time-display">
                       <span>White: {Math.floor(gameState.timeLeft.white / 1000)}s</span>
                       <span>Black: {Math.floor(gameState.timeLeft.black / 1000)}s</span>
+                      <button
+                        className="btn btn-danger time-control-btn"
+                        onClick={handleResign}
+                        style={{ fontSize: '13px', padding: '6px 10px', marginLeft: '20px' }}
+                      >
+                        🏳️ Resign
+                      </button>
+                      {/* Inline Move Notification */}
+                      {notification.message && (
+                        <span style={{ marginLeft: '20px', fontSize: '14px', fontFamily: 'monospace' }}>
+                          <span style={{ marginRight: '6px' }}>
+                            {notification.type === 'error' && '❌'}
+                            {notification.type === 'warning' && '⚠️'}
+                            {notification.type === 'success' && '✅'}
+                            {notification.type === 'info' && 'ℹ️'}
+                          </span>
+                          <span>{notification.message}</span>
+                          <button
+                            onClick={clearNotification}
+                            title="Clear notification"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              marginLeft: '8px',
+                              cursor: 'pointer',
+                              fontSize: '14px',
+                              opacity: 0.7
+                            }}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
