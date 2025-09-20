@@ -4,6 +4,8 @@ import FenInput from './FenInput';
 import { BootstrapTheme } from './ThemeSelector';
 import { useLichessAuth } from '../../hooks/useLichessAuth';
 import { useLichessGame } from '../../hooks/useLichessGame';
+import { LichessGameLink } from '../LichessGameLink';
+import { ConnectionStatus } from '../ConnectionStatus';
 import './SetupMode.css';
 
 type SetupMode = 'analysis' | 'play';
@@ -27,7 +29,6 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
   const { isAuthenticated, username } = useLichessAuth();
   const { gameState, createSeek } = useLichessGame();
 
-  // Quick pairing options
   const timeControls: TimeControl[] = [
     { minutes: 10, increment: 0, label: '10+0 Rapid', category: 'rapid' },
     { minutes: 10, increment: 5, label: '10+5 Rapid', category: 'rapid' },
@@ -102,7 +103,20 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
             <>
               <div className="user-info">
                 <span>Playing as: <strong>{username}</strong></span>
+                <ConnectionStatus
+                  connectionStatus={gameState.connectionStatus}
+                  connectionError={gameState.connectionError}
+                />
               </div>
+
+              {/* Game Link */}
+              {(gameState.gameUrl || gameState.gameId) && (
+                <LichessGameLink
+                  gameUrl={gameState.gameUrl}
+                  gameId={gameState.gameId}
+                  isPlaying={gameState.isPlaying}
+                />
+              )}
 
               {/* Game Status Display */}
               {gameState.isPlaying && (

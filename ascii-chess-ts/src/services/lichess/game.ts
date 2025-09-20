@@ -28,7 +28,20 @@ interface Challenge {
   perf: any;
 }
 
+interface StreamConfig {
+  maxReconnectAttempts?: number;
+  reconnectDelayBase?: number;
+  maxReconnectDelay?: number;
+  heartbeatInterval?: number;
+}
+
 class LichessGameService {
+  private readonly defaultStreamConfig: StreamConfig = {
+    maxReconnectAttempts: 5,
+    reconnectDelayBase: 1000,
+    maxReconnectDelay: 30000,
+    heartbeatInterval: 30000
+  };
   async createChallenge(username: string, options: {
     rated?: boolean;
     clock?: { limit: number; increment: number };
@@ -144,18 +157,71 @@ class LichessGameService {
     return response.data;
   }
 
-  streamGame(gameId: string, onMessage: (data: GameStream) => void): { close: () => void } | null {
+  streamGame(
+    gameId: string,
+    onMessage: (data: GameStream) => void,
+    onConnectionChange?: (connected: boolean, error?: string) => void,
+    config?: StreamConfig
+  ): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
       console.error('Not authenticated');
       return null;
     }
 
+    const streamConfig = { ...this.defaultStreamConfig, ...config };
     let abortController = new AbortController();
     let isClosed = false;
+    let reconnectAttempts = 0;
+    let lastHeartbeat = Date.now();
+    let heartbeatTimer: NodeJS.Timeout | null = null;
+
+    const cleanup = () => {
+      if (heartbeatTimer) {
+        clearTimeout(heartbeatTimer);
+        heartbeatTimer = null;
+      }
+      abortController.abort();
+    };
+
+    const checkHeartbeat = () => {
+      const now = Date.now();
+      if (now - lastHeartbeat > (streamConfig.heartbeatInterval! * 2)) {
+        console.warn('Game stream heartbeat timeout, reconnecting...');
+        cleanup();
+        if (!isClosed) {
+          reconnect();
+        }
+      }
+    };
+
+    const reconnect = () => {
+      if (isClosed || reconnectAttempts >= streamConfig.maxReconnectAttempts!) {
+        console.error('Max reconnection attempts reached or stream closed');
+        onConnectionChange?.(false, 'Max reconnection attempts reached');
+        return;
+      }
+
+      reconnectAttempts++;
+      const delay = Math.min(
+        streamConfig.reconnectDelayBase! * Math.pow(2, reconnectAttempts - 1),
+        streamConfig.maxReconnectDelay!
+      );
+
+      console.log(`Attempting to reconnect game stream (attempt ${reconnectAttempts}) in ${delay}ms...`);
+
+      setTimeout(() => {
+        if (!isClosed) {
+          abortController = new AbortController();
+          startStream();
+        }
+      }, delay);
+    };
 
     const startStream = async () => {
       try {
+        onConnectionChange?.(false, 'Connecting...');
+
         const response = await fetch(
           `https://lichess.org/api/board/game/stream/${gameId}`,
           {
@@ -171,6 +237,15 @@ class LichessGameService {
           throw new Error(`HTTP ${response.status}`);
         }
 
+        console.log('Game stream connected successfully');
+        onConnectionChange?.(true);
+        reconnectAttempts = 0;
+        lastHeartbeat = Date.now();
+
+        if (streamConfig.heartbeatInterval && !heartbeatTimer) {
+          heartbeatTimer = setInterval(checkHeartbeat, streamConfig.heartbeatInterval);
+        }
+
         const reader = response.body?.getReader();
         if (!reader) {
           throw new Error('No response body');
@@ -181,8 +256,12 @@ class LichessGameService {
 
         while (!isClosed) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            console.log('Game stream ended');
+            break;
+          }
 
+          lastHeartbeat = Date.now();
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
@@ -198,10 +277,17 @@ class LichessGameService {
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         if (!isClosed) {
           console.error('Game stream error:', error);
+          onConnectionChange?.(false, error.message);
+
+          if (error.name !== 'AbortError') {
+            reconnect();
+          }
         }
+      } finally {
+        cleanup();
       }
     };
 
@@ -209,25 +295,78 @@ class LichessGameService {
 
     return {
       close: () => {
+        console.log('Closing game stream');
         isClosed = true;
-        abortController.abort();
+        cleanup();
+        onConnectionChange?.(false, 'Stream closed');
       }
     };
   }
 
-  // Stream incoming events (challenges, game starts, etc.)
-  streamEvents(onMessage: (data: any) => void): { close: () => void } | null {
+  streamEvents(
+    onMessage: (data: any) => void,
+    onConnectionChange?: (connected: boolean, error?: string) => void,
+    config?: StreamConfig
+  ): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
       console.error('Not authenticated');
       return null;
     }
 
+    const streamConfig = { ...this.defaultStreamConfig, ...config };
     let abortController = new AbortController();
     let isClosed = false;
+    let reconnectAttempts = 0;
+    let lastHeartbeat = Date.now();
+    let heartbeatTimer: NodeJS.Timeout | null = null;
+
+    const cleanup = () => {
+      if (heartbeatTimer) {
+        clearTimeout(heartbeatTimer);
+        heartbeatTimer = null;
+      }
+      abortController.abort();
+    };
+
+    const checkHeartbeat = () => {
+      const now = Date.now();
+      if (now - lastHeartbeat > (streamConfig.heartbeatInterval! * 2)) {
+        console.warn('Event stream heartbeat timeout, reconnecting...');
+        cleanup();
+        if (!isClosed) {
+          reconnect();
+        }
+      }
+    };
+
+    const reconnect = () => {
+      if (isClosed || reconnectAttempts >= streamConfig.maxReconnectAttempts!) {
+        console.error('Max reconnection attempts reached or stream closed');
+        onConnectionChange?.(false, 'Max reconnection attempts reached');
+        return;
+      }
+
+      reconnectAttempts++;
+      const delay = Math.min(
+        streamConfig.reconnectDelayBase! * Math.pow(2, reconnectAttempts - 1),
+        streamConfig.maxReconnectDelay!
+      );
+
+      console.log(`Attempting to reconnect event stream (attempt ${reconnectAttempts}) in ${delay}ms...`);
+
+      setTimeout(() => {
+        if (!isClosed) {
+          abortController = new AbortController();
+          startStream();
+        }
+      }, delay);
+    };
 
     const startStream = async () => {
       try {
+        onConnectionChange?.(false, 'Connecting...');
+
         const response = await fetch(
           `https://lichess.org/api/stream/event`,
           {
@@ -243,6 +382,15 @@ class LichessGameService {
           throw new Error(`HTTP ${response.status}`);
         }
 
+        console.log('Event stream connected successfully');
+        onConnectionChange?.(true);
+        reconnectAttempts = 0;
+        lastHeartbeat = Date.now();
+
+        if (streamConfig.heartbeatInterval && !heartbeatTimer) {
+          heartbeatTimer = setInterval(checkHeartbeat, streamConfig.heartbeatInterval);
+        }
+
         const reader = response.body?.getReader();
         if (!reader) {
           throw new Error('No response body');
@@ -253,8 +401,12 @@ class LichessGameService {
 
         while (!isClosed) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            console.log('Event stream ended');
+            break;
+          }
 
+          lastHeartbeat = Date.now();
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
@@ -270,10 +422,17 @@ class LichessGameService {
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         if (!isClosed) {
           console.error('Event stream error:', error);
+          onConnectionChange?.(false, error.message);
+
+          if (error.name !== 'AbortError') {
+            reconnect();
+          }
         }
+      } finally {
+        cleanup();
       }
     };
 
@@ -281,8 +440,10 @@ class LichessGameService {
 
     return {
       close: () => {
+        console.log('Closing event stream');
         isClosed = true;
-        abortController.abort();
+        cleanup();
+        onConnectionChange?.(false, 'Stream closed');
       }
     };
   }
