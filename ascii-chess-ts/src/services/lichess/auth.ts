@@ -179,6 +179,12 @@ class LichessAuth {
   logout(): void {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_EXPIRY_KEY);
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: TOKEN_STORAGE_KEY,
+      oldValue: localStorage.getItem(TOKEN_STORAGE_KEY),
+      newValue: null,
+      storageArea: localStorage
+    }));
   }
 
   async makeAuthenticatedRequest(endpoint: string, options: any = {}): Promise<any> {

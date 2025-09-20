@@ -14,6 +14,7 @@ import KeybindingIndicators from "./common/KeybindingIndicators";
 import MoveControls from "./controls/MoveControls";
 import NavigationControls from "./controls/NavigationControls";
 import PieceViewSelector from "./controls/PieceViewSelector";
+import PromotionDialog from "./PromotionDialog";
 import React, { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./controls/SelectPosition";
@@ -79,6 +80,17 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
   const [moveInput, setMoveInput] = React.useState<string>("");
   const [moveDropdownValue, setMoveDropdownValue] = React.useState<string>("");
+  const [promotionDialog, setPromotionDialog] = React.useState<{
+    isOpen: boolean;
+    moves: any[];
+    fromSquare: string;
+    toSquare: string;
+  }>({
+    isOpen: false,
+    moves: [],
+    fromSquare: '',
+    toSquare: ''
+  });
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
@@ -96,6 +108,47 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const showNotification = (message: string) => {
     setNotification(message);
     setTimeout(() => setNotification(""), 3000);
+  };
+
+  const handlePromotionSelect = (selectedMove: any) => {
+    console.log('Promotion selected:', selectedMove);
+
+    if (gameState.isPlaying && gameState.gameId) {
+      const promotion = selectedMove.promotion || '';
+      sendMove(promotionDialog.fromSquare, promotionDialog.toSquare, promotion).then((success) => {
+        console.log('Promotion move send result:', success);
+        if (success) {
+          showNotification("Move sent to Lichess");
+        } else {
+          showNotification("Failed to send move to Lichess");
+        }
+      }).catch((error) => {
+        console.error('Error sending promotion move:', error);
+        showNotification("Error sending move to Lichess");
+      });
+    } else {
+      // For analysis mode, update the local board immediately
+      dispatch(makeMove(selectedMove.san));
+    }
+
+    setMoveInput("");
+    setMoveDropdownValue("");
+
+    setPromotionDialog({
+      isOpen: false,
+      moves: [],
+      fromSquare: '',
+      toSquare: ''
+    });
+  };
+
+  const handlePromotionCancel = () => {
+    setPromotionDialog({
+      isOpen: false,
+      moves: [],
+      fromSquare: '',
+      toSquare: ''
+    });
   };
 
   const handleMoveAttempt = (
@@ -130,11 +183,30 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
       console.log('Available verbose moves:', verboseMoves.slice(0, 5)); // Show first 5 moves
 
-      const matchingMove = verboseMoves.find(
+      const matchingMoves = verboseMoves.filter(
         (move: any) => move.from === fromSquare && move.to === toSquare
       );
 
-      console.log('Matching move found:', matchingMove);
+      console.log('Matching moves found:', matchingMoves);
+
+      if (matchingMoves.length === 0) {
+        console.log('No legal moves found for this piece to that square');
+        showNotification("Invalid move");
+        return false;
+      }
+
+      if (matchingMoves.length > 1 && matchingMoves.some(m => m.promotion)) {
+        console.log('Promotion detected, showing dialog');
+        setPromotionDialog({
+          isOpen: true,
+          moves: matchingMoves,
+          fromSquare,
+          toSquare
+        });
+        return true; // Move pending promotion selection
+      }
+
+      const matchingMove = matchingMoves[0];
 
       if (matchingMove) {
         // If we're in a Lichess game, send the move there asynchronously
@@ -633,6 +705,14 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           Press ? for shortcuts
         </div>
       )}
+
+      <PromotionDialog
+        isOpen={promotionDialog.isOpen}
+        moves={promotionDialog.moves}
+        onSelect={handlePromotionSelect}
+        onCancel={handlePromotionCancel}
+        color={chessGameState.fen.split(' ')[1] === 'w' ? 'black' : 'white'}
+      />
     </div>
   );
 };

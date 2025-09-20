@@ -491,13 +491,11 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     dispatch(loadFen({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }));
   }, [dispatch]);
 
-  // Reset game state when user logs out
   useEffect(() => {
-    if (!isAuthenticated) {
-      // User logged out - reset everything
+    if (!isAuthenticated && gameState.gameId) {
       startNewGame();
     }
-  }, [isAuthenticated, startNewGame]);
+  }, [isAuthenticated, gameState.gameId, startNewGame, username]);
 
   const value: LichessGameContextType = {
     gameState,
