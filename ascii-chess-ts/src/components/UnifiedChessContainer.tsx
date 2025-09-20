@@ -40,7 +40,7 @@ import {
   fetchNone,
 } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
-import { useLichessGame } from "../hooks/useLichessGame";
+import { useLichessGame } from "../contexts/LichessGameContext";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
 
@@ -82,7 +82,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
-  const { gameState, sendMove } = useLichessGame();
+  const { gameState, sendMove, getCurrentPosition } = useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
@@ -106,8 +106,27 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     console.log('handleMoveAttempt called with:', { fromSquare, toSquare, uciMove });
 
     try {
-      const game = new ChessGame(chessGameState.fen, displayMode);
-      const verboseMoves = game.getVerboseMoves();
+      // Use Lichess cache position if in a Lichess game, otherwise use Redux state
+      let game: ChessGame;
+      let verboseMoves: any[];
+
+      console.log('[UnifiedChessContainer] Current gameState:', {
+        isPlaying: gameState.isPlaying,
+        gameId: gameState.gameId,
+        status: gameState.status
+      });
+
+      if (gameState.isPlaying && gameState.gameId) {
+        // In Lichess game - use the cache position
+        game = getCurrentPosition();
+        verboseMoves = game.getVerboseMoves();
+        console.log('Using Lichess cache position for move validation');
+      } else {
+        // In analysis mode - use Redux state
+        game = new ChessGame(chessGameState.fen, displayMode);
+        verboseMoves = game.getVerboseMoves();
+        console.log('Using Redux state position for move validation');
+      }
 
       console.log('Available verbose moves:', verboseMoves.slice(0, 5)); // Show first 5 moves
 

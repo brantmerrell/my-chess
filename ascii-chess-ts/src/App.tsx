@@ -7,6 +7,7 @@ import { PieceDisplayMode } from "./types/chess";
 import UnifiedChessContainer from "./components/UnifiedChessContainer";
 import AuthCallback from "./components/auth/AuthCallback";
 import LichessLogin from "./components/auth/LichessLogin";
+import { LichessGameProvider } from "./contexts/LichessGameContext";
 
 function App() {
   const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
@@ -14,28 +15,30 @@ function App() {
 
   return (
     <Provider store={store}>
-      <Router>
-        <Routes>
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/" element={
-            <div className="App">
-              <div className="header-container" style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 20px'
-              }}>
-                <h1 className="title">Ascii Chessboard</h1>
-                <LichessLogin onAuthChange={setIsAuthenticated} />
+      <LichessGameProvider>
+        <Router>
+          <Routes>
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/" element={
+              <div className="App">
+                <div className="header-container" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 20px'
+                }}>
+                  <h1 className="title">Ascii Chessboard</h1>
+                  <LichessLogin onAuthChange={setIsAuthenticated} />
+                </div>
+                <UnifiedChessContainer
+                  displayMode={displayMode}
+                  setDisplayMode={setDisplayMode}
+                />
               </div>
-              <UnifiedChessContainer
-                displayMode={displayMode}
-                setDisplayMode={setDisplayMode}
-              />
-            </div>
-          } />
-        </Routes>
-      </Router>
+            } />
+          </Routes>
+        </Router>
+      </LichessGameProvider>
     </Provider>
   );
 }

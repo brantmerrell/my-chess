@@ -3,7 +3,7 @@ import SelectPosition from './SelectPosition';
 import FenInput from './FenInput';
 import { BootstrapTheme } from './ThemeSelector';
 import { useLichessAuth } from '../../hooks/useLichessAuth';
-import { useLichessGame } from '../../hooks/useLichessGame';
+import { useLichessGame } from '../../contexts/LichessGameContext';
 import { LichessGameLink } from '../LichessGameLink';
 import { ConnectionStatus } from '../ConnectionStatus';
 import './SetupMode.css';
@@ -38,6 +38,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
   ];
 
   const handleQuickPairing = async (timeControl: TimeControl) => {
+
     if (!isAuthenticated) {
       alert('Please log in with Lichess to play online');
       return;
@@ -47,6 +48,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
       minutes: timeControl.minutes,
       increment: timeControl.increment
     });
+
 
     if (!success) {
       alert('Failed to create game. Please try again.');
@@ -111,11 +113,13 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
 
               {/* Game Link */}
               {(gameState.gameUrl || gameState.gameId) && (
-                <LichessGameLink
-                  gameUrl={gameState.gameUrl}
-                  gameId={gameState.gameId}
-                  isPlaying={gameState.isPlaying}
-                />
+                <>
+                  <LichessGameLink
+                    gameUrl={gameState.gameUrl}
+                    gameId={gameState.gameId}
+                    isPlaying={gameState.isPlaying}
+                  />
+                </>
               )}
 
               {/* Game Status Display */}
@@ -133,14 +137,21 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
                 </div>
               )}
 
-              {gameState.status === 'seeking' && (
+              {gameState.status === 'seeking' && !gameState.isPlaying && (
                 <div className="seeking-status">
                   <h4>🔍 Looking for opponent...</h4>
                   <p>Your seek is active on Lichess</p>
                 </div>
               )}
 
-              {!gameState.isPlaying && gameState.status !== 'seeking' && (
+              {gameState.status === 'starting' && !gameState.isPlaying && (
+                <div className="seeking-status">
+                  <h4>⏳ Game starting...</h4>
+                  <p>Opponent found! Setting up game...</p>
+                </div>
+              )}
+
+              {!gameState.isPlaying && !gameState.gameId && (
                 <div className="quick-pairing">
                   <h4>Quick Pairing</h4>
                   <div className="time-control-buttons">
