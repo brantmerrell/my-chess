@@ -17,6 +17,7 @@ import PieceViewSelector from "./controls/PieceViewSelector";
 import React, { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./controls/SelectPosition";
+import SetupModeComponent from "./controls/SetupMode";
 import ThemeSelector from "./controls/ThemeSelector";
 import { PositionalViewSelector, HistoricalViewSelector } from "./controls/ViewSelector";
 import VerticalResizer, { VerticalResizerHandle } from "./common/VerticalResizer";
@@ -39,6 +40,7 @@ import {
   fetchNone,
 } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
+import { useLichessGame } from "../hooks/useLichessGame";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
 
@@ -80,6 +82,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
   const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
     useChessGame(displayMode);
+  const { gameState, sendMove } = useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
@@ -100,16 +103,57 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     toSquare: string,
     uciMove: string
   ): boolean => {
+    console.log('handleMoveAttempt called with:', { fromSquare, toSquare, uciMove });
+
     try {
       const game = new ChessGame(chessGameState.fen, displayMode);
       const verboseMoves = game.getVerboseMoves();
+
+      console.log('Available verbose moves:', verboseMoves.slice(0, 5)); // Show first 5 moves
 
       const matchingMove = verboseMoves.find(
         (move: any) => move.from === fromSquare && move.to === toSquare
       );
 
+      console.log('Matching move found:', matchingMove);
+
       if (matchingMove) {
-        dispatch(makeMove(matchingMove.san));
+        // If we're in a Lichess game, send the move there asynchronously
+        if (gameState.isPlaying && gameState.gameId) {
+          console.log('Attempting to send move to Lichess:', {
+            gameId: gameState.gameId,
+            fromSquare,
+            toSquare,
+            matchingMove,
+            gameState
+          });
+
+          const promotion = matchingMove.promotion || '';
+
+          // Send move to Lichess asynchronously
+          sendMove(fromSquare, toSquare, promotion).then((success) => {
+            console.log('Move send result:', success);
+            if (success) {
+              showNotification("Move sent to Lichess");
+            } else {
+              showNotification("Failed to send move to Lichess");
+            }
+          }).catch((error) => {
+            console.error('Error sending move:', error);
+            showNotification("Error sending move to Lichess");
+          });
+
+          // Don't update local board immediately for Lichess games -
+          // wait for confirmation from the game stream
+        } else {
+          console.log('Not in Lichess game, updating local board:', {
+            isPlaying: gameState.isPlaying,
+            gameId: gameState.gameId
+          });
+          // For analysis mode, update the local board immediately
+          dispatch(makeMove(matchingMove.san));
+        }
+
         setMoveInput("");
         setMoveDropdownValue("");
         return true;
@@ -503,15 +547,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         onToggle={() => setShowFenControls(!showFenControls)}
         theme={theme}
       >
-        <div className="setup-controls">
-          <SelectPosition theme={theme} setFen={setFen} />
-          <FenInput
-            fen={fen}
-            theme={theme}
-            onFenChange={setFen}
-            onSubmitFen={submitFen}
-          />
-        </div>
+        <SetupModeComponent
+          theme={theme}
+          fen={fen}
+          setFen={setFen}
+          submitFen={submitFen}
+        />
       </Accordion>
       <VerticalResizer
         ref={verticalResizerRef}
@@ -546,6 +587,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           externalMoveDropdown={moveDropdownValue || undefined}
           onExternalMoveInputChange={setMoveInput}
           onExternalMoveDropdownChange={setMoveDropdownValue}
+          onMoveAttempt={handleMoveAttempt}
+          gameState={gameState}
         />
       </Accordion>
       {showKeybindings && <KeybindingIndicators />}

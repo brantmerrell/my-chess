@@ -1,0 +1,238 @@
+.setup-mode-container {
+  padding: 10px;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.radio-label input[type="radio"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.radio-label span {
+  user-select: none;
+}
+
+.radio-label.light {
+  color: #333;
+}
+
+.radio-label.dark {
+  color: #e0e0e0;
+}
+
+.radio-label.blue {
+  color: #1976d2;
+}
+
+.analysis-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.play-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-required {
+  padding: 20px;
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid #ffc107;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.auth-required p {
+  margin: 0;
+  color: #856404;
+  font-family: monospace;
+}
+
+.user-info {
+  padding: 10px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.quick-pairing {
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 5px;
+}
+
+.quick-pairing h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.time-control-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.time-control-btn {
+  padding: 10px 15px;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-control-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.time-control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Bootstrap theme colors */
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: #138496;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Dark theme adjustments */
+.dark .auth-required {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: #ffb300;
+}
+
+.dark .auth-required p {
+  color: #ffd54f;
+}
+
+.dark .user-info {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+}
+
+.dark .quick-pairing {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .quick-pairing h4 {
+  color: #e0e0e0;
+}
+
+/* Game status styles */
+.game-status {
+  padding: 15px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 2px solid #4caf50;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.game-status h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #2e7d32;
+  font-family: monospace;
+}
+
+.game-status p {
+  margin: 5px 0;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.time-display {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.seeking-status {
+  padding: 15px;
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 2px solid #ffc107;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.seeking-status h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #f57f17;
+  font-family: monospace;
+}
+
+.seeking-status p {
+  margin: 5px 0;
+  font-family: monospace;
+  font-size: 14px;
+  color: #856404;
+}
+
+/* Dark theme adjustments for game status */
+.dark .game-status {
+  background-color: rgba(76, 175, 80, 0.2);
+  border-color: #66bb6a;
+}
+
+.dark .game-status h4 {
+  color: #81c784;
+}
+
+.dark .game-status p {
+  color: #c8e6c9;
+}
+
+.dark .seeking-status {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: #ffb300;
+}
+
+.dark .seeking-status h4 {
+  color: #ffd54f;
+}
+
+.dark .seeking-status p {
+  color: #fff3c4;
+}

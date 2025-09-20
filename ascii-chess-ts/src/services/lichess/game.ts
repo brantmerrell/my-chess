@@ -112,11 +112,19 @@ class LichessGameService {
   }
 
   async makeMove(gameId: string, move: string): Promise<any> {
-    const response = await lichessAuth.makeAuthenticatedRequest(
-      `/board/game/${gameId}/move/${move}`,
-      { method: 'POST' }
-    );
-    return response.data;
+    console.log(`Making move: POST /board/game/${gameId}/move/${move}`);
+
+    try {
+      const response = await lichessAuth.makeAuthenticatedRequest(
+        `/board/game/${gameId}/move/${move}`,
+        { method: 'POST' }
+      );
+      console.log('Move API response:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Move API error:', error);
+      throw error;
+    }
   }
 
   async resign(gameId: string): Promise<any> {
@@ -136,71 +144,147 @@ class LichessGameService {
     return response.data;
   }
 
-  streamGame(gameId: string, onMessage: (data: GameStream) => void): EventSource | null {
+  streamGame(gameId: string, onMessage: (data: GameStream) => void): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
       console.error('Not authenticated');
       return null;
     }
 
-    const eventSource = new EventSource(
-      `https://lichess.org/api/board/game/stream/${gameId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      } as any
-    );
+    let abortController = new AbortController();
+    let isClosed = false;
 
-    eventSource.onmessage = (event) => {
-      if (event.data) {
-        try {
-          const data = JSON.parse(event.data);
-          onMessage(data);
-        } catch (e) {
-          console.error('Failed to parse game stream data:', e);
+    const startStream = async () => {
+      try {
+        const response = await fetch(
+          `https://lichess.org/api/board/game/stream/${gameId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/x-ndjson'
+            },
+            signal: abortController.signal
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (!isClosed) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const data = JSON.parse(line);
+                onMessage(data);
+              } catch (e) {
+                console.error('Failed to parse game stream data:', e);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        if (!isClosed) {
+          console.error('Game stream error:', error);
         }
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('Game stream error:', error);
-    };
+    startStream();
 
-    return eventSource;
+    return {
+      close: () => {
+        isClosed = true;
+        abortController.abort();
+      }
+    };
   }
 
   // Stream incoming events (challenges, game starts, etc.)
-  streamEvents(onMessage: (data: any) => void): EventSource | null {
+  streamEvents(onMessage: (data: any) => void): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
       console.error('Not authenticated');
       return null;
     }
 
-    // Note: Native EventSource doesn't support Authorization header
-    // Will need to use a polyfill like @microsoft/fetch-event-source
-    // or handle this differently (e.g., through a proxy)
-    const eventSource = new EventSource(
-      `https://lichess.org/api/stream/event?access_token=${token}`
-    );
+    let abortController = new AbortController();
+    let isClosed = false;
 
-    eventSource.onmessage = (event) => {
-      if (event.data) {
-        try {
-          const data = JSON.parse(event.data);
-          onMessage(data);
-        } catch (e) {
-          console.error('Failed to parse event stream data:', e);
+    const startStream = async () => {
+      try {
+        const response = await fetch(
+          `https://lichess.org/api/stream/event`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/x-ndjson'
+            },
+            signal: abortController.signal
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (!isClosed) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const data = JSON.parse(line);
+                onMessage(data);
+              } catch (e) {
+                console.error('Failed to parse event stream data:', e);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        if (!isClosed) {
+          console.error('Event stream error:', error);
         }
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('Event stream error:', error);
-    };
+    startStream();
 
-    return eventSource;
+    return {
+      close: () => {
+        isClosed = true;
+        abortController.abort();
+      }
+    };
   }
 
   async getOngoingGames(): Promise<any[]> {
