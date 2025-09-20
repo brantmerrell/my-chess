@@ -27,7 +27,7 @@ interface SetupModeProps {
 const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, submitFen }) => {
   const [mode, setMode] = useState<SetupMode>('analysis');
   const { isAuthenticated, username } = useLichessAuth();
-  const { gameState, createSeek } = useLichessGame();
+  const { gameState, createSeek, startNewGame } = useLichessGame();
 
   const timeControls: TimeControl[] = [
     { minutes: 10, increment: 0, label: '10+0 Rapid', category: 'rapid' },
@@ -137,7 +137,40 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
                 </div>
               )}
 
-              {gameState.status === 'seeking' && !gameState.isPlaying && (
+              {/* Game Result Display */}
+              {gameState.gameResult && !gameState.isPlaying && (
+                <div className="game-result">
+                  <h4>🏁 Game Finished</h4>
+                  <div className="result-details">
+                    <p className={`result-outcome ${gameState.gameResult.result}`}>
+                      {gameState.gameResult.result === 'win' && '🎉 You won!'}
+                      {gameState.gameResult.result === 'loss' && '😔 You lost'}
+                      {gameState.gameResult.result === 'draw' && '🤝 Draw'}
+                    </p>
+                    <p className="result-reason">
+                      By {gameState.gameResult.reason === 'mate' ? 'checkmate' :
+                          gameState.gameResult.reason === 'resign' ? 'resignation' :
+                          gameState.gameResult.reason === 'timeout' ? 'timeout' :
+                          gameState.gameResult.reason === 'stalemate' ? 'stalemate' :
+                          gameState.gameResult.reason === 'draw' ? 'agreement' :
+                          gameState.gameResult.reason === 'abort' ? 'abort' :
+                          gameState.gameResult.reason}
+                    </p>
+                    {gameState.opponentName && (
+                      <p>Against {gameState.opponentName}</p>
+                    )}
+                  </div>
+                  <button
+                    className="btn btn-success"
+                    onClick={startNewGame}
+                    style={{ marginTop: '10px' }}
+                  >
+                    🆕 Start New Game
+                  </button>
+                </div>
+              )}
+
+              {gameState.status === 'seeking' && !gameState.isPlaying && !gameState.gameResult && (
                 <div className="seeking-status">
                   <h4>🔍 Looking for opponent...</h4>
                   <p>Your seek is active on Lichess</p>
@@ -151,7 +184,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({ theme, fen, setFen, subm
                 </div>
               )}
 
-              {!gameState.isPlaying && !gameState.gameId && (
+              {!gameState.isPlaying && !gameState.gameId && !gameState.gameResult && (
                 <div className="quick-pairing">
                   <h4>Quick Pairing</h4>
                   <div className="time-control-buttons">

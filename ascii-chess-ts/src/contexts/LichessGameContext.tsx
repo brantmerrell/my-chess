@@ -17,6 +17,12 @@ interface GameState {
   connectionStatus: 'connected' | 'connecting' | 'disconnected' | 'error';
   connectionError?: string;
   isMyTurn: boolean;
+  winner?: 'white' | 'black' | null;
+  gameResult?: {
+    result: 'win' | 'loss' | 'draw';
+    reason: 'mate' | 'resign' | 'timeout' | 'draw' | 'stalemate' | 'insufficient' | 'abort' | 'unknown';
+    winner?: 'white' | 'black' | null;
+  };
 }
 
 interface MoveCache {
@@ -31,6 +37,7 @@ interface LichessGameContextType {
   sendMove: (from: string, to: string, promotion?: string) => Promise<boolean>;
   resign: () => Promise<void>;
   getCurrentPosition: () => ChessGame;
+  startNewGame: () => void;
 }
 
 const LichessGameContext = createContext<LichessGameContextType | null>(null);
@@ -47,7 +54,9 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     status: 'idle',
     timeLeft: null,
     connectionStatus: 'disconnected',
-    isMyTurn: false
+    isMyTurn: false,
+    winner: null,
+    gameResult: undefined
   });
 
   const gameStreamRef = useRef<{ close: () => void } | null>(null);
@@ -57,6 +66,60 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     gameInstance: new ChessGame(),
     lastMoveIndex: -1
   });
+
+  // Parse game result from Lichess data
+  const parseGameResult = useCallback((data: any, myColor: 'white' | 'black' | null) => {
+    const status = data.status;
+    const winner = data.winner;
+
+    console.log('[LichessGameContext] Parsing game result:', { status, winner, myColor });
+
+    if (!myColor) return undefined;
+
+    let reason: 'mate' | 'resign' | 'timeout' | 'draw' | 'stalemate' | 'insufficient' | 'abort' | 'unknown' = 'unknown';
+    let result: 'win' | 'loss' | 'draw' = 'draw';
+
+    // Determine reason for game end
+    switch (status) {
+      case 'mate':
+        reason = 'mate';
+        break;
+      case 'resign':
+        reason = 'resign';
+        break;
+      case 'timeout':
+        reason = 'timeout';
+        break;
+      case 'draw':
+        reason = 'draw';
+        break;
+      case 'stalemate':
+        reason = 'stalemate';
+        break;
+      case 'variantEnd':
+      case 'unknownFinish':
+        reason = 'unknown';
+        break;
+      case 'aborted':
+        reason = 'abort';
+        break;
+      default:
+        reason = 'unknown';
+    }
+
+    // Determine result from my perspective
+    if (winner) {
+      result = winner === myColor ? 'win' : 'loss';
+    } else {
+      result = 'draw';
+    }
+
+    return {
+      result,
+      reason,
+      winner: winner || null
+    };
+  }, []);
 
   // Handle connection status changes
   const handleGameConnectionChange = useCallback((connected: boolean, error?: string) => {
@@ -197,10 +260,17 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
       }));
 
       if (data.status !== 'started') {
-        setGameState(prev => ({
-          ...prev,
-          isPlaying: false
-        }));
+        console.log('[LichessGameContext] Game ended with status:', data.status);
+
+        setGameState(prev => {
+          const gameResult = parseGameResult(data, prev.color);
+          return {
+            ...prev,
+            isPlaying: false,
+            winner: data.winner || null,
+            gameResult
+          };
+        });
 
         if (gameStreamRef.current) {
           gameStreamRef.current.close();
@@ -386,12 +456,49 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     return moveCacheRef.current.gameInstance;
   }, []);
 
+  // Start a new game - resets game state for a fresh start
+  const startNewGame = useCallback(() => {
+    console.log('[LichessGameContext] Starting new game - resetting state');
+
+    // Close any existing streams
+    if (gameStreamRef.current) {
+      gameStreamRef.current.close();
+      gameStreamRef.current = null;
+    }
+
+    // Reset game state
+    setGameState(prev => ({
+      ...prev,
+      gameId: null,
+      gameUrl: null,
+      isPlaying: false,
+      color: null,
+      opponentName: null,
+      status: 'idle',
+      timeLeft: null,
+      isMyTurn: false,
+      winner: null,
+      gameResult: undefined
+    }));
+
+    // Reset move cache
+    moveCacheRef.current = {
+      processedMoves: [],
+      gameInstance: new ChessGame(),
+      lastMoveIndex: -1
+    };
+
+    // Reset Redux store to starting position
+    dispatch(loadFen({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }));
+  }, [dispatch]);
+
   const value: LichessGameContextType = {
     gameState,
     createSeek,
     sendMove,
     resign,
-    getCurrentPosition
+    getCurrentPosition,
+    startNewGame
   };
 
   return (

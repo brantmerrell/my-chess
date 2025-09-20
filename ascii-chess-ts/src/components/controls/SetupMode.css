@@ -236,3 +236,107 @@
 .dark .seeking-status p {
   color: #fff3c4;
 }
+
+/* Game result styles */
+.game-result {
+  padding: 20px;
+  background-color: rgba(103, 58, 183, 0.1);
+  border: 2px solid #673ab7;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.game-result h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #512da8;
+  font-family: monospace;
+  font-size: 18px;
+}
+
+.result-details {
+  margin-bottom: 15px;
+}
+
+.result-outcome {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-family: monospace;
+}
+
+.result-outcome.win {
+  color: #388e3c;
+}
+
+.result-outcome.loss {
+  color: #d32f2f;
+}
+
+.result-outcome.draw {
+  color: #f57c00;
+}
+
+.result-reason {
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-family: monospace;
+  color: #666;
+  font-style: italic;
+}
+
+.game-result p {
+  margin: 5px 0;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 20px;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme adjustments for game result */
+.dark .game-result {
+  background-color: rgba(103, 58, 183, 0.2);
+  border-color: #9575cd;
+}
+
+.dark .game-result h4 {
+  color: #b39ddb;
+}
+
+.dark .result-outcome.win {
+  color: #66bb6a;
+}
+
+.dark .result-outcome.loss {
+  color: #ef5350;
+}
+
+.dark .result-outcome.draw {
+  color: #ffb74d;
+}
+
+.dark .result-reason {
+  color: #bbb;
+}
+
+.dark .game-result p {
+  color: #e1bee7;
+}
