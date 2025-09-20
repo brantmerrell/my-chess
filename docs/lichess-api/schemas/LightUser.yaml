@@ -1,0 +1,15 @@
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  flair:
+    $ref: "./Flair.yaml"
+  title:
+    $ref: "./Title.yaml"
+  patron:
+    type: boolean
+required:
+  - id
+  - name

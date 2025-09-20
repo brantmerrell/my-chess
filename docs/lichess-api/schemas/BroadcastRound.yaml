@@ -1,0 +1,20 @@
+type: object
+properties:
+  round:
+    $ref: "./BroadcastRoundInfo.yaml"
+  tour:
+    $ref: "./BroadcastTour.yaml"
+  study:
+    $ref: "./BroadcastRoundStudyInfo.yaml"
+  games:
+    type: array
+    items:
+      $ref: "./BroadcastRoundGame.yaml"
+  group:
+    $ref: "./BroadcastGroup.yaml"
+
+required:
+  - round
+  - tour
+  - study
+  - games
