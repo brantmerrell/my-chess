@@ -1,59 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { lichessAuth } from '../../services/lichess/auth';
+import React, { useEffect } from 'react';
+import { useLichessAuth } from '../../hooks/useLichessAuth';
 
 interface LichessLoginProps {
   onAuthChange?: (isAuthenticated: boolean) => void;
 }
 
 const LichessLogin: React.FC<LichessLoginProps> = ({ onAuthChange }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  const { isAuthenticated, username, loading, login, logout } = useLichessAuth();
 
   useEffect(() => {
     if (onAuthChange) {
       onAuthChange(isAuthenticated);
     }
   }, [isAuthenticated, onAuthChange]);
-
-  const checkAuthStatus = async () => {
-    setLoading(true);
-    try {
-      if (lichessAuth.isAuthenticated()) {
-        const user = await lichessAuth.getCurrentUser();
-        if (user) {
-          setIsAuthenticated(true);
-          setUsername(user.username);
-        } else {
-          setIsAuthenticated(false);
-          setUsername(null);
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUsername(null);
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-      setIsAuthenticated(false);
-      setUsername(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogin = () => {
-    lichessAuth.startAuth();
-  };
-
-  const handleLogout = () => {
-    lichessAuth.logout();
-    setIsAuthenticated(false);
-    setUsername(null);
-  };
 
   if (loading) {
     return (
@@ -88,7 +47,7 @@ const LichessLogin: React.FC<LichessLoginProps> = ({ onAuthChange }) => {
             Logged in as <strong>{username}</strong>
           </span>
           <button
-            onClick={handleLogout}
+            onClick={logout}
             style={{
               padding: '4px 12px',
               backgroundColor: '#dc3545',
@@ -113,7 +72,7 @@ const LichessLogin: React.FC<LichessLoginProps> = ({ onAuthChange }) => {
         <>
           <span style={{ color: '#999' }}>Not logged in</span>
           <button
-            onClick={handleLogin}
+            onClick={login}
             style={{
               padding: '6px 16px',
               backgroundColor: '#669900',

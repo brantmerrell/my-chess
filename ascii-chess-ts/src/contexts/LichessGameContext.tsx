@@ -44,7 +44,7 @@ const LichessGameContext = createContext<LichessGameContextType | null>(null);
 
 export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const dispatch = useDispatch();
-  const { username } = useLichessAuth();
+  const { username, isAuthenticated } = useLichessAuth();
   const [gameState, setGameState] = useState<GameState>({
     gameId: null,
     gameUrl: null,
@@ -67,7 +67,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     lastMoveIndex: -1
   });
 
-  // Parse game result from Lichess data
   const parseGameResult = useCallback((data: any, myColor: 'white' | 'black' | null) => {
     const status = data.status;
     const winner = data.winner;
@@ -79,7 +78,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     let reason: 'mate' | 'resign' | 'timeout' | 'draw' | 'stalemate' | 'insufficient' | 'abort' | 'unknown' = 'unknown';
     let result: 'win' | 'loss' | 'draw' = 'draw';
 
-    // Determine reason for game end
     switch (status) {
       case 'mate':
         reason = 'mate';
@@ -107,7 +105,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         reason = 'unknown';
     }
 
-    // Determine result from my perspective
     if (winner) {
       result = winner === myColor ? 'win' : 'loss';
     } else {
@@ -121,7 +118,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
   }, []);
 
-  // Handle connection status changes
   const handleGameConnectionChange = useCallback((connected: boolean, error?: string) => {
     setGameState(prev => ({
       ...prev,
@@ -136,7 +132,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, []);
 
-  // Optimized move processing - only process new moves
   const processMoves = useCallback((movesString: string) => {
     if (!movesString) {
       console.log('[LichessGameContext] No moves string, resetting to initial position');
@@ -231,7 +226,8 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         opponentName: isWhite ? (data.black.name || data.black.id) : (data.white.name || data.white.id),
         status: data.state.status === 'started' ? 'playing' : data.state.status,
         // Determine if it's my turn based on whose turn it is in the current position
-        isMyTurn: isWhite === (data.state.moves.split(' ').length % 2 === 0)
+        // Note: empty moves string means no moves have been made (white's turn)
+        isMyTurn: isWhite === (data.state.moves.trim() === '' ? true : data.state.moves.split(' ').length % 2 === 0)
       }));
 
       // Reset both cache and Redux store for new game
@@ -256,7 +252,10 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
           black: data.btime
         },
         // Update turn based on number of moves
-        isMyTurn: prev.color === 'white' ? (data.moves.split(' ').length % 2 === 0) : (data.moves.split(' ').length % 2 === 1)
+        // Note: empty moves string means no moves have been made (white's turn)
+        isMyTurn: prev.color === 'white'
+          ? (data.moves.trim() === '' ? true : data.moves.split(' ').length % 2 === 0)
+          : (data.moves.trim() === '' ? false : data.moves.split(' ').length % 2 === 1)
       }));
 
       if (data.status !== 'started') {
@@ -491,6 +490,14 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
     // Reset Redux store to starting position
     dispatch(loadFen({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' }));
   }, [dispatch]);
+
+  // Reset game state when user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // User logged out - reset everything
+      startNewGame();
+    }
+  }, [isAuthenticated, startNewGame]);
 
   const value: LichessGameContextType = {
     gameState,
