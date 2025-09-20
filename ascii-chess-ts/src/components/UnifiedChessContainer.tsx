@@ -96,6 +96,25 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     useChessGame(displayMode);
   const { gameState, sendMove, getCurrentPosition } = useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
+
+  React.useEffect(() => {
+    if (gameState.isPlaying && gameState.color) {
+      const shouldFlip = gameState.color === 'black';
+      console.log('[UnifiedChessContainer] Auto-orienting board:', {
+        color: gameState.color,
+        shouldFlip,
+        currentFlipState: flipBoard
+      });
+      if (flipBoard !== shouldFlip) {
+        setFlipBoard(shouldFlip);
+      }
+    } else if (!gameState.isPlaying && gameState.gameId === null) {
+      if (flipBoard) {
+        console.log('[UnifiedChessContainer] Resetting board orientation to default');
+        setFlipBoard(false);
+      }
+    }
+  }, [gameState.isPlaying, gameState.color, gameState.gameId]);
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
     const fens = [game.toFen()];
@@ -623,6 +642,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                   onChange={(e) => setFlipBoard(e.target.checked)}
                 />
                 Flip Board
+                {gameState.isPlaying && gameState.color && (
+                  <span style={{
+                    fontSize: '0.8em',
+                    marginLeft: '5px',
+                    color: '#666',
+                    fontStyle: 'italic'
+                  }}>
+                    (playing as {gameState.color})
+                  </span>
+                )}
               </label>
             </div>
           )}
