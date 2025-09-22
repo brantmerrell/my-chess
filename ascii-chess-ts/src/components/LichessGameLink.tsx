@@ -33,9 +33,6 @@ export const LichessGameLink: React.FC<LichessGameLinkProps> = ({
 
   return (
     <div className="lichess-game-link">
-      <div className="lichess-game-link__label">
-        {isPlaying ? 'Playing on Lichess' : 'View on Lichess'}
-      </div>
       <div className="lichess-game-link__actions">
         <button
           className="lichess-game-link__button lichess-game-link__button--open"
