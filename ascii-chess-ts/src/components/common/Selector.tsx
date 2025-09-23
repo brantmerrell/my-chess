@@ -8,7 +8,7 @@ interface SelectorOption {
 
 interface SelectorProps<T extends string> {
   id: string;
-  label: React.ReactNode;
+  label?: React.ReactNode;
   value: T;
   onChange: (value: T) => void;
   options: readonly SelectorOption[];
@@ -27,9 +27,11 @@ function Selector<T extends string>({
 }: SelectorProps<T>) {
   return (
     <div className={`selector-wrapper ${className}`}>
-      <label className="selector-label text-info" htmlFor={id}>
-        {label}
-      </label>
+      {label && (
+        <label className="selector-label text-info" htmlFor={id}>
+          {label}
+        </label>
+      )}
       <div className="selector-container">
         <select
           id={id}

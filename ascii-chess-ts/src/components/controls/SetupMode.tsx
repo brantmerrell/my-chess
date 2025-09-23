@@ -6,6 +6,7 @@ import { useLichessAuth } from "../../hooks/useLichessAuth";
 import { useLichessGame } from "../../contexts/LichessGameContext";
 import { LichessGameLink } from "../LichessGameLink";
 import { ConnectionStatus } from "../ConnectionStatus";
+import LichessLogin from "../auth/LichessLogin";
 import "./SetupMode.css";
 type SetupMode = "analysis" | "play";
 interface TimeControl {
@@ -34,7 +35,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   clearNotification,
 }) => {
   const [mode, setMode] = useState<SetupMode>("analysis");
-  const { isAuthenticated, username } = useLichessAuth();
+  const { isAuthenticated, username, logout } = useLichessAuth();
   const { gameState, createSeek, startNewGame, resign } = useLichessGame();
 
   const reasonDisplayMap: Record<string, string> = {
@@ -91,13 +92,13 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
           className={`tab ${mode === "analysis" ? "active" : ""} ${theme}`}
           onClick={() => setMode("analysis")}
         >
-          Analysis
+          Custom
         </button>
         <button
           className={`tab ${mode === "play" ? "active" : ""} ${theme}`}
           onClick={() => setMode("play")}
         >
-          Play
+          Lichess
         </button>
       </div>
       {mode === "analysis" && (
@@ -115,22 +116,65 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
         <div className="play-controls">
           {!isAuthenticated ? (
             <div className="auth-required">
-              <p>Please log in with Lichess to play online</p>
+              <LichessLogin />
             </div>
           ) : (
             <>
               <div className="play-status-row">
-                <div className="status-stack">
-                  <div className="user-info">
+                <div className="user-info">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span>
                       Playing as: <strong>{username}</strong>
                     </span>
-                    <ConnectionStatus
-                      connectionStatus={gameState.connectionStatus}
-                      connectionError={gameState.connectionError}
-                    />
+                    <button
+                      onClick={logout}
+                      style={{
+                        padding: '2px 8px',
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '11px',
+                        fontFamily: 'monospace'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = '#c82333';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = '#dc3545';
+                      }}
+                    >
+                      Logout
+                    </button>
                   </div>
-                  {gameState.isPlaying && (
+                  <ConnectionStatus
+                    connectionStatus={gameState.connectionStatus}
+                    connectionError={gameState.connectionError}
+                  />
+                </div>
+                {!gameState.isPlaying &&
+                  !gameState.gameId &&
+                  !gameState.gameResult && (
+                    <div className="quick-pairing">
+                      <span className="quick-pairing-label">Quick Pairing:</span>
+                      <div className="time-control-buttons">
+                        {timeControls.map((tc) => (
+                          <button
+                            key={tc.label}
+                            className={`btn btn-${tc.category === "rapid" ? "info" : "primary"} time-control-btn`}
+                            onClick={() => handleQuickPairing(tc)}
+                            disabled={gameState.status === "seeking"}
+                          >
+                            {tc.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+              </div>
+              {gameState.isPlaying && (
+                <div className="status-stack">
                     <div className="game-status-compact">
                       <span className="game-active">🟢 Active</span>
                       <span>
@@ -190,8 +234,10 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
                     </div>
                   )}
                     </div>
-                  )}
-                  {gameState.gameResult && !gameState.isPlaying && (
+                </div>
+              )}
+              {gameState.gameResult && !gameState.isPlaying && (
+                <div className="status-stack">
                     <div className="game-result-compact">
                       <span className="result-icon">🏁</span>
                       <span
@@ -211,47 +257,27 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
                         🎮 New Game
                       </button>
                     </div>
-                  )}
-                  {gameState.status === "seeking" &&
-                    !gameState.isPlaying &&
-                    !gameState.gameResult && (
-                      <div className="seeking-status-compact">
-                        <span>🔍 Looking for opponent...</span>
-                      </div>
-                    )}
-                  {gameState.status === "starting" && !gameState.isPlaying && (
-                    <div className="seeking-status-compact">
-                      <span>⏳ Game starting...</span>
-                    </div>
-                  )}
                 </div>
-                {(gameState.gameUrl || gameState.gameId) && (
+              )}
+              {gameState.status === "seeking" &&
+                !gameState.isPlaying &&
+                !gameState.gameResult && (
+                  <div className="seeking-status-compact">
+                    <span>🔍 Looking for opponent...</span>
+                  </div>
+                )}
+              {gameState.status === "starting" && !gameState.isPlaying && (
+                <div className="seeking-status-compact">
+                  <span>⏳ Game starting...</span>
+                </div>
+              )}
+              {(gameState.gameUrl || gameState.gameId) && (
                   <LichessGameLink
                     gameUrl={gameState.gameUrl}
                     gameId={gameState.gameId}
                     isPlaying={gameState.isPlaying}
                   />
-                )}
-              </div>
-              {!gameState.isPlaying &&
-                !gameState.gameId &&
-                !gameState.gameResult && (
-                  <div className="quick-pairing-row">
-                    <span className="quick-pairing-label">Quick Pairing:</span>
-                    <div className="time-control-buttons">
-                      {timeControls.map((tc) => (
-                        <button
-                          key={tc.label}
-                          className={`btn btn-${tc.category === "rapid" ? "info" : "primary"} time-control-btn`}
-                          onClick={() => handleQuickPairing(tc)}
-                          disabled={gameState.status === "seeking"}
-                        >
-                          {tc.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              )}
             </>
           )}
         </div>

@@ -2,6 +2,9 @@
   padding: 10px;
   width: 100%;
   max-width: none;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .mode-tabs {
@@ -65,21 +68,30 @@
 .analysis-controls {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
+  flex: 1;
+  height: 110px;
+  justify-content: flex-start;
 }
 
 .play-controls {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
+  flex: 1;
+  height: 110px;
+  justify-content: flex-start;
 }
 
 .auth-required {
-  padding: 20px;
-  background-color: rgba(255, 193, 7, 0.1);
-  border: 1px solid #ffc107;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.02);
   border-radius: 5px;
   text-align: center;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-required p {
@@ -90,12 +102,13 @@
 
 .play-status-row {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 15px;
-  margin-bottom: 15px;
   padding: 10px;
   background-color: rgba(0, 0, 0, 0.02);
   border-radius: 5px;
+  flex-wrap: wrap;
+  min-height: 60px;
 }
 
 .status-stack {
@@ -103,6 +116,7 @@
   flex-direction: column;
   gap: 8px;
   min-width: 300px;
+  width: 100%;
 }
 
 .user-info {
@@ -115,7 +129,18 @@
   border-radius: 5px;
   font-family: monospace;
   font-size: 13px;
-  width: 100%;
+  flex: 0 0 auto;
+  min-width: 250px;
+}
+
+.quick-pairing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 5px;
+  flex: 1 1 auto;
 }
 
 .quick-pairing-row {
@@ -202,8 +227,7 @@
 }
 
 .dark .auth-required {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #ffb300;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .dark .auth-required p {
@@ -217,6 +241,10 @@
 .dark .user-info {
   background-color: rgba(76, 175, 80, 0.2);
   color: #81c784;
+}
+
+.dark .quick-pairing {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .dark .quick-pairing-row {
@@ -240,6 +268,7 @@
   font-family: monospace;
   font-size: 13px;
   width: 100%;
+  min-height: 40px;
 }
 
 .game-active {
@@ -269,7 +298,7 @@
   font-size: 13px;
   color: #856404;
   font-weight: 500;
-  width: 100%;
+  min-height: 40px;
 }
 
 /* Dark theme adjustments for game status */
@@ -302,6 +331,7 @@
   font-family: monospace;
   font-size: 13px;
   width: 100%;
+  min-height: 40px;
 }
 
 .result-icon {

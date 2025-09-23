@@ -6,12 +6,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PieceDisplayMode } from "./types/chess";
 import UnifiedChessContainer from "./components/UnifiedChessContainer";
 import AuthCallback from "./components/auth/AuthCallback";
-import LichessLogin from "./components/auth/LichessLogin";
 import { LichessGameProvider } from "./contexts/LichessGameContext";
+import ThemeSelector from "./components/controls/ThemeSelector";
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
   const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
     <Provider store={store}>
@@ -28,7 +29,10 @@ function App() {
                   padding: '10px 20px'
                 }}>
                   <h1 className="title">Ascii Chessboard</h1>
-                  <LichessLogin onAuthChange={setIsAuthenticated} />
+                  <ThemeSelector
+                    currentTheme={theme}
+                    onThemeChange={setTheme}
+                  />
                 </div>
                 <UnifiedChessContainer
                   displayMode={displayMode}
