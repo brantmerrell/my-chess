@@ -1,8 +1,0 @@
-type: string
-enum:
-  - ultraBullet
-  - bullet
-  - blitz
-  - rapid
-  - classical
-  - correspondence

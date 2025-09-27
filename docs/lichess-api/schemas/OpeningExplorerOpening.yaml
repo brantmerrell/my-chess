@@ -1,9 +1,0 @@
-type: object
-properties:
-  eco:
-    type: string
-  name:
-    type: string
-required:
-  - eco
-  - name

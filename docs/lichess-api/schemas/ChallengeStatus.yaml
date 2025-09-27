@@ -1,7 +1,0 @@
-type: string
-enum:
-  - created
-  - offline
-  - canceled
-  - declined
-  - accepted

@@ -1,5 +1,0 @@
-properties:
-  error:
-    type: string
-example:
-  error: "This user cannot edit this swiss"

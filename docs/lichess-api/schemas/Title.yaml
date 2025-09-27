@@ -1,3 +1,0 @@
-type: string
-enum: [GM, WGM, IM, WIM, FM, WFM, NM, CM, WCM, WNM, LM, BOT]
-description: only appears if the user is a titled player or a bot user
