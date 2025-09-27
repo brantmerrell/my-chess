@@ -179,6 +179,16 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
         const legalMoves = cache.gameInstance.getVerboseMoves();
         console.log(`[LichessGameContext] Processing UCI move: ${uciMove}, from: ${from}, to: ${to}, promotion: ${promotion}`);
 
+        // Special logging for castling moves
+        const isCastling = (from === 'e1' && (to === 'g1' || to === 'c1')) ||
+                          (from === 'e8' && (to === 'g8' || to === 'c8'));
+        if (isCastling) {
+          console.log(`[LichessGameContext] CASTLING DETECTED: ${uciMove}`);
+          console.log(`[LichessGameContext] Current FEN before move: ${cache.gameInstance.toFen()}`);
+          console.log(`[LichessGameContext] Available castling moves:`,
+            legalMoves.filter((m: any) => m.flags && (m.flags.includes('k') || m.flags.includes('q'))));
+        }
+
         const matchingMove = legalMoves.find((m: any) =>
           m.from === from && m.to === to &&
           (!promotion || m.promotion === promotion)
@@ -186,21 +196,46 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({ childre
 
         if (matchingMove) {
           console.log(`[LichessGameContext] Found matching move: ${matchingMove.san} for UCI ${uciMove}`);
-          cache.gameInstance.makeMove(matchingMove.san);
-          dispatch(makeMove(matchingMove.san));
-          cache.processedMoves.push(uciMove);
-          cache.lastMoveIndex++;
+          if (isCastling) {
+            console.log(`[LichessGameContext] Castling move details:`, {
+              san: matchingMove.san,
+              flags: matchingMove.flags,
+              from: matchingMove.from,
+              to: matchingMove.to
+            });
+          }
 
-          if (notificationCallbackRef.current) {
-            if (pendingSentMovesRef.current.has(uciMove)) {
-              pendingSentMovesRef.current.delete(uciMove);
-              notificationCallbackRef.current(`${uciMove} confirmed by Lichess`, 'success');
-            } else {
-              notificationCallbackRef.current(`${uciMove} received from opponent`, 'info');
+          try {
+            const moveResult = cache.gameInstance.makeMove(matchingMove.san);
+            console.log(`[LichessGameContext] Move result:`, moveResult ? 'SUCCESS' : 'FAILED');
+            if (isCastling) {
+              console.log(`[LichessGameContext] FEN after castling: ${cache.gameInstance.toFen()}`);
             }
+            dispatch(makeMove(matchingMove.san));
+            cache.processedMoves.push(uciMove);
+            cache.lastMoveIndex++;
+
+            if (notificationCallbackRef.current) {
+              if (pendingSentMovesRef.current.has(uciMove)) {
+                pendingSentMovesRef.current.delete(uciMove);
+                notificationCallbackRef.current(`${uciMove} confirmed by Lichess`, 'success');
+              } else {
+                notificationCallbackRef.current(`${uciMove} received from opponent`, 'info');
+              }
+            }
+          } catch (error) {
+            console.error(`[LichessGameContext] Failed to make move ${matchingMove.san}:`, error);
+            cache.lastMoveIndex++;
+            continue;
           }
         } else {
           console.error(`[LichessGameContext] No matching move found for UCI ${uciMove} (${from}-${to})`);
+          if (isCastling) {
+            console.error(`[LichessGameContext] Castling rights and position:`, {
+              fen: cache.gameInstance.toFen(),
+              availableMoves: legalMoves.map((m: any) => `${m.from}-${m.to}`).slice(0, 10)
+            });
+          }
 
           // Mark this move as processed even though we couldn't apply it
           // This prevents infinite loops
