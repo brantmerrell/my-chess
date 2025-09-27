@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { lichessAuth } from '../../services/lichess/auth';
+import './AuthCallback.css';
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -52,41 +53,34 @@ const AuthCallback: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      fontFamily: 'monospace'
-    }}>
+    <div className="auth-callback">
       {status === 'processing' && (
         <>
-          <div style={{ fontSize: '24px', marginBottom: '20px' }}>
+          <div className="auth-callback__title">
             Completing authentication...
           </div>
-          <div style={{ fontSize: '48px' }}>♔</div>
+          <div className="auth-callback__icon">♔</div>
         </>
       )}
 
       {status === 'success' && (
         <>
-          <div style={{ fontSize: '24px', color: 'green', marginBottom: '20px' }}>
+          <div className="auth-callback__title auth-callback__title--success">
             Authentication successful!
           </div>
-          <div style={{ fontSize: '16px' }}>Redirecting...</div>
+          <div className="auth-callback__subtitle">Redirecting...</div>
         </>
       )}
 
       {status === 'error' && (
         <>
-          <div style={{ fontSize: '24px', color: 'red', marginBottom: '20px' }}>
+          <div className="auth-callback__title auth-callback__title--error">
             Authentication failed
           </div>
-          <div style={{ fontSize: '16px', marginBottom: '10px' }}>
+          <div className="auth-callback__error-message">
             {errorMessage}
           </div>
-          <div style={{ fontSize: '14px' }}>Redirecting to home...</div>
+          <div className="auth-callback__redirect-notice">Redirecting to home...</div>
         </>
       )}
     </div>
