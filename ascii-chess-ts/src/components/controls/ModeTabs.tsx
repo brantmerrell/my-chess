@@ -13,13 +13,13 @@ const ModeTabs: React.FC<ModeTabsProps> = ({ mode, theme, onModeChange }) => {
   return (
     <div className="mode-tabs">
       <button
-        className={`tab ${mode === "analysis" ? "active" : ""} ${theme}`}
+        className={`tab ${mode === "analysis" ? "active" : ""}`}
         onClick={() => onModeChange("analysis")}
       >
         Custom
       </button>
       <button
-        className={`tab ${mode === "play" ? "active" : ""} ${theme}`}
+        className={`tab ${mode === "play" ? "active" : ""}`}
         onClick={() => onModeChange("play")}
       >
         Lichess

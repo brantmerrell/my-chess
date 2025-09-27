@@ -10,6 +10,7 @@
 .auth-callback__title {
   font-size: 24px;
   margin-bottom: 20px;
+  color: var(--theme-primary);
 }
 
 .auth-callback__icon {
@@ -30,58 +31,11 @@
 }
 
 .auth-callback__title--success {
-  color: #28a745;
+  color: var(--theme-success, #28a745);
 }
 
 .auth-callback__title--error {
-  color: #dc3545;
+  color: var(--theme-danger, #dc3545);
 }
 
-/* Theme-specific styles */
-.cyborg .auth-callback__title {
-  color: #80ffdb;
-}
-
-.cyborg .auth-callback__title--success {
-  color: #80ffdb;
-}
-
-.cyborg .auth-callback__title--error {
-  color: #ff5555;
-}
-
-.vapor .auth-callback__title {
-  color: #ff6baf;
-}
-
-.vapor .auth-callback__title--success {
-  color: #ff6baf;
-}
-
-.vapor .auth-callback__title--error {
-  color: #ff5555;
-}
-
-.solar .auth-callback__title {
-  color: #b58900;
-}
-
-.solar .auth-callback__title--success {
-  color: #b58900;
-}
-
-.solar .auth-callback__title--error {
-  color: #dc322f;
-}
-
-.superhero .auth-callback__title {
-  color: #df691a;
-}
-
-.superhero .auth-callback__title--success {
-  color: #df691a;
-}
-
-.superhero .auth-callback__title--error {
-  color: #e74c3c;
-}
+/* Theme-specific styles are now handled by CSS variables */

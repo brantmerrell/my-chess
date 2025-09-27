@@ -22,7 +22,7 @@ const Accordion: React.FC<AccordionProps> = ({
   return (
     <div className={`accordion ${className}`}>
       <button
-        className={`accordion-header accordion-header--${theme}`}
+        className="accordion-header"
         onClick={onToggle}
         aria-expanded={isExpanded}
         aria-controls={`accordion-content-${typeof title === "string" ? title.replace(/\s+/g, "-").toLowerCase() : "accordion"}`}
@@ -30,7 +30,7 @@ const Accordion: React.FC<AccordionProps> = ({
         <span className={`accordion-chevron ${isExpanded ? "expanded" : ""}`}>
           ▶
         </span>
-        <span className={`accordion-title accordion-title--${theme}`}>
+        <span className="accordion-title">
           {title}
         </span>
       </button>

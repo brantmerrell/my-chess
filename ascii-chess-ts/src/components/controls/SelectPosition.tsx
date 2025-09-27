@@ -42,7 +42,7 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme, setFen }) => {
       <select
         aria-label="Position Selection"
         id="position-selector"
-        className={`dropdown-toggle position-select btn btn-secondary position-select--${theme}`}
+        className="dropdown-toggle position-select btn btn-secondary"
         value={selectedSetup}
         onChange={handleOptionChange}
         onKeyDown={(e) => {

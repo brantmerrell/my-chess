@@ -21,7 +21,10 @@ export const useTheme = (initialTheme: BootstrapTheme = "solar") => {
         link.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${theme}/bootstrap.min.css`;
         document.head.appendChild(link);
 
+        document.documentElement.setAttribute('data-theme', theme);
+
         localStorage.setItem("chess-theme", theme);
+
       } catch (error) {
         console.error("Error loading theme:", error);
       }

@@ -3,11 +3,11 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background-color: #f5f5f5;
+  background-color: var(--theme-dark-bg, #f5f5f5);
   border-radius: 4px;
   font-family: monospace;
   font-size: 14px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--theme-primary, #ddd);
 }
 
 .lichess-login__loading {
@@ -20,11 +20,11 @@
 }
 
 .lichess-login__icon {
-  color: #4caf50;
+  color: var(--theme-success, #4caf50);
 }
 
 .lichess-login__text {
-  color: #333;
+  color: var(--theme-primary, #333);
 }
 
 .lichess-login__username {
@@ -33,7 +33,7 @@
 
 .lichess-login__logout-btn {
   padding: 4px 12px;
-  background-color: #dc3545;
+  background-color: var(--theme-danger, #dc3545);
   color: white;
   border: none;
   border-radius: 3px;
@@ -44,16 +44,17 @@
 }
 
 .lichess-login__logout-btn:hover {
-  background-color: #c82333;
+  background-color: var(--theme-danger, #c82333);
+  filter: brightness(0.9);
 }
 
 .lichess-login__not-logged-in {
-  color: #666;
+  color: var(--theme-text-muted, #666);
 }
 
 .lichess-login__login-btn {
   padding: 6px 16px;
-  background-color: #669900;
+  background-color: var(--theme-success, #669900);
   color: white;
   border: none;
   border-radius: 3px;
@@ -65,58 +66,8 @@
 }
 
 .lichess-login__login-btn:hover {
-  background-color: #7ab200;
+  background-color: var(--theme-success, #7ab200);
+  filter: brightness(1.1);
 }
 
-/* Theme-specific styles */
-.cyborg .lichess-login {
-  background-color: #2a2a2a;
-  border-color: #80ffdb;
-}
-
-.cyborg .lichess-login__text {
-  color: #80ffdb;
-}
-
-.cyborg .lichess-login__not-logged-in {
-  color: #80ffdb;
-}
-
-.vapor .lichess-login {
-  background-color: #2a2a2a;
-  border-color: #ff6baf;
-}
-
-.vapor .lichess-login__text {
-  color: #ff6baf;
-}
-
-.vapor .lichess-login__not-logged-in {
-  color: #ff6baf;
-}
-
-.solar .lichess-login {
-  background-color: #002b36;
-  border-color: #b58900;
-}
-
-.solar .lichess-login__text {
-  color: #b58900;
-}
-
-.solar .lichess-login__not-logged-in {
-  color: #b58900;
-}
-
-.superhero .lichess-login {
-  background-color: #2b3e50;
-  border-color: #df691a;
-}
-
-.superhero .lichess-login__text {
-  color: #df691a;
-}
-
-.superhero .lichess-login__not-logged-in {
-  color: #df691a;
-}
+/* Theme-specific styles are now handled by CSS variables */

@@ -4,8 +4,8 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--theme-bg-10, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--theme-bg-20, rgba(0, 0, 0, 0.1));
   border-radius: 5px;
   flex: 0 0 auto;
   min-height: 40px;
@@ -21,10 +21,10 @@
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--theme-border-dark, #ccc);
   border-radius: 4px;
-  background-color: white;
-  color: #333;
+  background-color: var(--theme-dark-bg, white);
+  color: var(--theme-primary, #333);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -32,8 +32,8 @@
 }
 
 .lichess-game-link__button:hover {
-  background-color: #f5f5f5;
-  border-color: #999;
+  background-color: var(--theme-darker-bg, #f5f5f5);
+  border-color: var(--theme-primary, #999);
 }
 
 .lichess-game-link__button--open {
@@ -65,62 +65,9 @@
 
 .lichess-game-link__id {
   font-size: 12px;
-  color: #888;
+  color: var(--theme-text-muted, #888);
   font-family: monospace;
   white-space: nowrap;
 }
 
-/* Theme-specific styles */
-.cyborg .lichess-game-link {
-  background-color: rgba(128, 255, 219, 0.1);
-  border-color: rgba(128, 255, 219, 0.2);
-}
-
-.cyborg .lichess-game-link__button {
-  background-color: #2a2a2a;
-  color: #80ffdb;
-  border-color: #444;
-}
-
-.cyborg .lichess-game-link__button:hover {
-  background-color: #333;
-  border-color: #80ffdb;
-}
-
-.vapor .lichess-game-link {
-  background-color: rgba(255, 107, 175, 0.1);
-  border-color: rgba(255, 107, 175, 0.2);
-}
-
-.vapor .lichess-game-link__button {
-  background-color: #2a2a2a;
-  color: #ff6baf;
-  border-color: #444;
-}
-
-.vapor .lichess-game-link__button:hover {
-  background-color: #333;
-  border-color: #ff6baf;
-}
-
-.solar .lichess-game-link {
-  background-color: rgba(181, 137, 0, 0.1);
-  border-color: rgba(181, 137, 0, 0.2);
-}
-
-.solar .lichess-game-link__button {
-  background-color: #002b36;
-  color: #b58900;
-  border-color: #073642;
-}
-
-.superhero .lichess-game-link {
-  background-color: rgba(223, 105, 26, 0.1);
-  border-color: rgba(223, 105, 26, 0.2);
-}
-
-.superhero .lichess-game-link__button {
-  background-color: #2b3e50;
-  color: #df691a;
-  border-color: #34495e;
-}
+/* Theme-specific styles are now handled by CSS variables */

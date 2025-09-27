@@ -10,7 +10,7 @@
   display: flex;
   gap: 0;
   margin-bottom: 20px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--theme-border, #ddd);
 }
 
 .tab {
@@ -28,13 +28,13 @@
 }
 
 .tab:hover {
-  color: #333;
-  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--theme-text, #333);
+  background-color: var(--theme-bg-5, rgba(0, 0, 0, 0.03));
 }
 
 .tab.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
+  color: var(--theme-primary);
+  border-bottom-color: var(--theme-primary);
   font-weight: bold;
 }
 
@@ -44,36 +44,6 @@
 
 .tab.light.active {
   color: #007bff;
-}
-
-.tab.cyborg {
-  color: #80ffdb;
-}
-.tab.vapor {
-  color: #ff6baf;
-}
-.tab.solar {
-  color: #b58900;
-}
-.tab.superhero {
-  color: #df691a;
-}
-
-.tab.cyborg.active {
-  color: #80ffdb;
-  border-bottom-color: #80ffdb;
-}
-.tab.vapor.active {
-  color: #ff6baf;
-  border-bottom-color: #ff6baf;
-}
-.tab.solar.active {
-  color: #b58900;
-  border-bottom-color: #b58900;
-}
-.tab.superhero.active {
-  color: #df691a;
-  border-bottom-color: #df691a;
 }
 
 .tab.blue {
@@ -106,7 +76,7 @@
 
 .auth-required {
   padding: 15px;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--theme-bg-5, rgba(0, 0, 0, 0.02));
   border-radius: 5px;
   text-align: center;
   min-height: 60px;
@@ -117,7 +87,7 @@
 
 .auth-required p {
   margin: 0;
-  color: #856404;
+  color: var(--theme-warning, #856404);
   font-family: monospace;
 }
 
@@ -126,7 +96,7 @@
   flex-direction: row;
   gap: 12px;
   padding: 10px;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--theme-bg-5, rgba(0, 0, 0, 0.02));
   border-radius: 5px;
   flex: 1;
   align-items: flex-start;
@@ -146,13 +116,14 @@
   flex-direction: column;
   gap: 6px;
   padding: 8px 12px;
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: var(--theme-bg-20, rgba(76, 175, 80, 0.1));
   border-radius: 5px;
   font-family: monospace;
   font-size: 13px;
   flex: 0 0 auto;
   min-width: 220px;
   max-width: 280px;
+  color: var(--theme-primary);
 }
 
 .quick-pairing {
@@ -160,7 +131,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--theme-bg-10, rgba(0, 0, 0, 0.03));
   border-radius: 5px;
   flex: 1;
   min-width: 300px;
@@ -171,7 +142,7 @@
   align-items: center;
   gap: 15px;
   padding: 12px;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--theme-bg-10, rgba(0, 0, 0, 0.03));
   border-radius: 5px;
   flex-wrap: wrap;
 }
@@ -181,6 +152,7 @@
   font-size: 14px;
   font-weight: bold;
   white-space: nowrap;
+  color: var(--theme-primary);
 }
 
 .time-control-buttons {
@@ -214,153 +186,36 @@
 
 /* Bootstrap theme colors */
 .btn-info {
-  background-color: #17a2b8;
+  background-color: var(--theme-info, #17a2b8);
   color: white;
 }
 
 .btn-info:hover:not(:disabled) {
-  background-color: #138496;
+  background-color: var(--theme-info, #138496);
+  filter: brightness(0.9);
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: var(--theme-primary, #007bff);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--theme-primary, #0056b3);
+  filter: brightness(0.9);
 }
 
 .btn-danger {
-  background-color: #dc3545;
+  background-color: var(--theme-danger, #dc3545);
   color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #c82333;
+  background-color: var(--theme-danger, #c82333);
+  filter: brightness(0.9);
 }
 
-/* Theme-specific styles */
-.cyborg .mode-tabs {
-  border-bottom-color: #80ffdb;
-}
-.vapor .mode-tabs {
-  border-bottom-color: #ff6baf;
-}
-.solar .mode-tabs {
-  border-bottom-color: #b58900;
-}
-.superhero .mode-tabs {
-  border-bottom-color: #df691a;
-}
-
-.cyborg .tab:hover {
-  background-color: rgba(128, 255, 219, 0.1);
-}
-.vapor .tab:hover {
-  background-color: rgba(255, 107, 175, 0.1);
-}
-.solar .tab:hover {
-  background-color: rgba(181, 137, 0, 0.1);
-}
-.superhero .tab:hover {
-  background-color: rgba(223, 105, 26, 0.1);
-}
-
-.cyborg .auth-required {
-  background-color: rgba(128, 255, 219, 0.05);
-}
-.vapor .auth-required {
-  background-color: rgba(255, 107, 175, 0.05);
-}
-.solar .auth-required {
-  background-color: rgba(181, 137, 0, 0.05);
-}
-.superhero .auth-required {
-  background-color: rgba(223, 105, 26, 0.05);
-}
-
-.cyborg .auth-required p {
-  color: #80ffdb;
-}
-.vapor .auth-required p {
-  color: #ff6baf;
-}
-.solar .auth-required p {
-  color: #b58900;
-}
-.superhero .auth-required p {
-  color: #df691a;
-}
-
-.cyborg .play-status-row {
-  background-color: rgba(128, 255, 219, 0.05);
-}
-.vapor .play-status-row {
-  background-color: rgba(255, 107, 175, 0.05);
-}
-.solar .play-status-row {
-  background-color: rgba(181, 137, 0, 0.05);
-}
-.superhero .play-status-row {
-  background-color: rgba(223, 105, 26, 0.05);
-}
-
-.cyborg .user-info {
-  background-color: rgba(128, 255, 219, 0.2);
-  color: #80ffdb;
-}
-.vapor .user-info {
-  background-color: rgba(255, 107, 175, 0.2);
-  color: #ff6baf;
-}
-.solar .user-info {
-  background-color: rgba(181, 137, 0, 0.2);
-  color: #b58900;
-}
-.superhero .user-info {
-  background-color: rgba(223, 105, 26, 0.2);
-  color: #df691a;
-}
-
-.cyborg .quick-pairing {
-  background-color: rgba(128, 255, 219, 0.1);
-}
-.vapor .quick-pairing {
-  background-color: rgba(255, 107, 175, 0.1);
-}
-.solar .quick-pairing {
-  background-color: rgba(181, 137, 0, 0.1);
-}
-.superhero .quick-pairing {
-  background-color: rgba(223, 105, 26, 0.1);
-}
-
-.cyborg .quick-pairing-row {
-  background-color: rgba(128, 255, 219, 0.1);
-}
-.vapor .quick-pairing-row {
-  background-color: rgba(255, 107, 175, 0.1);
-}
-.solar .quick-pairing-row {
-  background-color: rgba(181, 137, 0, 0.1);
-}
-.superhero .quick-pairing-row {
-  background-color: rgba(223, 105, 26, 0.1);
-}
-
-.cyborg .quick-pairing-label {
-  color: #80ffdb;
-}
-.vapor .quick-pairing-label {
-  color: #ff6baf;
-}
-.solar .quick-pairing-label {
-  color: #b58900;
-}
-.superhero .quick-pairing-label {
-  color: #df691a;
-}
+/* Theme-specific styles are now handled by CSS variables */
 
 /* Game status styles */
 .game-status-compact {
@@ -368,8 +223,8 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  background-color: rgba(76, 175, 80, 0.15);
-  border: 1px solid #4caf50;
+  background-color: var(--theme-bg-20, rgba(76, 175, 80, 0.15));
+  border: 1px solid var(--theme-success, #4caf50);
   border-radius: 5px;
   font-family: monospace;
   font-size: 13px;
@@ -379,7 +234,7 @@
 
 .game-active {
   font-weight: bold;
-  color: #2e7d32;
+  color: var(--theme-primary, #2e7d32);
 }
 
 .seeking-status-compact {
@@ -387,71 +242,17 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background-color: rgba(255, 193, 7, 0.15);
-  border: 1px solid #ffc107;
+  background-color: var(--theme-bg-15, rgba(255, 193, 7, 0.15));
+  border: 1px solid var(--theme-warning, #ffc107);
   border-radius: 5px;
   font-family: monospace;
   font-size: 13px;
-  color: #856404;
+  color: var(--theme-warning, #856404);
   font-weight: 500;
   min-height: 40px;
 }
 
-/* Theme-specific styles for game status */
-.cyborg .game-status-compact {
-  background-color: rgba(128, 255, 219, 0.2);
-  border-color: #80ffdb;
-  color: #80ffdb;
-}
-.vapor .game-status-compact {
-  background-color: rgba(255, 107, 175, 0.2);
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-.solar .game-status-compact {
-  background-color: rgba(181, 137, 0, 0.2);
-  border-color: #b58900;
-  color: #b58900;
-}
-.superhero .game-status-compact {
-  background-color: rgba(223, 105, 26, 0.2);
-  border-color: #df691a;
-  color: #df691a;
-}
-
-.cyborg .game-active {
-  color: #80ffdb;
-}
-.vapor .game-active {
-  color: #ff6baf;
-}
-.solar .game-active {
-  color: #b58900;
-}
-.superhero .game-active {
-  color: #df691a;
-}
-
-.cyborg .seeking-status-compact {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #ffb300;
-  color: #ffd54f;
-}
-.vapor .seeking-status-compact {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #ffb300;
-  color: #ffd54f;
-}
-.solar .seeking-status-compact {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #b58900;
-  color: #b58900;
-}
-.superhero .seeking-status-compact {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-color: #f39c12;
-  color: #f39c12;
-}
+/* Theme-specific styles for game status are now handled by CSS variables */
 
 /* Game result styles */
 .game-result-compact {
@@ -459,13 +260,14 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  background-color: rgba(103, 58, 183, 0.15);
-  border: 1px solid #673ab7;
+  background-color: var(--theme-bg-20, rgba(103, 58, 183, 0.15));
+  border: 1px solid var(--theme-primary, #673ab7);
   border-radius: 5px;
   font-family: monospace;
   font-size: 13px;
   flex: 0 0 auto;
   min-height: 40px;
+  color: var(--theme-primary);
 }
 
 .result-icon {
@@ -478,25 +280,25 @@
 }
 
 .result-outcome.win {
-  color: #388e3c;
+  color: var(--theme-success, #388e3c);
 }
 
 .result-outcome.loss {
-  color: #d32f2f;
+  color: var(--theme-danger, #d32f2f);
 }
 
 .result-outcome.draw {
-  color: #f57c00;
+  color: var(--theme-warning, #f57c00);
 }
 
 .result-reason {
-  color: #666;
+  color: var(--theme-text-muted, #666);
   font-style: italic;
   font-size: 12px;
 }
 
 .btn-success {
-  background-color: #28a745;
+  background-color: var(--theme-success, #28a745);
   color: white;
   padding: 12px 20px;
   font-family: monospace;
@@ -519,79 +321,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Theme-specific styles for game result */
-.cyborg .game-result-compact {
-  background-color: rgba(128, 255, 219, 0.2);
-  border-color: #80ffdb;
-  color: #80ffdb;
-}
-.vapor .game-result-compact {
-  background-color: rgba(255, 107, 175, 0.2);
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-.solar .game-result-compact {
-  background-color: rgba(181, 137, 0, 0.2);
-  border-color: #b58900;
-  color: #b58900;
-}
-.superhero .game-result-compact {
-  background-color: rgba(223, 105, 26, 0.2);
-  border-color: #df691a;
-  color: #df691a;
-}
-
-.cyborg .result-outcome.win {
-  color: #80ffdb;
-}
-.vapor .result-outcome.win {
-  color: #ff6baf;
-}
-.solar .result-outcome.win {
-  color: #859900;
-}
-.superhero .result-outcome.win {
-  color: #5cb85c;
-}
-
-.cyborg .result-outcome.loss {
-  color: #ff5555;
-}
-.vapor .result-outcome.loss {
-  color: #ff5555;
-}
-.solar .result-outcome.loss {
-  color: #dc322f;
-}
-.superhero .result-outcome.loss {
-  color: #e74c3c;
-}
-
-.cyborg .result-outcome.draw {
-  color: #ffb74d;
-}
-.vapor .result-outcome.draw {
-  color: #ffb74d;
-}
-.solar .result-outcome.draw {
-  color: #b58900;
-}
-.superhero .result-outcome.draw {
-  color: #f39c12;
-}
-
-.cyborg .result-reason {
-  color: #aaa;
-}
-.vapor .result-reason {
-  color: #aaa;
-}
-.solar .result-reason {
-  color: #93a1a1;
-}
-.superhero .result-reason {
-  color: #aaa;
-}
+/* Theme-specific styles for game result are now handled by CSS variables */
 
 /* Inline game notification styles */
 .game-notification {
@@ -641,120 +371,27 @@
 
 /* Type-specific notification styles */
 .game-notification-error {
-  border-color: #f56565;
-  background: rgba(245, 101, 101, 0.1);
-  color: #c53030;
+  border-color: var(--notification-error-text, #f56565);
+  background: var(--notification-error-bg, rgba(245, 101, 101, 0.1));
+  color: var(--notification-error-text, #c53030);
 }
 
 .game-notification-warning {
-  border-color: #ed8936;
-  background: rgba(237, 137, 54, 0.1);
-  color: #c05621;
+  border-color: var(--notification-warning-text, #ed8936);
+  background: var(--notification-warning-bg, rgba(237, 137, 54, 0.1));
+  color: var(--notification-warning-text, #c05621);
 }
 
 .game-notification-success {
-  border-color: #48bb78;
-  background: rgba(72, 187, 120, 0.1);
-  color: #22543d;
+  border-color: var(--notification-success-text, #48bb78);
+  background: var(--notification-success-bg, rgba(72, 187, 120, 0.1));
+  color: var(--notification-success-text, #22543d);
 }
 
 .game-notification-info {
-  border-color: #4299e1;
-  background: rgba(66, 153, 225, 0.1);
-  color: #2c5282;
+  border-color: var(--notification-info-text, #4299e1);
+  background: var(--notification-info-bg, rgba(66, 153, 225, 0.1));
+  color: var(--notification-info-text, #2c5282);
 }
 
-/* Theme-specific styles for inline notifications */
-.cyborg .game-notification {
-  background: rgba(0, 0, 0, 0.2);
-}
-.vapor .game-notification {
-  background: rgba(0, 0, 0, 0.2);
-}
-.solar .game-notification {
-  background: rgba(0, 43, 54, 0.2);
-}
-.superhero .game-notification {
-  background: rgba(43, 62, 80, 0.2);
-}
-
-.cyborg .game-notification-error {
-  background: rgba(245, 101, 101, 0.2);
-  color: #fc8181;
-}
-.vapor .game-notification-error {
-  background: rgba(245, 101, 101, 0.2);
-  color: #fc8181;
-}
-.solar .game-notification-error {
-  background: rgba(220, 50, 47, 0.2);
-  color: #dc322f;
-}
-.superhero .game-notification-error {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-}
-
-.cyborg .game-notification-warning {
-  background: rgba(237, 137, 54, 0.2);
-  color: #f6ad55;
-}
-.vapor .game-notification-warning {
-  background: rgba(237, 137, 54, 0.2);
-  color: #f6ad55;
-}
-.solar .game-notification-warning {
-  background: rgba(181, 137, 0, 0.2);
-  color: #b58900;
-}
-.superhero .game-notification-warning {
-  background: rgba(243, 156, 18, 0.2);
-  color: #f39c12;
-}
-
-.cyborg .game-notification-success {
-  background: rgba(72, 187, 120, 0.2);
-  color: #68d391;
-}
-.vapor .game-notification-success {
-  background: rgba(72, 187, 120, 0.2);
-  color: #68d391;
-}
-.solar .game-notification-success {
-  background: rgba(133, 153, 0, 0.2);
-  color: #859900;
-}
-.superhero .game-notification-success {
-  background: rgba(92, 184, 92, 0.2);
-  color: #5cb85c;
-}
-
-.cyborg .game-notification-info {
-  background: rgba(66, 153, 225, 0.2);
-  color: #63b3ed;
-}
-.vapor .game-notification-info {
-  background: rgba(66, 153, 225, 0.2);
-  color: #63b3ed;
-}
-.solar .game-notification-info {
-  background: rgba(38, 139, 210, 0.2);
-  color: #268bd2;
-}
-.superhero .game-notification-info {
-  background: rgba(91, 192, 222, 0.2);
-  color: #5bc0de;
-}
-
-.cyborg .notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.vapor .notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.solar .notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-.superhero .notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+/* Theme-specific notification styles are now handled by CSS variables */

@@ -14,21 +14,22 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
-  border: 2px solid #333;
+  background: var(--theme-darker-bg, white);
+  border: 2px solid var(--theme-primary, #333);
   border-radius: 8px;
   padding: 20px;
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   min-width: 300px;
   font-family: monospace;
+  color: var(--theme-primary, #333);
 }
 
 .promotion-dialog h3 {
   margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
-  color: #333;
+  color: var(--theme-primary, #333);
   font-size: 18px;
   font-weight: bold;
 }
@@ -45,17 +46,18 @@
   flex-direction: column;
   align-items: center;
   padding: 15px;
-  background: #f5f5f5;
-  border: 2px solid #ddd;
+  background: var(--theme-dark-bg, #f5f5f5);
+  border: 2px solid var(--theme-primary, #ddd);
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: monospace;
+  color: var(--theme-primary, #333);
 }
 
 .promotion-button:hover {
-  background: #e0e0e0;
-  border-color: #333;
+  background: var(--theme-darker-bg, #e0e0e0);
+  border-color: var(--theme-primary, #333);
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -69,13 +71,13 @@
 .promotion-move-notation {
   font-size: 14px;
   font-weight: bold;
-  color: #333;
+  color: var(--theme-primary, #333);
 }
 
 .promotion-cancel {
   width: 100%;
   padding: 10px;
-  background: #dc3545;
+  background: var(--theme-danger, #dc3545);
   color: white;
   border: none;
   border-radius: 5px;
@@ -87,106 +89,8 @@
 }
 
 .promotion-cancel:hover {
-  background: #c82333;
+  background: var(--theme-danger, #c82333);
+  filter: brightness(0.9);
 }
 
-/* Theme-specific styles */
-body.cyborg .promotion-dialog {
-  background: #2a2a2a;
-  border-color: #80ffdb;
-  color: #80ffdb;
-}
-
-body.cyborg .promotion-dialog h3 {
-  color: #80ffdb;
-}
-
-body.cyborg .promotion-button {
-  background: #333;
-  border-color: #80ffdb;
-  color: #80ffdb;
-}
-
-body.cyborg .promotion-button:hover {
-  background: #444;
-  border-color: #80ffdb;
-}
-
-body.cyborg .promotion-move-notation {
-  color: #80ffdb;
-}
-
-body.vapor .promotion-dialog {
-  background: #2a2a2a;
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-
-body.vapor .promotion-dialog h3 {
-  color: #ff6baf;
-}
-
-body.vapor .promotion-button {
-  background: #333;
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-
-body.vapor .promotion-button:hover {
-  background: #444;
-  border-color: #ff6baf;
-}
-
-body.vapor .promotion-move-notation {
-  color: #ff6baf;
-}
-
-body.solar .promotion-dialog {
-  background: #002b36;
-  border-color: #b58900;
-  color: #b58900;
-}
-
-body.solar .promotion-dialog h3 {
-  color: #b58900;
-}
-
-body.solar .promotion-button {
-  background: #073642;
-  border-color: #b58900;
-  color: #b58900;
-}
-
-body.solar .promotion-button:hover {
-  background: #0a4c5a;
-  border-color: #b58900;
-}
-
-body.solar .promotion-move-notation {
-  color: #b58900;
-}
-
-body.superhero .promotion-dialog {
-  background: #2b3e50;
-  border-color: #df691a;
-  color: #df691a;
-}
-
-body.superhero .promotion-dialog h3 {
-  color: #df691a;
-}
-
-body.superhero .promotion-button {
-  background: #34495e;
-  border-color: #df691a;
-  color: #df691a;
-}
-
-body.superhero .promotion-button:hover {
-  background: #3e5771;
-  border-color: #df691a;
-}
-
-body.superhero .promotion-move-notation {
-  color: #df691a;
-}
+/* Theme-specific styles are now handled by CSS variables */

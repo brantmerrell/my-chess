@@ -1,4 +1,5 @@
 @import "./shared/containers.css";
+@import "./styles/themes.css";
 
 body {
   margin: 0;

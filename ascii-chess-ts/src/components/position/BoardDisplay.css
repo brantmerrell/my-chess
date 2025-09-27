@@ -11,7 +11,7 @@ div.board-display .ascii-board,
   width: 630px;
   padding: 10px;
   margin: 5px auto;
-  color: #333;
+  color: var(--theme-text, #333);
   border-radius: 5px;
   font-family:
     "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono",
@@ -19,8 +19,9 @@ div.board-display .ascii-board,
   font-weight: 500;
   white-space: pre;
   overflow-x: auto;
-  background-color: #2a9fd6;
+  background-color: var(--theme-dark-bg, #2a9fd6);
   line-height: 1.2;
+  font-size: 31px;
 }
 
 div.board-display .ascii-board span,
@@ -39,37 +40,4 @@ div.board-display .ascii-board span,
   text-transform: none !important;
 }
 
-.ascii-board--cyborg {
-  font-size: 31px;
-  background-color: #2a9fd6;
-}
-
-.ascii-board--vapor {
-  font-size: 31px;
-  background-color: #6f42c1; /* Vapor (primary) */
-}
-
-.ascii-board--journal {
-  font-size: 31px;
-  background-color: #eb6864; /* Journal (primary) */
-}
-
-.ascii-board--solar {
-  font-size: 31px;
-  background-color: #b58900; /* Solar (primary) */
-}
-
-.ascii-board--superhero {
-  font-size: 31px;
-  background-color: #df6919; /* Superhero (primary) */
-}
-
-.ascii-board--minty {
-  font-size: 31px;
-  background-color: #78c2ad; /* Minty (primary) */
-}
-
-.ascii-board--quartz {
-  font-size: 29px;
-  background-color: #e83283; /* Quartz (primary) */
-}
+/* Theme-specific styles are now handled by CSS variables in themes.css */

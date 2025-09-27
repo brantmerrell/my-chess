@@ -1,0 +1,266 @@
+/* CSS Custom Properties for Theme System */
+/* Clean data-attribute based theming - no DOM manipulation needed */
+
+/* Default theme values - overridden by data-theme selectors */
+:root {
+  --theme-primary: #007bff;
+  --theme-secondary: #6c757d;
+  --theme-success: #28a745;
+  --theme-danger: #dc3545;
+  --theme-warning: #ffc107;
+  --theme-info: #17a2b8;
+
+  /* Background opacity variations */
+  --theme-bg-5: rgba(0, 123, 255, 0.05);
+  --theme-bg-10: rgba(0, 123, 255, 0.1);
+  --theme-bg-15: rgba(0, 123, 255, 0.15);
+  --theme-bg-20: rgba(0, 123, 255, 0.2);
+
+  /* Text colors */
+  --theme-text: #333;
+  --theme-text-muted: #666;
+  --theme-text-light: #999;
+
+  /* Borders */
+  --theme-border: #ddd;
+  --theme-border-dark: #999;
+
+  /* Background colors */
+  --theme-dark-bg: #fff;
+  --theme-darker-bg: #f8f9fa;
+  --theme-darkest-bg: #e9ecef;
+
+  /* Notification colors */
+  --notification-error-bg: rgba(220, 53, 69, 0.1);
+  --notification-error-text: #dc3545;
+  --notification-warning-bg: rgba(255, 193, 7, 0.1);
+  --notification-warning-text: #ffc107;
+  --notification-success-bg: rgba(40, 167, 69, 0.1);
+  --notification-success-text: #28a745;
+  --notification-info-bg: rgba(23, 162, 184, 0.1);
+  --notification-info-text: #17a2b8;
+}
+
+/* Theme-specific overrides using data attributes */
+/* Clean, performant, and follows modern CSS patterns */
+
+[data-theme="cyborg"] {
+  --theme-primary: #80ffdb;
+  --theme-secondary: #aaa;
+  --theme-success: #80ffdb;
+  --theme-danger: #ff5555;
+  --theme-warning: #ffd54f;
+  --theme-info: #63b3ed;
+
+  --theme-bg-5: rgba(128, 255, 219, 0.05);
+  --theme-bg-10: rgba(128, 255, 219, 0.1);
+  --theme-bg-15: rgba(128, 255, 219, 0.15);
+  --theme-bg-20: rgba(128, 255, 219, 0.2);
+
+  --theme-text: #80ffdb;
+  --theme-text-muted: #aaa;
+  --theme-text-light: #666;
+
+  --theme-border: #80ffdb;
+  --theme-border-dark: #444;
+
+  --theme-dark-bg: #2a2a2a;
+  --theme-darker-bg: #333;
+  --theme-darkest-bg: #1a1a1a;
+
+  /* Notification colors */
+  --notification-error-bg: rgba(255, 85, 85, 0.2);
+  --notification-error-text: #ff5555;
+  --notification-warning-bg: rgba(255, 213, 79, 0.2);
+  --notification-warning-text: #ffd54f;
+  --notification-success-bg: rgba(128, 255, 219, 0.2);
+  --notification-success-text: #80ffdb;
+  --notification-info-bg: rgba(99, 179, 237, 0.2);
+  --notification-info-text: #63b3ed;
+}
+
+[data-theme="vapor"] {
+  --theme-primary: #ff6baf;
+  --theme-secondary: #aaa;
+  --theme-success: #ff6baf;
+  --theme-danger: #ff5555;
+  --theme-warning: #ffd54f;
+  --theme-info: #63b3ed;
+
+  --theme-bg-5: rgba(255, 107, 175, 0.05);
+  --theme-bg-10: rgba(255, 107, 175, 0.1);
+  --theme-bg-15: rgba(255, 107, 175, 0.15);
+  --theme-bg-20: rgba(255, 107, 175, 0.2);
+
+  --theme-text: #ff6baf;
+  --theme-text-muted: #aaa;
+  --theme-text-light: #666;
+
+  --theme-border: #ff6baf;
+  --theme-border-dark: #444;
+
+  --theme-dark-bg: #2a2a2a;
+  --theme-darker-bg: #333;
+  --theme-darkest-bg: #1a1a1a;
+
+  /* Notification colors */
+  --notification-error-bg: rgba(255, 85, 85, 0.2);
+  --notification-error-text: #ff5555;
+  --notification-warning-bg: rgba(255, 213, 79, 0.2);
+  --notification-warning-text: #ffd54f;
+  --notification-success-bg: rgba(255, 107, 175, 0.2);
+  --notification-success-text: #ff6baf;
+  --notification-info-bg: rgba(99, 179, 237, 0.2);
+  --notification-info-text: #63b3ed;
+}
+
+[data-theme="solar"] {
+  --theme-primary: #b58900;
+  --theme-secondary: #93a1a1;
+  --theme-success: #859900;
+  --theme-danger: #dc322f;
+  --theme-warning: #b58900;
+  --theme-info: #268bd2;
+
+  --theme-bg-5: rgba(181, 137, 0, 0.05);
+  --theme-bg-10: rgba(181, 137, 0, 0.1);
+  --theme-bg-15: rgba(181, 137, 0, 0.15);
+  --theme-bg-20: rgba(181, 137, 0, 0.2);
+
+  --theme-text: #b58900;
+  --theme-text-muted: #93a1a1;
+  --theme-text-light: #657b83;
+
+  --theme-border: #b58900;
+  --theme-border-dark: #073642;
+
+  --theme-dark-bg: #002b36;
+  --theme-darker-bg: #073642;
+  --theme-darkest-bg: #001f27;
+
+  /* Notification colors */
+  --notification-error-bg: rgba(220, 50, 47, 0.2);
+  --notification-error-text: #dc322f;
+  --notification-warning-bg: rgba(181, 137, 0, 0.2);
+  --notification-warning-text: #b58900;
+  --notification-success-bg: rgba(133, 153, 0, 0.2);
+  --notification-success-text: #859900;
+  --notification-info-bg: rgba(38, 139, 210, 0.2);
+  --notification-info-text: #268bd2;
+}
+
+/* Superhero Theme - Dark theme with orange accents */
+[data-theme="superhero"] {
+  --theme-primary: #df691a;
+  --theme-secondary: #aaa;
+  --theme-success: #5cb85c;
+  --theme-danger: #e74c3c;
+  --theme-warning: #f39c12;
+  --theme-info: #5bc0de;
+
+  --theme-bg-5: rgba(223, 105, 26, 0.05);
+  --theme-bg-10: rgba(223, 105, 26, 0.1);
+  --theme-bg-15: rgba(223, 105, 26, 0.15);
+  --theme-bg-20: rgba(223, 105, 26, 0.2);
+
+  --theme-text: #df691a;
+  --theme-text-muted: #aaa;
+  --theme-text-light: #888;
+
+  --theme-border: #df691a;
+  --theme-border-dark: #34495e;
+
+  --theme-dark-bg: #2b3e50;
+  --theme-darker-bg: #34495e;
+  --theme-darkest-bg: #1c2833;
+
+  /* Notification colors */
+  --notification-error-bg: rgba(231, 76, 60, 0.2);
+  --notification-error-text: #e74c3c;
+  --notification-warning-bg: rgba(243, 156, 18, 0.2);
+  --notification-warning-text: #f39c12;
+  --notification-success-bg: rgba(92, 184, 92, 0.2);
+  --notification-success-text: #5cb85c;
+  --notification-info-bg: rgba(91, 192, 222, 0.2);
+  --notification-info-text: #5bc0de;
+}
+
+/* Journal Theme - Light theme with red accents */
+[data-theme="journal"] {
+  --theme-primary: #eb6864;
+  --theme-secondary: #6c757d;
+  --theme-success: #22b24c;
+  --theme-danger: #eb6864;
+  --theme-warning: #f39c12;
+  --theme-info: #336699;
+
+  --theme-bg-5: rgba(235, 104, 100, 0.05);
+  --theme-bg-10: rgba(235, 104, 100, 0.1);
+  --theme-bg-15: rgba(235, 104, 100, 0.15);
+  --theme-bg-20: rgba(235, 104, 100, 0.2);
+
+  --theme-text: #333;
+  --theme-text-muted: #777;
+  --theme-text-light: #999;
+
+  --theme-border: #ddd;
+  --theme-border-dark: #eb6864;
+
+  --theme-dark-bg: #fff;
+  --theme-darker-bg: #f8f9fa;
+  --theme-darkest-bg: #e9ecef;
+}
+
+/* Minty Theme - Light theme with mint green accents */
+[data-theme="minty"] {
+  --theme-primary: #78c2ad;
+  --theme-secondary: #f3969a;
+  --theme-success: #56cc9d;
+  --theme-danger: #ff7851;
+  --theme-warning: #ffce67;
+  --theme-info: #6cc3d5;
+
+  --theme-bg-5: rgba(120, 194, 173, 0.05);
+  --theme-bg-10: rgba(120, 194, 173, 0.1);
+  --theme-bg-15: rgba(120, 194, 173, 0.15);
+  --theme-bg-20: rgba(120, 194, 173, 0.2);
+
+  --theme-text: #333;
+  --theme-text-muted: #888;
+  --theme-text-light: #aaa;
+
+  --theme-border: #dee2e6;
+  --theme-border-dark: #78c2ad;
+
+  --theme-dark-bg: #fff;
+  --theme-darker-bg: #f8f9fa;
+  --theme-darkest-bg: #e9ecef;
+}
+
+/* Quartz Theme - Light theme with pink accents */
+[data-theme="quartz"] {
+  --theme-primary: #e83283;
+  --theme-secondary: #9b9b9b;
+  --theme-success: #1dc7ea;
+  --theme-danger: #e83283;
+  --theme-warning: #ff9500;
+  --theme-info: #1dc7ea;
+
+  --theme-bg-5: rgba(232, 50, 131, 0.05);
+  --theme-bg-10: rgba(232, 50, 131, 0.1);
+  --theme-bg-15: rgba(232, 50, 131, 0.15);
+  --theme-bg-20: rgba(232, 50, 131, 0.2);
+
+  --theme-text: #333;
+  --theme-text-muted: #9b9b9b;
+  --theme-text-light: #bbb;
+
+  --theme-border: #e7e7e8;
+  --theme-border-dark: #e83283;
+
+  --theme-dark-bg: #fff;
+  --theme-darker-bg: #f8f9fa;
+  --theme-darkest-bg: #e9ecef;
+}
+
+/* All notification colors are now integrated into their respective theme blocks above */
