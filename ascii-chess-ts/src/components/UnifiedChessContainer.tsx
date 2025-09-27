@@ -507,7 +507,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "v":
         case "V":
           e.preventDefault();
-          setShowMoveControls(!showMoveControls);
+          setShowViewControls(!showViewControls);
           break;
         case "+":
         case "=": // Also handle = key (which is typically the same key as + without shift)
@@ -667,6 +667,37 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           </div>
         </div>
       </VerticalResizer>
+      <Accordion
+        title={
+          <span>
+            <u>V</u>iew Controls
+          </span>
+        }
+        isExpanded={showViewControls}
+        onToggle={() => setShowViewControls(!showViewControls)}
+        theme={theme}
+      >
+        <div className="view-controls-container">
+          <div className="view-controls-left">
+            <PieceViewSelector
+              displayMode={displayMode}
+              onDisplayModeChange={setDisplayMode}
+            />
+            {showConnectionTypeSelector && (
+              <ConnectionTypeSelector
+                connectionType={connectionType}
+                onConnectionTypeChange={setConnectionType}
+              />
+            )}
+          </div>
+          <div className="view-controls-right">
+            <HistoricalViewSelector
+              selectedView={selectedHistoricalView}
+              onViewChange={setSelectedHistoricalView}
+            />
+          </div>
+        </div>
+      </Accordion>
       <NavigationControls />
       <MoveControls
         displayMode={displayMode}
@@ -677,38 +708,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         onMoveAttempt={handleMoveAttempt}
         gameState={gameState}
       />
-      <Accordion
-        title={
-          <span>
-            Appea<u>r</u>ance
-          </span>
-        }
-        isExpanded={showViewControls}
-        onToggle={() => setShowViewControls(!showViewControls)}
-        theme={theme}
-        className="combined-controls-disclosure"
-      >
-        <div className="view-controls-grid">
-          <PositionalViewSelector
-            selectedView={selectedPositionalView}
-            onViewChange={setSelectedPositionalView}
-          />
-          <HistoricalViewSelector
-            selectedView={selectedHistoricalView}
-            onViewChange={setSelectedHistoricalView}
-          />
-          <PieceViewSelector
-            displayMode={displayMode}
-            onDisplayModeChange={setDisplayMode}
-          />
-          <ConnectionTypeSelector
-            connectionType={connectionType}
-            onConnectionTypeChange={setConnectionType}
-          />
-        </div>
-      </Accordion>
       {showKeybindings && <KeybindingIndicators />}
       {!showKeybindings && (
+        /* TO-DO: migrate to css */
         <div
           className="help-hint"
           style={{
@@ -730,7 +732,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           Press ? for shortcuts
         </div>
       )}
-
       <PromotionDialog
         isOpen={promotionDialog.isOpen}
         moves={promotionDialog.moves}

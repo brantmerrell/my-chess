@@ -1,6 +1,6 @@
 import React from "react";
 import { PieceDisplayMode } from "../../types/chess";
-import Selector from "../common/Selector";
+import "./PieceViewSelector.css";
 
 interface PieceViewSelectorProps {
   displayMode: PieceDisplayMode;
@@ -8,10 +8,10 @@ interface PieceViewSelectorProps {
 }
 
 const PIECE_VIEW_OPTIONS = [
-  { value: "symbols", label: "Unicode" },
-  { value: "full", label: "Full" },
-  { value: "letters", label: "Letters" },
-  { value: "masked", label: "Asterisk" },
+  { value: "full", label: "[♚♛♜♝♞♟]" },
+  { value: "symbols", label: "(♔♕♖♗♘♙)" },
+  { value: "letters", label: "(KQRBNP)" },
+  { value: "masked", label: "(******)" },
 ] as const;
 
 const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
@@ -19,17 +19,27 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
   onDisplayModeChange,
 }) => {
   return (
-    <Selector
-      id="piece-view-selector"
-      label={
-        <span>
-          <u>P</u>iece View
-        </span>
-      }
-      value={displayMode}
-      onChange={onDisplayModeChange}
-      options={PIECE_VIEW_OPTIONS}
-    />
+    <div className="form-group">
+      <label className="form-label">
+        <u>P</u>iece View
+      </label>
+      <div className="piece-view-button-group">
+        {PIECE_VIEW_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={`piece-view-button ${
+              displayMode === option.value ? "active" : ""
+            }`}
+            onClick={() =>
+              onDisplayModeChange(option.value as PieceDisplayMode)
+            }
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 };
 

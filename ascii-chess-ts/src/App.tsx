@@ -8,10 +8,11 @@ import UnifiedChessContainer from "./components/UnifiedChessContainer";
 import AuthCallback from "./components/auth/AuthCallback";
 import { LichessGameProvider } from "./contexts/LichessGameContext";
 import ThemeSelector from "./components/controls/ThemeSelector";
+import PieceViewSelector from "./components/controls/PieceViewSelector";
 import { useTheme } from "./hooks/useTheme";
 
 function App() {
-  const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
+  const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("full");
   const { theme, setTheme } = useTheme();
 
   return (

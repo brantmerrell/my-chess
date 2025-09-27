@@ -1,6 +1,5 @@
 import React from "react";
 import { ConnectionType } from "../../types/visualization";
-import Selector from "../common/Selector";
 
 interface ConnectionTypeSelectorProps {
   connectionType: ConnectionType;
@@ -20,17 +19,34 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
   onConnectionTypeChange,
 }) => {
   return (
-    <Selector
-      id="connection-type-selector"
-      label={
-        <span>
-          Co<u>n</u>nection Type
-        </span>
-      }
-      value={connectionType}
-      onChange={onConnectionTypeChange}
-      options={CONNECTION_TYPE_OPTIONS}
-    />
+    <div className="form-group">
+      <label className="form-label">
+        Co<u>n</u>nection Type
+      </label>
+      <div className="connection-type-radio-group">
+        {CONNECTION_TYPE_OPTIONS.map((option) => (
+          <div key={option.value} className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="connection-type"
+              id={`connection-type-${option.value}`}
+              value={option.value}
+              checked={connectionType === option.value}
+              onChange={() =>
+                onConnectionTypeChange(option.value as ConnectionType)
+              }
+            />
+            <label
+              className="form-check-label"
+              htmlFor={`connection-type-${option.value}`}
+            >
+              {option.label}
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

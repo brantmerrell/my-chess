@@ -1,5 +1,6 @@
 import React from "react";
 import Selector from "../common/Selector";
+import "./ViewSelector.css";
 
 type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
@@ -23,8 +24,8 @@ const POSITIONAL_VIEW_OPTIONS = [
 ] as const;
 
 const HISTORICAL_VIEW_OPTIONS = [
-  { value: "history", label: "History" },
-  { value: "fencount", label: "Line" },
+  { value: "history", label: "🮁" },
+  { value: "fencount", label: "🗠" },
 ] as const;
 
 export const PositionalViewSelector: React.FC<PositionalViewSelectorProps> = ({
@@ -51,17 +52,25 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
   onViewChange,
 }) => {
   return (
-    <Selector
-      id="historical-view-selector"
-      label={
-        <span>
-          Hist<u>o</u>rical View
-        </span>
-      }
-      value={selectedView}
-      onChange={onViewChange}
-      options={HISTORICAL_VIEW_OPTIONS}
-    />
+    <div className="form-group">
+      <label className="form-label">
+        Hist<u>o</u>rical View
+      </label>
+      <div className="historical-view-button-group">
+        {HISTORICAL_VIEW_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={`historical-view-button ${
+              selectedView === option.value ? "active" : ""
+            }`}
+            onClick={() => onViewChange(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 };
 

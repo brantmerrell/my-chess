@@ -293,9 +293,11 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
 
   return (
     <div
-      className="visualization-container visualization-container--fixed-height sequence-metrics-container"
+      className="visualization-container sequence-metrics-container"
       style={{
         padding: "1rem",
+        height: "100%",
+        maxWidth: "100%",
       }}
     >
       <div style={{ marginBottom: "1rem" }}>
@@ -335,7 +337,9 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
           ))}
         </div>
       </div>
-      <Line data={data} options={options} />
+      <div style={{ width: "100%", height: "calc(100% - 60px)" }}>
+        <Line data={data} options={options} />
+      </div>
     </div>
   );
 };
