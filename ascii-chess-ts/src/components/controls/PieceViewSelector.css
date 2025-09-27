@@ -1,0 +1,39 @@
+.piece-view-button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.piece-view-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  height: 40px;
+}
+
+.piece-view-button:hover {
+  border-color: #999;
+  background-color: #f8f9fa;
+}
+
+.piece-view-button.active {
+  border-color: #007bff;
+  background-color: #007bff;
+  color: white;
+}
+
+.piece-view-button.large {
+  font-size: 20px;
+  height: 44px;
+}
