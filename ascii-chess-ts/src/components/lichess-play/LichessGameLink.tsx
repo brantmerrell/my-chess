@@ -1,5 +1,5 @@
-import React from 'react';
-import './LichessGameLink.css';
+import React from "react";
+import "./LichessGameLink.css";
 
 interface LichessGameLinkProps {
   gameUrl: string | null;
@@ -10,23 +10,23 @@ interface LichessGameLinkProps {
 export const LichessGameLink: React.FC<LichessGameLinkProps> = ({
   gameUrl,
   gameId,
-  isPlaying
+  isPlaying,
 }) => {
   if (!gameUrl || !gameId) {
     return null;
   }
 
   const handleClick = () => {
-    window.open(gameUrl, '_blank', 'noopener,noreferrer');
+    window.open(gameUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleCopy = async () => {
     if (gameUrl) {
       try {
         await navigator.clipboard.writeText(gameUrl);
-        console.log('Game link copied to clipboard');
+        console.log("Game link copied to clipboard");
       } catch (err) {
-        console.error('Failed to copy link:', err);
+        console.error("Failed to copy link:", err);
       }
     }
   };
@@ -51,9 +51,7 @@ export const LichessGameLink: React.FC<LichessGameLinkProps> = ({
           <span className="lichess-game-link__text">Copy Link</span>
         </button>
       </div>
-      <div className="lichess-game-link__id">
-        Game ID: {gameId}
-      </div>
+      <div className="lichess-game-link__id">Game ID: {gameId}</div>
     </div>
   );
 };

@@ -1,8 +1,10 @@
-import { GRID_MARGIN } from './graphConstants';
+import { GRID_MARGIN } from "./graphConstants";
 
 export const squareToCoords = (square: string): [number, number] => {
   if (!square || square.length !== 2) {
-    throw new Error(`Invalid square format: ${square}. Expected format like "a1"`);
+    throw new Error(
+      `Invalid square format: ${square}. Expected format like "a1"`,
+    );
   }
 
   const file = square.charCodeAt(0) - "a".charCodeAt(0);

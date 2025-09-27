@@ -17,10 +17,7 @@ interface SelectPositionProps {
   setFen: (fen: string) => void;
 }
 
-const SelectPosition: React.FC<SelectPositionProps> = ({
-  theme,
-  setFen
-}) => {
+const SelectPosition: React.FC<SelectPositionProps> = ({ theme, setFen }) => {
   const dispatch = useAppDispatch();
   const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
 
@@ -69,7 +66,6 @@ const SelectPosition: React.FC<SelectPositionProps> = ({
           }
         }}
       >
-
         {/* Regular setups (no category) */}
         {CHESS_SETUPS.filter((setup) => !setup.category).map((setup) => (
           <option key={setup.id} value={setup.id}>

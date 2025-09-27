@@ -3,7 +3,7 @@ import { ConnectionStatus } from "./ConnectionStatus";
 
 interface UserInfoProps {
   username: string | null;
-  connectionStatus: 'connected' | 'connecting' | 'disconnected' | 'error';
+  connectionStatus: "connected" | "connecting" | "disconnected" | "error";
   connectionError?: string;
   onLogout: () => void;
 }
@@ -16,27 +16,34 @@ const UserInfo: React.FC<UserInfoProps> = ({
 }) => {
   return (
     <div className="user-info">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "10px",
+        }}
+      >
         <span>
-          Playing as: <strong>{username || 'Guest'}</strong>
+          Playing as: <strong>{username || "Guest"}</strong>
         </span>
         <button
           onClick={onLogout}
           style={{
-            padding: '2px 8px',
-            backgroundColor: '#dc3545',
-            color: 'white',
-            border: 'none',
-            borderRadius: '3px',
-            cursor: 'pointer',
-            fontSize: '11px',
-            fontFamily: 'monospace'
+            padding: "2px 8px",
+            backgroundColor: "#dc3545",
+            color: "white",
+            border: "none",
+            borderRadius: "3px",
+            cursor: "pointer",
+            fontSize: "11px",
+            fontFamily: "monospace",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#c82333';
+            e.currentTarget.style.backgroundColor = "#c82333";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#dc3545';
+            e.currentTarget.style.backgroundColor = "#dc3545";
           }}
         >
           Logout

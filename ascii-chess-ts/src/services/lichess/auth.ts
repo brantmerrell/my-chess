@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
-const LICHESS_OAUTH_URL = 'https://lichess.org/oauth';
-const LICHESS_API_URL = 'https://lichess.org/api';
-const TOKEN_STORAGE_KEY = 'lichess_access_token';
-const TOKEN_EXPIRY_KEY = 'lichess_token_expiry';
+const LICHESS_OAUTH_URL = "https://lichess.org/oauth";
+const LICHESS_API_URL = "https://lichess.org/api";
+const TOKEN_STORAGE_KEY = "lichess_access_token";
+const TOKEN_EXPIRY_KEY = "lichess_token_expiry";
 
 interface TokenResponse {
   access_token: string;
@@ -28,37 +28,39 @@ class LichessAuth {
     const baseUrl = window.location.origin;
     this.clientId = baseUrl;
     this.redirectUri = `${baseUrl}/auth/callback`;
-    this.scope = 'board:play challenge:read challenge:write';
+    this.scope = "board:play challenge:read challenge:write";
   }
 
   private generateRandomString(length: number): string {
     const array = new Uint8Array(length);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
+    return Array.from(array, (byte) =>
+      ("0" + (byte & 0xff).toString(16)).slice(-2),
+    ).join("");
   }
 
   private base64UrlEncode(str: string): string {
-    const bytes = new Uint8Array(str.split('').map(c => c.charCodeAt(0)));
+    const bytes = new Uint8Array(str.split("").map((c) => c.charCodeAt(0)));
     const charCodes = Array.from(bytes);
     return btoa(String.fromCharCode(...charCodes))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
   }
 
   private async sha256(plain: string): Promise<ArrayBuffer> {
     const encoder = new TextEncoder();
     const data = encoder.encode(plain);
-    return crypto.subtle.digest('SHA-256', data);
+    return crypto.subtle.digest("SHA-256", data);
   }
 
   private async generateCodeChallenge(verifier: string): Promise<string> {
     const hash = await this.sha256(verifier);
     const hashArray = Array.from(new Uint8Array(hash));
     return btoa(String.fromCharCode(...hashArray))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
   }
 
   async startAuth(): Promise<void> {
@@ -66,17 +68,17 @@ class LichessAuth {
     const state = this.generateRandomString(32);
     const codeChallenge = await this.generateCodeChallenge(codeVerifier);
 
-    sessionStorage.setItem('lichess_code_verifier', codeVerifier);
-    sessionStorage.setItem('lichess_state', state);
+    sessionStorage.setItem("lichess_code_verifier", codeVerifier);
+    sessionStorage.setItem("lichess_state", state);
 
     const params = new URLSearchParams({
-      response_type: 'code',
+      response_type: "code",
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
       scope: this.scope,
-      code_challenge_method: 'S256',
+      code_challenge_method: "S256",
       code_challenge: codeChallenge,
-      state: state
+      state: state,
     });
 
     window.location.href = `${LICHESS_OAUTH_URL}?${params.toString()}`;
@@ -84,15 +86,15 @@ class LichessAuth {
 
   async handleCallback(code: string, state: string): Promise<boolean> {
     try {
-      const storedState = sessionStorage.getItem('lichess_state');
+      const storedState = sessionStorage.getItem("lichess_state");
       if (state !== storedState) {
-        console.error('State mismatch - possible CSRF attack');
+        console.error("State mismatch - possible CSRF attack");
         return false;
       }
 
-      const codeVerifier = sessionStorage.getItem('lichess_code_verifier');
+      const codeVerifier = sessionStorage.getItem("lichess_code_verifier");
       if (!codeVerifier) {
-        console.error('Code verifier not found');
+        console.error("Code verifier not found");
         return false;
       }
 
@@ -100,29 +102,32 @@ class LichessAuth {
 
       this.storeToken(tokenResponse);
 
-      sessionStorage.removeItem('lichess_code_verifier');
-      sessionStorage.removeItem('lichess_state');
+      sessionStorage.removeItem("lichess_code_verifier");
+      sessionStorage.removeItem("lichess_state");
 
       return true;
     } catch (error) {
-      console.error('OAuth callback error:', error);
+      console.error("OAuth callback error:", error);
       return false;
     }
   }
 
-  private async exchangeCodeForToken(code: string, codeVerifier: string): Promise<TokenResponse> {
+  private async exchangeCodeForToken(
+    code: string,
+    codeVerifier: string,
+  ): Promise<TokenResponse> {
     const params = new URLSearchParams({
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
       code: code,
       code_verifier: codeVerifier,
       redirect_uri: this.redirectUri,
-      client_id: this.clientId
+      client_id: this.clientId,
     });
 
     const response = await axios.post(`${LICHESS_API_URL}/token`, params, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     });
 
     return response.data;
@@ -132,7 +137,7 @@ class LichessAuth {
     localStorage.setItem(TOKEN_STORAGE_KEY, tokenResponse.access_token);
 
     if (tokenResponse.expires_in) {
-      const expiryTime = Date.now() + (tokenResponse.expires_in * 1000);
+      const expiryTime = Date.now() + tokenResponse.expires_in * 1000;
       localStorage.setItem(TOKEN_EXPIRY_KEY, expiryTime.toString());
     }
   }
@@ -163,12 +168,12 @@ class LichessAuth {
     try {
       const response = await axios.get(`${LICHESS_API_URL}/account`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to get user info:', error);
+      console.error("Failed to get user info:", error);
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         this.logout();
       }
@@ -179,18 +184,23 @@ class LichessAuth {
   logout(): void {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_EXPIRY_KEY);
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: TOKEN_STORAGE_KEY,
-      oldValue: localStorage.getItem(TOKEN_STORAGE_KEY),
-      newValue: null,
-      storageArea: localStorage
-    }));
+    window.dispatchEvent(
+      new StorageEvent("storage", {
+        key: TOKEN_STORAGE_KEY,
+        oldValue: localStorage.getItem(TOKEN_STORAGE_KEY),
+        newValue: null,
+        storageArea: localStorage,
+      }),
+    );
   }
 
-  async makeAuthenticatedRequest(endpoint: string, options: any = {}): Promise<any> {
+  async makeAuthenticatedRequest(
+    endpoint: string,
+    options: any = {},
+  ): Promise<any> {
     const token = this.getToken();
     if (!token) {
-      throw new Error('Not authenticated');
+      throw new Error("Not authenticated");
     }
 
     return axios({
@@ -198,8 +208,8 @@ class LichessAuth {
       url: `${LICHESS_API_URL}${endpoint}`,
       headers: {
         ...options.headers,
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 }

@@ -9,7 +9,7 @@ import "./MoveControls.css";
 interface GameState {
   gameId: string | null;
   isPlaying: boolean;
-  color: 'white' | 'black' | null;
+  color: "white" | "black" | null;
   opponentName: string | null;
   status: string;
   timeLeft: { white: number; black: number } | null;
@@ -21,7 +21,11 @@ interface MoveControlsProps {
   externalMoveDropdown?: string;
   onExternalMoveInputChange?: (value: string) => void;
   onExternalMoveDropdownChange?: (value: string) => void;
-  onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => boolean;
+  onMoveAttempt?: (
+    fromSquare: string,
+    toSquare: string,
+    uciMove: string,
+  ) => boolean;
   gameState?: GameState;
 }
 
@@ -44,8 +48,12 @@ const MoveControls: React.FC<MoveControlsProps> = ({
     undoLastMove,
   } = useMoveHistory(displayMode);
 
-  const selectedMove = externalMoveDropdown !== undefined ? externalMoveDropdown : internalSelectedMove;
-  const moveInput = externalMoveInput !== undefined ? externalMoveInput : selectedMove;
+  const selectedMove =
+    externalMoveDropdown !== undefined
+      ? externalMoveDropdown
+      : internalSelectedMove;
+  const moveInput =
+    externalMoveInput !== undefined ? externalMoveInput : selectedMove;
 
   const setSelectedMove = (value: string) => {
     if (onExternalMoveDropdownChange) {
@@ -97,7 +105,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
 
     // If we have a Lichess game and the move handler, try to use it
     if (gameState?.isPlaying && onMoveAttempt) {
-      console.log('Trying to handle move via Lichess integration:', move);
+      console.log("Trying to handle move via Lichess integration:", move);
 
       try {
         // Get current FEN from Redux state
@@ -113,26 +121,32 @@ const MoveControls: React.FC<MoveControlsProps> = ({
           if (!matchingMove) {
             // Try as UCI move
             matchingMove = verboseMoves.find((m: any) => {
-              const uci = m.from + m.to + (m.promotion || '');
+              const uci = m.from + m.to + (m.promotion || "");
               return uci === move;
             });
           }
 
           if (matchingMove) {
-            console.log('Found matching move for Lichess:', matchingMove);
-            const success = onMoveAttempt(matchingMove.from, matchingMove.to, matchingMove.from + matchingMove.to + (matchingMove.promotion || ''));
+            console.log("Found matching move for Lichess:", matchingMove);
+            const success = onMoveAttempt(
+              matchingMove.from,
+              matchingMove.to,
+              matchingMove.from +
+                matchingMove.to +
+                (matchingMove.promotion || ""),
+            );
             if (success) {
               return; // Move handled by Lichess integration
             }
           }
         }
       } catch (error) {
-        console.error('Error in Lichess move handling:', error);
+        console.error("Error in Lichess move handling:", error);
       }
     }
 
     // Fallback to regular move handling for analysis mode
-    console.log('Using regular move handling for:', move);
+    console.log("Using regular move handling for:", move);
     makeSelectedMove(move);
   };
 

@@ -1,4 +1,4 @@
-import { lichessAuth } from './auth';
+import { lichessAuth } from "./auth";
 
 interface GameStream {
   type: string;
@@ -40,34 +40,37 @@ class LichessGameService {
     maxReconnectAttempts: 5,
     reconnectDelayBase: 1000,
     maxReconnectDelay: 30000,
-    heartbeatInterval: 30000
+    heartbeatInterval: 30000,
   };
-  async createChallenge(username: string, options: {
-    rated?: boolean;
-    clock?: { limit: number; increment: number };
-    color?: 'random' | 'white' | 'black';
-    variant?: string;
-  } = {}): Promise<Challenge> {
+  async createChallenge(
+    username: string,
+    options: {
+      rated?: boolean;
+      clock?: { limit: number; increment: number };
+      color?: "random" | "white" | "black";
+      variant?: string;
+    } = {},
+  ): Promise<Challenge> {
     const params: any = {
       rated: options.rated || false,
-      color: options.color || 'random',
-      variant: options.variant || 'standard'
+      color: options.color || "random",
+      variant: options.variant || "standard",
     };
 
     if (options.clock) {
-      params['clock.limit'] = options.clock.limit;
-      params['clock.increment'] = options.clock.increment;
+      params["clock.limit"] = options.clock.limit;
+      params["clock.increment"] = options.clock.increment;
     }
 
     const response = await lichessAuth.makeAuthenticatedRequest(
       `/challenge/${username}`,
       {
-        method: 'POST',
+        method: "POST",
         data: new URLSearchParams(params),
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
     );
 
     return response.data;
@@ -76,51 +79,52 @@ class LichessGameService {
   async acceptChallenge(challengeId: string): Promise<any> {
     const response = await lichessAuth.makeAuthenticatedRequest(
       `/challenge/${challengeId}/accept`,
-      { method: 'POST' }
+      { method: "POST" },
     );
     return response.data;
   }
 
   async declineChallenge(challengeId: string, reason?: string): Promise<any> {
-    const params = reason ? new URLSearchParams({ reason }) : new URLSearchParams();
+    const params = reason
+      ? new URLSearchParams({ reason })
+      : new URLSearchParams();
     const response = await lichessAuth.makeAuthenticatedRequest(
       `/challenge/${challengeId}/decline`,
       {
-        method: 'POST',
+        method: "POST",
         data: params,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
     );
     return response.data;
   }
 
-  async createSeek(options: {
-    rated?: boolean;
-    time?: number;
-    increment?: number;
-    variant?: string;
-    color?: 'random' | 'white' | 'black';
-  } = {}): Promise<any> {
+  async createSeek(
+    options: {
+      rated?: boolean;
+      time?: number;
+      increment?: number;
+      variant?: string;
+      color?: "random" | "white" | "black";
+    } = {},
+  ): Promise<any> {
     const params: any = {
       rated: options.rated || false,
       time: options.time || 10,
       increment: options.increment || 0,
-      variant: options.variant || 'standard',
-      color: options.color || 'random'
+      variant: options.variant || "standard",
+      color: options.color || "random",
     };
 
-    const response = await lichessAuth.makeAuthenticatedRequest(
-      '/board/seek',
-      {
-        method: 'POST',
-        data: new URLSearchParams(params),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    );
+    const response = await lichessAuth.makeAuthenticatedRequest("/board/seek", {
+      method: "POST",
+      data: new URLSearchParams(params),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
     return response.data;
   }
 
@@ -130,12 +134,12 @@ class LichessGameService {
     try {
       const response = await lichessAuth.makeAuthenticatedRequest(
         `/board/game/${gameId}/move/${move}`,
-        { method: 'POST' }
+        { method: "POST" },
       );
-      console.log('Move API response:', response);
+      console.log("Move API response:", response);
       return response.data;
     } catch (error) {
-      console.error('Move API error:', error);
+      console.error("Move API error:", error);
       throw error;
     }
   }
@@ -143,17 +147,18 @@ class LichessGameService {
   async resign(gameId: string): Promise<any> {
     const response = await lichessAuth.makeAuthenticatedRequest(
       `/board/game/${gameId}/resign`,
-      { method: 'POST' }
+      { method: "POST" },
     );
     return response.data;
   }
 
   async handleDraw(gameId: string, accept: boolean): Promise<any> {
-    const endpoint = accept ? `/board/game/${gameId}/draw/accept` : `/board/game/${gameId}/draw/offer`;
-    const response = await lichessAuth.makeAuthenticatedRequest(
-      endpoint,
-      { method: 'POST' }
-    );
+    const endpoint = accept
+      ? `/board/game/${gameId}/draw/accept`
+      : `/board/game/${gameId}/draw/offer`;
+    const response = await lichessAuth.makeAuthenticatedRequest(endpoint, {
+      method: "POST",
+    });
     return response.data;
   }
 
@@ -161,11 +166,11 @@ class LichessGameService {
     gameId: string,
     onMessage: (data: GameStream) => void,
     onConnectionChange?: (connected: boolean, error?: string) => void,
-    config?: StreamConfig
+    config?: StreamConfig,
   ): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
-      console.error('Not authenticated');
+      console.error("Not authenticated");
       return null;
     }
 
@@ -186,8 +191,8 @@ class LichessGameService {
 
     const checkHeartbeat = () => {
       const now = Date.now();
-      if (now - lastHeartbeat > (streamConfig.heartbeatInterval! * 2)) {
-        console.warn('Game stream heartbeat timeout, reconnecting...');
+      if (now - lastHeartbeat > streamConfig.heartbeatInterval! * 2) {
+        console.warn("Game stream heartbeat timeout, reconnecting...");
         cleanup();
         if (!isClosed) {
           reconnect();
@@ -197,18 +202,20 @@ class LichessGameService {
 
     const reconnect = () => {
       if (isClosed || reconnectAttempts >= streamConfig.maxReconnectAttempts!) {
-        console.error('Max reconnection attempts reached or stream closed');
-        onConnectionChange?.(false, 'Max reconnection attempts reached');
+        console.error("Max reconnection attempts reached or stream closed");
+        onConnectionChange?.(false, "Max reconnection attempts reached");
         return;
       }
 
       reconnectAttempts++;
       const delay = Math.min(
         streamConfig.reconnectDelayBase! * Math.pow(2, reconnectAttempts - 1),
-        streamConfig.maxReconnectDelay!
+        streamConfig.maxReconnectDelay!,
       );
 
-      console.log(`Attempting to reconnect game stream (attempt ${reconnectAttempts}) in ${delay}ms...`);
+      console.log(
+        `Attempting to reconnect game stream (attempt ${reconnectAttempts}) in ${delay}ms...`,
+      );
 
       setTimeout(() => {
         if (!isClosed) {
@@ -220,51 +227,54 @@ class LichessGameService {
 
     const startStream = async () => {
       try {
-        onConnectionChange?.(false, 'Connecting...');
+        onConnectionChange?.(false, "Connecting...");
 
         const response = await fetch(
           `https://lichess.org/api/board/game/stream/${gameId}`,
           {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/x-ndjson'
+              Authorization: `Bearer ${token}`,
+              Accept: "application/x-ndjson",
             },
-            signal: abortController.signal
-          }
+            signal: abortController.signal,
+          },
         );
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('Game stream connected successfully');
+        console.log("Game stream connected successfully");
         onConnectionChange?.(true);
         reconnectAttempts = 0;
         lastHeartbeat = Date.now();
 
         if (streamConfig.heartbeatInterval && !heartbeatTimer) {
-          heartbeatTimer = setInterval(checkHeartbeat, streamConfig.heartbeatInterval);
+          heartbeatTimer = setInterval(
+            checkHeartbeat,
+            streamConfig.heartbeatInterval,
+          );
         }
 
         const reader = response.body?.getReader();
         if (!reader) {
-          throw new Error('No response body');
+          throw new Error("No response body");
         }
 
         const decoder = new TextDecoder();
-        let buffer = '';
+        let buffer = "";
 
         while (!isClosed) {
           const { done, value } = await reader.read();
           if (done) {
-            console.log('Game stream ended');
+            console.log("Game stream ended");
             break;
           }
 
           lastHeartbeat = Date.now();
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
 
           for (const line of lines) {
             if (line.trim()) {
@@ -272,17 +282,17 @@ class LichessGameService {
                 const data = JSON.parse(line);
                 onMessage(data);
               } catch (e) {
-                console.error('Failed to parse game stream data:', e);
+                console.error("Failed to parse game stream data:", e);
               }
             }
           }
         }
       } catch (error: any) {
         if (!isClosed) {
-          console.error('Game stream error:', error);
+          console.error("Game stream error:", error);
           onConnectionChange?.(false, error.message);
 
-          if (error.name !== 'AbortError') {
+          if (error.name !== "AbortError") {
             reconnect();
           }
         }
@@ -295,22 +305,22 @@ class LichessGameService {
 
     return {
       close: () => {
-        console.log('Closing game stream');
+        console.log("Closing game stream");
         isClosed = true;
         cleanup();
-        onConnectionChange?.(false, 'Stream closed');
-      }
+        onConnectionChange?.(false, "Stream closed");
+      },
     };
   }
 
   streamEvents(
     onMessage: (data: any) => void,
     onConnectionChange?: (connected: boolean, error?: string) => void,
-    config?: StreamConfig
+    config?: StreamConfig,
   ): { close: () => void } | null {
     const token = lichessAuth.getToken();
     if (!token) {
-      console.error('Not authenticated');
+      console.error("Not authenticated");
       return null;
     }
 
@@ -331,8 +341,8 @@ class LichessGameService {
 
     const checkHeartbeat = () => {
       const now = Date.now();
-      if (now - lastHeartbeat > (streamConfig.heartbeatInterval! * 2)) {
-        console.warn('Event stream heartbeat timeout, reconnecting...');
+      if (now - lastHeartbeat > streamConfig.heartbeatInterval! * 2) {
+        console.warn("Event stream heartbeat timeout, reconnecting...");
         cleanup();
         if (!isClosed) {
           reconnect();
@@ -342,18 +352,20 @@ class LichessGameService {
 
     const reconnect = () => {
       if (isClosed || reconnectAttempts >= streamConfig.maxReconnectAttempts!) {
-        console.error('Max reconnection attempts reached or stream closed');
-        onConnectionChange?.(false, 'Max reconnection attempts reached');
+        console.error("Max reconnection attempts reached or stream closed");
+        onConnectionChange?.(false, "Max reconnection attempts reached");
         return;
       }
 
       reconnectAttempts++;
       const delay = Math.min(
         streamConfig.reconnectDelayBase! * Math.pow(2, reconnectAttempts - 1),
-        streamConfig.maxReconnectDelay!
+        streamConfig.maxReconnectDelay!,
       );
 
-      console.log(`Attempting to reconnect event stream (attempt ${reconnectAttempts}) in ${delay}ms...`);
+      console.log(
+        `Attempting to reconnect event stream (attempt ${reconnectAttempts}) in ${delay}ms...`,
+      );
 
       setTimeout(() => {
         if (!isClosed) {
@@ -365,51 +377,51 @@ class LichessGameService {
 
     const startStream = async () => {
       try {
-        onConnectionChange?.(false, 'Connecting...');
+        onConnectionChange?.(false, "Connecting...");
 
-        const response = await fetch(
-          `https://lichess.org/api/stream/event`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/x-ndjson'
-            },
-            signal: abortController.signal
-          }
-        );
+        const response = await fetch(`https://lichess.org/api/stream/event`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/x-ndjson",
+          },
+          signal: abortController.signal,
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('Event stream connected successfully');
+        console.log("Event stream connected successfully");
         onConnectionChange?.(true);
         reconnectAttempts = 0;
         lastHeartbeat = Date.now();
 
         if (streamConfig.heartbeatInterval && !heartbeatTimer) {
-          heartbeatTimer = setInterval(checkHeartbeat, streamConfig.heartbeatInterval);
+          heartbeatTimer = setInterval(
+            checkHeartbeat,
+            streamConfig.heartbeatInterval,
+          );
         }
 
         const reader = response.body?.getReader();
         if (!reader) {
-          throw new Error('No response body');
+          throw new Error("No response body");
         }
 
         const decoder = new TextDecoder();
-        let buffer = '';
+        let buffer = "";
 
         while (!isClosed) {
           const { done, value } = await reader.read();
           if (done) {
-            console.log('Event stream ended');
+            console.log("Event stream ended");
             break;
           }
 
           lastHeartbeat = Date.now();
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
 
           for (const line of lines) {
             if (line.trim()) {
@@ -417,17 +429,17 @@ class LichessGameService {
                 const data = JSON.parse(line);
                 onMessage(data);
               } catch (e) {
-                console.error('Failed to parse event stream data:', e);
+                console.error("Failed to parse event stream data:", e);
               }
             }
           }
         }
       } catch (error: any) {
         if (!isClosed) {
-          console.error('Event stream error:', error);
+          console.error("Event stream error:", error);
           onConnectionChange?.(false, error.message);
 
-          if (error.name !== 'AbortError') {
+          if (error.name !== "AbortError") {
             reconnect();
           }
         }
@@ -440,44 +452,48 @@ class LichessGameService {
 
     return {
       close: () => {
-        console.log('Closing event stream');
+        console.log("Closing event stream");
         isClosed = true;
         cleanup();
-        onConnectionChange?.(false, 'Stream closed');
-      }
+        onConnectionChange?.(false, "Stream closed");
+      },
     };
   }
 
   async getOngoingGames(): Promise<any[]> {
-    const response = await lichessAuth.makeAuthenticatedRequest('/account/playing');
+    const response =
+      await lichessAuth.makeAuthenticatedRequest("/account/playing");
     return response.data.nowPlaying || [];
   }
 
-  async challengeAI(level: number = 1, options: {
-    clock?: { limit: number; increment: number };
-    color?: 'random' | 'white' | 'black';
-    variant?: string;
-  } = {}): Promise<any> {
+  async challengeAI(
+    level: number = 1,
+    options: {
+      clock?: { limit: number; increment: number };
+      color?: "random" | "white" | "black";
+      variant?: string;
+    } = {},
+  ): Promise<any> {
     const params: any = {
       level: Math.min(Math.max(level, 1), 8),
-      color: options.color || 'random',
-      variant: options.variant || 'standard'
+      color: options.color || "random",
+      variant: options.variant || "standard",
     };
 
     if (options.clock) {
-      params['clock.limit'] = options.clock.limit;
-      params['clock.increment'] = options.clock.increment;
+      params["clock.limit"] = options.clock.limit;
+      params["clock.increment"] = options.clock.increment;
     }
 
     const response = await lichessAuth.makeAuthenticatedRequest(
-      '/challenge/ai',
+      "/challenge/ai",
       {
-        method: 'POST',
+        method: "POST",
         data: new URLSearchParams(params),
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
     );
     return response.data;
   }

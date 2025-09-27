@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
-  annotationPlugin
+  annotationPlugin,
 );
 
 interface SequenceMetricsProps {

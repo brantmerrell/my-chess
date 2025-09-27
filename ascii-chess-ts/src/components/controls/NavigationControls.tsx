@@ -1,7 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../app/hooks";
-import { RootState, goForward, goBackward, goToPosition } from "../../app/store";
+import {
+  RootState,
+  goForward,
+  goBackward,
+  goToPosition,
+} from "../../app/store";
 import "./NavigationControls.css";
 
 const NavigationControls: React.FC = () => {

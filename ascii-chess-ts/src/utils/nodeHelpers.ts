@@ -11,21 +11,21 @@ type SimulationLink = {
 
 export const calculateNodeCheckStatus = (
   node: SimulationNode,
-  links: SimulationLink[]
+  links: SimulationLink[],
 ): boolean => {
   if (node.piece_type.toLowerCase() !== "k") {
     return false;
   }
 
   return links.some(
-    (link) => link.type === "threat" && link.target.square === node.square
+    (link) => link.type === "threat" && link.target.square === node.square,
   );
 };
 
 export const getNodeFontSize = (
   displayMode: PieceDisplayMode,
   showGrid: boolean,
-  isLabel: boolean = false
+  isLabel: boolean = false,
 ): string => {
   if (isLabel) {
     return FONT_SIZES[displayMode]?.label || FONT_SIZES.default.label;
@@ -40,7 +40,9 @@ export const getNodeFontSize = (
   }
 
   if (displayMode === "masked") {
-    return showGrid ? FONT_SIZES.masked.mainWithGrid : FONT_SIZES.masked.mainNoGrid;
+    return showGrid
+      ? FONT_SIZES.masked.mainWithGrid
+      : FONT_SIZES.masked.mainNoGrid;
   }
 
   return FONT_SIZES[displayMode]?.main || FONT_SIZES.default.main;
@@ -49,10 +51,11 @@ export const getNodeFontSize = (
 export const getNodeTextPositioning = (
   displayMode: PieceDisplayMode,
   showGrid: boolean,
-  isLabel: boolean = false
+  isLabel: boolean = false,
 ): string | number => {
   if (isLabel) {
-    const positioning = TEXT_POSITIONING[displayMode] || TEXT_POSITIONING.default;
+    const positioning =
+      TEXT_POSITIONING[displayMode] || TEXT_POSITIONING.default;
     return positioning.labelDy;
   }
 

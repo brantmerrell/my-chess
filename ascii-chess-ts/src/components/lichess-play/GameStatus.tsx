@@ -1,7 +1,7 @@
 import React from "react";
 
 interface GameStatusProps {
-  color: 'white' | 'black' | null;
+  color: "white" | "black" | null;
   opponentName: string | null;
   status: string;
   timeLeft: { white: number; black: number } | null;
@@ -32,12 +32,8 @@ const GameStatus: React.FC<GameStatusProps> = ({
         <span>{status}</span>
         {timeLeft && (
           <>
-            <span>
-              W: {Math.floor(timeLeft.white / 1000)}s
-            </span>
-            <span>
-              B: {Math.floor(timeLeft.black / 1000)}s
-            </span>
+            <span>W: {Math.floor(timeLeft.white / 1000)}s</span>
+            <span>B: {Math.floor(timeLeft.black / 1000)}s</span>
             <button
               className="btn btn-danger time-control-btn"
               onClick={onResign}

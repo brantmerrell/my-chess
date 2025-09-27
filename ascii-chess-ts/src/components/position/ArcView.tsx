@@ -118,7 +118,11 @@ const ArcView: React.FC<ArcViewProps> = ({
       .attr("dy", ".3em")
       .attr("fill", (d) => (d.color === "white" ? "#fff" : "#000"))
       .style("font-size", (d) => (displayMode === "symbols" ? "14px" : "12px"))
-      .text((d) => d.piece_type === "phantom" ? "" : getPieceDisplay(d.piece_type, d.color, displayMode));
+      .text((d) =>
+        d.piece_type === "phantom"
+          ? ""
+          : getPieceDisplay(d.piece_type, d.color, displayMode),
+      );
 
     nodeGroup
       .append("text")

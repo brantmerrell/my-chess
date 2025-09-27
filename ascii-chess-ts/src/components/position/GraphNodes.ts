@@ -6,9 +6,13 @@ import { getNodeStyle } from "../../utils/graphStyles";
 import {
   calculateNodeCheckStatus,
   getNodeFontSize,
-  getNodeTextPositioning
+  getNodeTextPositioning,
 } from "../../utils/nodeHelpers";
-import { NODE_RADIUS, CHESS_FONT_FAMILY, STROKE_WIDTHS } from "../../utils/graphConstants";
+import {
+  NODE_RADIUS,
+  CHESS_FONT_FAMILY,
+  STROKE_WIDTHS,
+} from "../../utils/graphConstants";
 
 type SimulationNode = LinkNode & d3.SimulationNodeDatum;
 type SimulationLink = {
@@ -23,10 +27,14 @@ export const renderNodes = (
   links: SimulationLink[],
   displayMode: PieceDisplayMode,
   showGrid: boolean,
-  dragBehavior: d3.DragBehavior<SVGGElement, SimulationNode, SimulationNode | d3.SubjectPosition>,
+  dragBehavior: d3.DragBehavior<
+    SVGGElement,
+    SimulationNode,
+    SimulationNode | d3.SubjectPosition
+  >,
 ) => {
   const nodeCheckStatus = new Map<string, boolean>();
-  visibleNodes.forEach(node => {
+  visibleNodes.forEach((node) => {
     nodeCheckStatus.set(node.square, calculateNodeCheckStatus(node, links));
   });
 
@@ -102,14 +110,19 @@ export const renderPhantomMarkers = (
   phantomNodes: SimulationNode[],
   links: SimulationLink[],
 ) => {
-  const phantomThreatStatus = new Map<string, { kingBlocked: boolean; directThreat: boolean }>();
+  const phantomThreatStatus = new Map<
+    string,
+    { kingBlocked: boolean; directThreat: boolean }
+  >();
 
-  phantomNodes.forEach(node => {
+  phantomNodes.forEach((node) => {
     const kingBlocked = links.some(
-      link => link.type === "king_blocked_threat" && link.target.square === node.square
+      (link) =>
+        link.type === "king_blocked_threat" &&
+        link.target.square === node.square,
     );
     const directThreat = links.some(
-      link => link.type === "threat" && link.target.square === node.square
+      (link) => link.type === "threat" && link.target.square === node.square,
     );
     phantomThreatStatus.set(node.square, { kingBlocked, directThreat });
   });

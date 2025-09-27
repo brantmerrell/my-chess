@@ -1,12 +1,24 @@
 import React from "react";
 
 interface GameResultProps {
-  result: 'win' | 'loss' | 'draw';
-  reason: 'mate' | 'resign' | 'timeout' | 'draw' | 'stalemate' | 'insufficient' | 'abort' | 'unknown';
+  result: "win" | "loss" | "draw";
+  reason:
+    | "mate"
+    | "resign"
+    | "timeout"
+    | "draw"
+    | "stalemate"
+    | "insufficient"
+    | "abort"
+    | "unknown";
   onNewGame: () => void;
 }
 
-const GameResult: React.FC<GameResultProps> = ({ result, reason, onNewGame }) => {
+const GameResult: React.FC<GameResultProps> = ({
+  result,
+  reason,
+  onNewGame,
+}) => {
   const reasonDisplayMap: Record<string, string> = {
     mate: "checkmate",
     resign: "resignation",
@@ -15,7 +27,7 @@ const GameResult: React.FC<GameResultProps> = ({ result, reason, onNewGame }) =>
     draw: "agreement",
     abort: "abort",
     insufficient: "insufficient material",
-    unknown: "unknown"
+    unknown: "unknown",
   };
 
   const getReasonDisplay = (reason: string): string => {
@@ -31,13 +43,8 @@ const GameResult: React.FC<GameResultProps> = ({ result, reason, onNewGame }) =>
           {result === "loss" && "Lost"}
           {result === "draw" && "Draw"}
         </span>
-        <span className="result-reason">
-          {getReasonDisplay(reason)}
-        </span>
-        <button
-          className="btn btn-success btn-sm"
-          onClick={onNewGame}
-        >
+        <span className="result-reason">{getReasonDisplay(reason)}</span>
+        <button className="btn btn-success btn-sm" onClick={onNewGame}>
           🎮 New Game
         </button>
       </div>

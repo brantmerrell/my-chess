@@ -20,26 +20,32 @@ function App() {
         <Router>
           <Routes>
             <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/" element={
-              <div className="App">
-                <div className="header-container" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '10px 20px'
-                }}>
-                  <h1 className="title">Ascii Chessboard</h1>
-                  <ThemeSelector
-                    currentTheme={theme}
-                    onThemeChange={setTheme}
+            <Route
+              path="/"
+              element={
+                <div className="App">
+                  <div
+                    className="header-container"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10px 20px",
+                    }}
+                  >
+                    <h1 className="title">Ascii Chessboard</h1>
+                    <ThemeSelector
+                      currentTheme={theme}
+                      onThemeChange={setTheme}
+                    />
+                  </div>
+                  <UnifiedChessContainer
+                    displayMode={displayMode}
+                    setDisplayMode={setDisplayMode}
                   />
                 </div>
-                <UnifiedChessContainer
-                  displayMode={displayMode}
-                  setDisplayMode={setDisplayMode}
-                />
-              </div>
-            } />
+              }
+            />
           </Routes>
         </Router>
       </LichessGameProvider>
