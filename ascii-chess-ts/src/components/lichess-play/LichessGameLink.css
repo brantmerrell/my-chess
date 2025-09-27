@@ -11,14 +11,6 @@
   min-height: 40px;
 }
 
-.lichess-game-link__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #666;
-}
-
 .lichess-game-link__actions {
   display: flex;
   gap: 8px;
