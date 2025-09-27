@@ -78,36 +78,57 @@
   white-space: nowrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  .lichess-game-link {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+/* Theme-specific styles */
+.cyborg .lichess-game-link {
+  background-color: rgba(128, 255, 219, 0.1);
+  border-color: rgba(128, 255, 219, 0.2);
+}
 
-  .lichess-game-link__label {
-    color: #aaa;
-  }
+.cyborg .lichess-game-link__button {
+  background-color: #2a2a2a;
+  color: #80ffdb;
+  border-color: #444;
+}
 
-  .lichess-game-link__button {
-    background-color: #2a2a2a;
-    color: #ddd;
-    border-color: #444;
-  }
+.cyborg .lichess-game-link__button:hover {
+  background-color: #333;
+  border-color: #80ffdb;
+}
 
-  .lichess-game-link__button:hover {
-    background-color: #333;
-    border-color: #555;
-  }
+.vapor .lichess-game-link {
+  background-color: rgba(255, 107, 175, 0.1);
+  border-color: rgba(255, 107, 175, 0.2);
+}
 
-  .lichess-game-link__button--copy {
-    background-color: #333;
-  }
+.vapor .lichess-game-link__button {
+  background-color: #2a2a2a;
+  color: #ff6baf;
+  border-color: #444;
+}
 
-  .lichess-game-link__button--copy:hover {
-    background-color: #444;
-  }
+.vapor .lichess-game-link__button:hover {
+  background-color: #333;
+  border-color: #ff6baf;
+}
 
-  .lichess-game-link__id {
-    color: #666;
-  }
+.solar .lichess-game-link {
+  background-color: rgba(181, 137, 0, 0.1);
+  border-color: rgba(181, 137, 0, 0.2);
+}
+
+.solar .lichess-game-link__button {
+  background-color: #002b36;
+  color: #b58900;
+  border-color: #073642;
+}
+
+.superhero .lichess-game-link {
+  background-color: rgba(223, 105, 26, 0.1);
+  border-color: rgba(223, 105, 26, 0.2);
+}
+
+.superhero .lichess-game-link__button {
+  background-color: #2b3e50;
+  color: #df691a;
+  border-color: #34495e;
 }
