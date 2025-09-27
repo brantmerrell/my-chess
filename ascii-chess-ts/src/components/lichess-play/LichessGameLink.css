@@ -1,11 +1,14 @@
 .lichess-game-link {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 8px;
-  padding: 12px;
+  padding: 8px 12px;
   background-color: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-radius: 5px;
+  flex: 0 0 auto;
+  min-height: 40px;
 }
 
 .lichess-game-link__label {
@@ -24,13 +27,13 @@
 .lichess-game-link__button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 4px;
+  padding: 4px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
   color: #333;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -61,18 +64,18 @@
 }
 
 .lichess-game-link__icon {
-  font-size: 16px;
-}
-
-.lichess-game-link__text {
   font-size: 14px;
 }
 
+.lichess-game-link__text {
+  font-size: 12px;
+}
+
 .lichess-game-link__id {
-  font-size: 15px;
+  font-size: 12px;
   color: #888;
   font-family: monospace;
-  margin-top: 4px;
+  white-space: nowrap;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { ConnectionStatus } from "../ConnectionStatus";
+import { ConnectionStatus } from "./ConnectionStatus";
 
 interface UserInfoProps {
   username: string | null;
@@ -16,7 +16,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
 }) => {
   return (
     <div className="user-info">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
         <span>
           Playing as: <strong>{username || 'Guest'}</strong>
         </span>

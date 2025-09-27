@@ -31,20 +31,19 @@ const GameStatus: React.FC<GameStatusProps> = ({
         </span>
         <span>{status}</span>
         {timeLeft && (
-          <div className="time-display">
+          <>
             <span>
-              White: {Math.floor(timeLeft.white / 1000)}s
+              W: {Math.floor(timeLeft.white / 1000)}s
             </span>
             <span>
-              Black: {Math.floor(timeLeft.black / 1000)}s
+              B: {Math.floor(timeLeft.black / 1000)}s
             </span>
             <button
               className="btn btn-danger time-control-btn"
               onClick={onResign}
               style={{
-                fontSize: "13px",
-                padding: "6px 10px",
-                marginLeft: "20px",
+                fontSize: "12px",
+                padding: "4px 8px",
               }}
             >
               🏳️ Resign
@@ -52,12 +51,11 @@ const GameStatus: React.FC<GameStatusProps> = ({
             {notification?.message && (
               <span
                 style={{
-                  marginLeft: "20px",
-                  fontSize: "14px",
+                  fontSize: "12px",
                   fontFamily: "monospace",
                 }}
               >
-                <span style={{ marginRight: "6px" }}>
+                <span style={{ marginRight: "4px" }}>
                   {notification.type === "error" && "✾"}
                   {notification.type === "warning" && "‼"}
                   {notification.type === "success" && "🗸"}
@@ -71,9 +69,9 @@ const GameStatus: React.FC<GameStatusProps> = ({
                     style={{
                       background: "none",
                       border: "none",
-                      marginLeft: "8px",
+                      marginLeft: "6px",
                       cursor: "pointer",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       opacity: 0.7,
                     }}
                   >
@@ -82,7 +80,7 @@ const GameStatus: React.FC<GameStatusProps> = ({
                 )}
               </span>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
