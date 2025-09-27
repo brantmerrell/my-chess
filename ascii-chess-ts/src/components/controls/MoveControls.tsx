@@ -3,7 +3,17 @@ import { PieceDisplayMode } from "../../types/chess";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
+import { ChessGame } from "../../chess/chessGame";
 import "./MoveControls.css";
+
+interface GameState {
+  gameId: string | null;
+  isPlaying: boolean;
+  color: 'white' | 'black' | null;
+  opponentName: string | null;
+  status: string;
+  timeLeft: { white: number; black: number } | null;
+}
 
 interface MoveControlsProps {
   displayMode: PieceDisplayMode;
@@ -11,6 +21,8 @@ interface MoveControlsProps {
   externalMoveDropdown?: string;
   onExternalMoveInputChange?: (value: string) => void;
   onExternalMoveDropdownChange?: (value: string) => void;
+  onMoveAttempt?: (fromSquare: string, toSquare: string, uciMove: string) => boolean;
+  gameState?: GameState;
 }
 
 const MoveControls: React.FC<MoveControlsProps> = ({
@@ -19,6 +31,8 @@ const MoveControls: React.FC<MoveControlsProps> = ({
   externalMoveDropdown,
   onExternalMoveInputChange,
   onExternalMoveDropdownChange,
+  onMoveAttempt,
+  gameState,
 }) => {
   const {
     moves,
@@ -65,17 +79,61 @@ const MoveControls: React.FC<MoveControlsProps> = ({
 
   const handleMoveSubmit = () => {
     if (!isAtLatestPosition) return;
-    makeSelectedMove(moveInput);
+    handleMove(moveInput);
     if (onExternalMoveInputChange) onExternalMoveInputChange("");
     if (onExternalMoveDropdownChange) onExternalMoveDropdownChange("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && isAtLatestPosition) {
-      makeSelectedMove(moveInput);
+      handleMove(moveInput);
       if (onExternalMoveInputChange) onExternalMoveInputChange("");
       if (onExternalMoveDropdownChange) onExternalMoveDropdownChange("");
     }
+  };
+
+  const handleMove = (move: string) => {
+    if (!move.trim()) return;
+
+    // If we have a Lichess game and the move handler, try to use it
+    if (gameState?.isPlaying && onMoveAttempt) {
+      console.log('Trying to handle move via Lichess integration:', move);
+
+      try {
+        // Get current FEN from Redux state
+        const currentFen = positions[currentPositionIndex]?.fen;
+
+        if (currentFen) {
+          const game = new ChessGame(currentFen, displayMode);
+          const verboseMoves = game.getVerboseMoves();
+
+          // Try to find the move - could be SAN (e4) or UCI (e2e4)
+          let matchingMove = verboseMoves.find((m: any) => m.san === move);
+
+          if (!matchingMove) {
+            // Try as UCI move
+            matchingMove = verboseMoves.find((m: any) => {
+              const uci = m.from + m.to + (m.promotion || '');
+              return uci === move;
+            });
+          }
+
+          if (matchingMove) {
+            console.log('Found matching move for Lichess:', matchingMove);
+            const success = onMoveAttempt(matchingMove.from, matchingMove.to, matchingMove.from + matchingMove.to + (matchingMove.promotion || ''));
+            if (success) {
+              return; // Move handled by Lichess integration
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error in Lichess move handling:', error);
+      }
+    }
+
+    // Fallback to regular move handling for analysis mode
+    console.log('Using regular move handling for:', move);
+    makeSelectedMove(move);
   };
 
   const handleUndoMove = () => {

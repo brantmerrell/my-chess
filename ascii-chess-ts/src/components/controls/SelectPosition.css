@@ -9,7 +9,7 @@ body {
 .position-layout {
   padding: 0px;
   display: flex;
-  margin: 5px auto;
+  margin: 0;
   width: 100%;
 }
 

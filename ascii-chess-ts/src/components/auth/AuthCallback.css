@@ -1,0 +1,87 @@
+.auth-callback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: monospace;
+}
+
+.auth-callback__title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.auth-callback__icon {
+  font-size: 48px;
+}
+
+.auth-callback__subtitle {
+  font-size: 16px;
+}
+
+.auth-callback__error-message {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.auth-callback__redirect-notice {
+  font-size: 14px;
+}
+
+.auth-callback__title--success {
+  color: #28a745;
+}
+
+.auth-callback__title--error {
+  color: #dc3545;
+}
+
+/* Theme-specific styles */
+.cyborg .auth-callback__title {
+  color: #80ffdb;
+}
+
+.cyborg .auth-callback__title--success {
+  color: #80ffdb;
+}
+
+.cyborg .auth-callback__title--error {
+  color: #ff5555;
+}
+
+.vapor .auth-callback__title {
+  color: #ff6baf;
+}
+
+.vapor .auth-callback__title--success {
+  color: #ff6baf;
+}
+
+.vapor .auth-callback__title--error {
+  color: #ff5555;
+}
+
+.solar .auth-callback__title {
+  color: #b58900;
+}
+
+.solar .auth-callback__title--success {
+  color: #b58900;
+}
+
+.solar .auth-callback__title--error {
+  color: #dc322f;
+}
+
+.superhero .auth-callback__title {
+  color: #df691a;
+}
+
+.superhero .auth-callback__title--success {
+  color: #df691a;
+}
+
+.superhero .auth-callback__title--error {
+  color: #e74c3c;
+}

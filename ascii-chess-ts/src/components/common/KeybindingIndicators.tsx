@@ -9,6 +9,7 @@ const KeybindingIndicators: React.FC = () => {
     { key: "-", description: "Decrease container height" },
     { key: "f", description: "Focus position selector" },
     { key: "F", description: "Focus FEN input" },
+    { key: "T", description: "Focus theme selector" },
     { key: "?", description: "Toggle shortcuts panel" },
     { key: "Esc", description: "Unfocus current element" },
   ];
