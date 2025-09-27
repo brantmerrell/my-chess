@@ -189,7 +189,9 @@
   overflow: auto;
   box-sizing: border-box;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 /* Responsive design */
 @media (max-width: 1000px) {
