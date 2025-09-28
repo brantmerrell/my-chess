@@ -418,49 +418,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           const { positions } = chessGameState;
           dispatch(goToPosition(positions.length - 1));
           break;
-        case "i":
-        case "I":
-          e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
-          const positionalViewSelector = document.querySelector(
-            "#positional-view-selector",
-          ) as HTMLSelectElement;
-          if (positionalViewSelector) {
-            positionalViewSelector.focus();
-          }
-          break;
-        case "o":
-        case "O":
-          e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
-          const historicalViewSelector = document.querySelector(
-            "#historical-view-selector",
-          ) as HTMLSelectElement;
-          if (historicalViewSelector) {
-            historicalViewSelector.focus();
-          }
-          break;
-        case "p":
-          e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
-          const pieceViewSelector = document.querySelector(
-            "#piece-view-selector",
-          ) as HTMLSelectElement;
-          if (pieceViewSelector) {
-            pieceViewSelector.focus();
-          }
-          break;
-        case "n":
-        case "N":
-          e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
-          const connectionSelector = document.querySelector(
-            "#connection-type-selector",
-          ) as HTMLSelectElement;
-          if (connectionSelector) {
-            connectionSelector.focus();
-          }
-          break;
         case "c":
         case "C":
           e.preventDefault(); // Prevent default alphabetical selection
@@ -494,27 +451,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "?":
           setShowKeybindings(!showKeybindings);
           break;
-        case "r":
-        case "R":
-          e.preventDefault();
-          setShowViewControls(!showViewControls);
-          break;
-        case "e":
-        case "E":
-          e.preventDefault();
-          setShowFenControls(!showFenControls);
-          break;
         case "v":
         case "V":
           e.preventDefault();
           setShowViewControls(!showViewControls);
           break;
-        case "+":
-        case "=": // Also handle = key (which is typically the same key as + without shift)
+        case "]":
           e.preventDefault();
           verticalResizerRef.current?.increaseHeight();
           break;
-        case "-":
+        case "[":
           e.preventDefault();
           verticalResizerRef.current?.decreaseHeight();
           break;
@@ -689,6 +635,19 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
                 onConnectionTypeChange={setConnectionType}
               />
             )}
+            {selectedPositionalView === "graph" && (
+              <div className="form-group">
+                <label className="form-check-label">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={showGrid}
+                    onChange={() => setShowGrid(!showGrid)}
+                  />
+                  Sho<u>w</u> Grid
+                </label>
+              </div>
+            )}
           </div>
           <div className="view-controls-right">
             <HistoricalViewSelector
@@ -708,7 +667,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         onMoveAttempt={handleMoveAttempt}
         gameState={gameState}
       />
-      {showKeybindings && <KeybindingIndicators />}
+      {showKeybindings && <KeybindingIndicators onDismiss={() => setShowKeybindings(false)} />}
       {!showKeybindings && (
         /* TO-DO: migrate to css */
         <div

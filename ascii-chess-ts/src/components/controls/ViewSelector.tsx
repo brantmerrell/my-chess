@@ -54,7 +54,7 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
   return (
     <div className="form-group">
       <label className="form-label">
-        Hist<u>o</u>rical View
+        Historical View
       </label>
       <div className="historical-view-button-group">
         {HISTORICAL_VIEW_OPTIONS.map((option) => (

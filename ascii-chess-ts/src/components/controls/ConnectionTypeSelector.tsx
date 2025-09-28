@@ -21,7 +21,7 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
   return (
     <div className="form-group">
       <label className="form-label">
-        Co<u>n</u>nection Type
+        Connection Type
       </label>
       <div className="connection-type-radio-group">
         {CONNECTION_TYPE_OPTIONS.map((option) => (

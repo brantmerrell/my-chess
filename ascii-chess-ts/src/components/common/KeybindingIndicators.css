@@ -11,6 +11,7 @@
   max-width: 250px;
   opacity: 0.7;
   transition: opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .keybinding-indicators:hover {
