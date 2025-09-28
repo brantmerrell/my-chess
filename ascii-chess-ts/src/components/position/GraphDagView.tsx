@@ -48,9 +48,7 @@ const GraphDagView: React.FC<GraphDagViewProps> = ({ edges, theme }) => {
   if (loading) {
     return (
       <div className="visualization-container board-display">
-        <div
-          className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full"
-        >
+        <div className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full">
           Loading GraphDAG visualization...
         </div>
       </div>
@@ -60,9 +58,7 @@ const GraphDagView: React.FC<GraphDagViewProps> = ({ edges, theme }) => {
   if (error) {
     return (
       <div className="visualization-container board-display">
-        <div
-          className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full"
-        >
+        <div className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full">
           Error: {error}
         </div>
       </div>
@@ -71,9 +67,7 @@ const GraphDagView: React.FC<GraphDagViewProps> = ({ edges, theme }) => {
 
   return (
     <div className="visualization-container board-display">
-      <div
-        className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full"
-      >
+      <div className="ascii-board p-4 rounded-lg font-mono text-xl whitespace-pre overflow-x-auto w-full">
         {asciiArt}
       </div>
     </div>

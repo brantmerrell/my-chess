@@ -30,9 +30,7 @@ const Accordion: React.FC<AccordionProps> = ({
         <span className={`accordion-chevron ${isExpanded ? "expanded" : ""}`}>
           ▶
         </span>
-        <span className="accordion-title">
-          {title}
-        </span>
+        <span className="accordion-title">{title}</span>
       </button>
       <div
         id={`accordion-content-${typeof title === "string" ? title.replace(/\s+/g, "-").toLowerCase() : "accordion"}`}
