@@ -1,38 +1,38 @@
 body {
   .start-fen {
-    margin: 5px;
-    height: 38px;
-    border-radius: 5px;
-    width: 485px;
+    margin: 0.3125rem;
+    height: 2.375rem;
+    border-radius: 0.3125rem;
+    width: 30.3125rem;
   }
 }
 .position-layout {
-  padding: 0px;
+  padding: 0;
   display: flex;
   margin: 0;
   width: 100%;
 }
 
 .position-select {
-  width: 500px;
+  width: 31.25rem;
   text-align: center;
-  height: 38px;
-  padding: 0 10px;
-  border-radius: 5px;
+  height: 2.375rem;
+  padding: 0 0.625rem;
+  border-radius: 0.3125rem;
   background-position: right 0.75rem center;
 }
 
 /* Theme-specific fixes for Quartz theme dropdown text alignment */
 .position-select--quartz {
-  height: 44px !important;
-  line-height: 44px;
-  padding: 0 10px;
+  height: 2.75rem !important;
+  line-height: 2.75rem;
+  padding: 0 0.625rem;
 }
 
 .position-select:focus {
-  outline: 3px solid #ffd700 !important;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4) !important;
+  outline: 0.1875rem solid #ffd700 !important;
+  outline-offset: 0.125rem;
+  box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4) !important;
   background-color: #fff3cd !important;
   color: #856404 !important;
   transform: scale(1.02);
@@ -44,7 +44,7 @@ body {
 }
 
 .position-select option {
-  padding: 8px;
+  padding: 0.5rem;
 }
 
 /* Remove default arrow in IE */
@@ -53,9 +53,9 @@ body {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .position-layout {
-    margin: 5px 0;
-    max-width: 400px;
+    margin: 0.3125rem 0;
+    max-width: 25rem;
   }
 }

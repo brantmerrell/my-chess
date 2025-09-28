@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./GraphView.css";
 import * as d3 from "d3";
 import {
@@ -39,6 +39,29 @@ const GraphView: React.FC<GraphViewProps> = ({
   onMoveAttempt,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
+
+  // Handle container resize
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        setDimensions({
+          width: Math.max(600, width),
+          height: Math.max(600, height),
+        });
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!linksData || !processedEdges || !svgRef.current) return;
@@ -46,12 +69,11 @@ const GraphView: React.FC<GraphViewProps> = ({
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 600;
-    const height = 600;
+    const { width, height } = dimensions;
+
     svg
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`);
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     const g = svg.append("g");
 
@@ -291,10 +313,11 @@ const GraphView: React.FC<GraphViewProps> = ({
     showGrid,
     flipBoard,
     onMoveAttempt,
+    dimensions,
   ]);
 
   return (
-    <VisualizationContainer className="graph-view-container">
+    <VisualizationContainer className="graph-view-container" ref={containerRef}>
       <svg ref={svgRef} className="visualization-svg graph-view" />
     </VisualizationContainer>
   );

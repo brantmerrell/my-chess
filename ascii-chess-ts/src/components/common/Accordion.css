@@ -1,6 +1,6 @@
 .accordion {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.1);
 }
@@ -25,8 +25,8 @@
 }
 
 .accordion-header:focus {
-  outline: 2px solid #007bff;
-  outline-offset: -2px;
+  outline: 0.125rem solid #007bff;
+  outline-offset: -0.125rem;
 }
 
 .accordion-chevron {
@@ -116,6 +116,6 @@
 }
 
 .accordion-content.expanded {
-  max-height: 500px;
+  max-height: 31.25rem;
   padding: 0 1rem 1rem 1rem;
 }

@@ -23,10 +23,17 @@ export const gridToScreen = (
   height: number,
 ): [number, number] => {
   const margin = GRID_MARGIN;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+  const boardSize = Math.min(width - 2 * margin, height - 2 * margin);
+  const gridSize = boardSize / 8;
+
+  // Center the board horizontally if width > height
+  const xOffset = width > height ? (width - boardSize) / 2 : margin;
+  // Center the board vertically if height > width
+  const yOffset = height > width ? (height - boardSize) / 2 : margin;
+
   return [
-    margin + coords[0] * gridSize + gridSize / 2,
-    margin + coords[1] * gridSize + gridSize / 2,
+    xOffset + coords[0] * gridSize + gridSize / 2,
+    yOffset + coords[1] * gridSize + gridSize / 2,
   ];
 };
 
@@ -37,10 +44,16 @@ export const screenToSquare = (
   height: number,
 ): string | null => {
   const margin = GRID_MARGIN;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+  const boardSize = Math.min(width - 2 * margin, height - 2 * margin);
+  const gridSize = boardSize / 8;
 
-  const gridX = Math.round((x - margin - gridSize / 2) / gridSize);
-  const gridY = Math.round((y - margin - gridSize / 2) / gridSize);
+  // Center the board horizontally if width > height
+  const xOffset = width > height ? (width - boardSize) / 2 : margin;
+  // Center the board vertically if height > width
+  const yOffset = height > width ? (height - boardSize) / 2 : margin;
+
+  const gridX = Math.round((x - xOffset - gridSize / 2) / gridSize);
+  const gridY = Math.round((y - yOffset - gridSize / 2) / gridSize);
 
   if (gridX < 0 || gridX > 7 || gridY < 0 || gridY > 7) {
     return null;

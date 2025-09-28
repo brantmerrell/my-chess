@@ -7,27 +7,33 @@ export const renderGrid = (
   height: number,
 ) => {
   const margin = GRID_MARGIN;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+  const boardSize = Math.min(width - 2 * margin, height - 2 * margin);
+  const gridSize = boardSize / 8;
+
+  // Center the board horizontally if width > height
+  const xOffset = width > height ? (width - boardSize) / 2 : margin;
+  // Center the board vertically if height > width
+  const yOffset = height > width ? (height - boardSize) / 2 : margin;
 
   const gridLines = g.append("g").attr("class", "grid");
 
   for (let i = 0; i <= 8; i++) {
     gridLines
       .append("line")
-      .attr("x1", margin + i * gridSize)
-      .attr("y1", margin)
-      .attr("x2", margin + i * gridSize)
-      .attr("y2", margin + 8 * gridSize)
+      .attr("x1", xOffset + i * gridSize)
+      .attr("y1", yOffset)
+      .attr("x2", xOffset + i * gridSize)
+      .attr("y2", yOffset + 8 * gridSize)
       .attr("stroke", "#e0e0e0")
       .attr("stroke-width", 1)
       .attr("opacity", 0.5);
 
     gridLines
       .append("line")
-      .attr("x1", margin)
-      .attr("y1", margin + i * gridSize)
-      .attr("x2", margin + 8 * gridSize)
-      .attr("y2", margin + i * gridSize)
+      .attr("x1", xOffset)
+      .attr("y1", yOffset + i * gridSize)
+      .attr("x2", xOffset + 8 * gridSize)
+      .attr("y2", yOffset + i * gridSize)
       .attr("stroke", "#e0e0e0")
       .attr("stroke-width", 1)
       .attr("opacity", 0.5);
@@ -41,7 +47,14 @@ export const renderCoordinates = (
   flipBoard: boolean = false,
 ) => {
   const margin = GRID_MARGIN;
-  const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
+  const boardSize = Math.min(width - 2 * margin, height - 2 * margin);
+  const gridSize = boardSize / 8;
+
+  // Center the board horizontally if width > height
+  const xOffset = width > height ? (width - boardSize) / 2 : margin;
+  // Center the board vertically if height > width
+  const yOffset = height > width ? (height - boardSize) / 2 : margin;
+
   const coordinates = g.append("g").attr("class", "coordinates");
 
   for (let i = 0; i < 8; i++) {
@@ -49,8 +62,8 @@ export const renderCoordinates = (
     const file = String.fromCharCode("a".charCodeAt(0) + fileIndex);
     coordinates
       .append("text")
-      .attr("x", margin + i * gridSize + gridSize / 2)
-      .attr("y", margin + 8 * gridSize + 25)
+      .attr("x", xOffset + i * gridSize + gridSize / 2)
+      .attr("y", yOffset + 8 * gridSize + 25)
       .attr("text-anchor", "middle")
       .attr("font-size", "18px")
       .attr("font-family", "monospace")
@@ -62,8 +75,8 @@ export const renderCoordinates = (
     const rank = flipBoard ? i + 1 : 8 - i;
     coordinates
       .append("text")
-      .attr("x", margin - 20)
-      .attr("y", margin + i * gridSize + gridSize / 2)
+      .attr("x", xOffset - 20)
+      .attr("y", yOffset + i * gridSize + gridSize / 2)
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
       .attr("font-size", "18px")

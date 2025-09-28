@@ -8,11 +8,11 @@
 
 div.board-display .ascii-board,
 .board-display .ascii-board {
-  width: 630px;
-  padding: 10px;
-  margin: 5px auto;
+  width: 39.375rem;
+  padding: 0.625rem;
+  margin: 0.3125rem auto;
   color: #333;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   font-family:
     "Noto Sans Mono", "Source Code Pro", "Consolas", "DejaVu Sans Mono",
     monospace;
@@ -40,36 +40,36 @@ div.board-display .ascii-board span,
 }
 
 .ascii-board--cyborg {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #2a9fd6;
 }
 
 .ascii-board--vapor {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #6f42c1; /* Vapor (primary) */
 }
 
 .ascii-board--journal {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #eb6864; /* Journal (primary) */
 }
 
 .ascii-board--solar {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #b58900; /* Solar (primary) */
 }
 
 .ascii-board--superhero {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #df6919; /* Superhero (primary) */
 }
 
 .ascii-board--minty {
-  font-size: 31px;
+  font-size: 1.9375rem;
   background-color: #78c2ad; /* Minty (primary) */
 }
 
 .ascii-board--quartz {
-  font-size: 29px;
+  font-size: 1.8125rem;
   background-color: #e83283; /* Quartz (primary) */
 }

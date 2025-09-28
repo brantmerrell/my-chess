@@ -1,22 +1,22 @@
 .lichess-login {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
   background-color: #f5f5f5;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   font-family: monospace;
-  font-size: 14px;
-  border: 1px solid #ddd;
+  font-size: 0.875rem;
+  border: 0.0625rem solid #ddd;
 }
 
 .lichess-login__loading {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .lichess-login__icon {
@@ -32,13 +32,13 @@
 }
 
 .lichess-login__logout-btn {
-  padding: 4px 12px;
+  padding: 0.25rem 0.75rem;
   background-color: #dc3545;
   color: white;
   border: none;
-  border-radius: 3px;
+  border-radius: 0.1875rem;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-family: monospace;
   transition: background-color 0.2s;
 }
@@ -52,13 +52,13 @@
 }
 
 .lichess-login__login-btn {
-  padding: 6px 16px;
+  padding: 0.375rem 1rem;
   background-color: #669900;
   color: white;
   border: none;
-  border-radius: 3px;
+  border-radius: 0.1875rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-family: monospace;
   font-weight: bold;
   transition: background-color 0.2s;

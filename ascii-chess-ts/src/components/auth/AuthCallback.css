@@ -8,25 +8,25 @@
 }
 
 .auth-callback__title {
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .auth-callback__icon {
-  font-size: 48px;
+  font-size: 2.75rem;
 }
 
 .auth-callback__subtitle {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .auth-callback__error-message {
-  font-size: 16px;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  margin-bottom: 0.625rem;
 }
 
 .auth-callback__redirect-notice {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .auth-callback__title--success {

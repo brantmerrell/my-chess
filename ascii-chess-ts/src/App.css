@@ -4,9 +4,9 @@
 .App .chess-container {
   display: flex;
   flex-direction: column;
-  max-width: 1600px;
+  max-width: 100rem;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 1.25rem;
 }
 
 .App-logo {
@@ -27,7 +27,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(0.625rem + 2vmin);
   color: white;
 }
 
@@ -37,7 +37,7 @@
 
 .title {
   text-align: left;
-  padding-left: 20px;
+  padding-left: 1.25rem;
 }
 
 @keyframes App-logo-spin {
@@ -49,23 +49,23 @@
   }
 }
 .display-options {
-  margin: 5px;
-  padding: 5px;
+  margin: 0.3125rem;
+  padding: 0.3125rem;
 }
 
 .display-options {
-  margin: 10px 0;
+  margin: 0.625rem 0;
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   justify-content: center;
 }
 
 .display-toggle {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   background-color: #4a5568;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -80,7 +80,7 @@
 .display-toggle:disabled {
   background-color: #2b6cb0;
   cursor: default;
-  box-shadow: 0 0 0 2px #4299e1;
+  box-shadow: 0 0 0 0.125rem #4299e1;
 }
 .header-container {
   display: flex;

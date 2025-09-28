@@ -18,10 +18,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 8px;
+  height: 0.5rem;
   cursor: ns-resize;
   background: transparent;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 0.125rem solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
   z-index: 10;
 }
@@ -38,11 +38,11 @@
 
 .vertical-resizer-grip {
   position: absolute;
-  bottom: 2px;
+  bottom: 0.125rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 4px;
+  width: 2.5rem;
+  height: 0.25rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,7 +51,7 @@
 .vertical-resizer-grip::before {
   content: "⋮";
   color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1;
   transform: rotate(90deg);
 }
@@ -64,8 +64,9 @@
   color: #007bff;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 1000px) {
+
+@media (max-width: 62.5rem) {
+
   .vertical-resizer-container {
     height: auto !important;
   }

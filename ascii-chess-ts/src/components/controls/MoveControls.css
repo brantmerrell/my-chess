@@ -3,47 +3,47 @@
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 25rem;
   margin: 0 auto;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 0.625rem;
+  border-radius: 0.375rem;
   background: rgba(0, 0, 0, 0.05);
 }
 
 .moves-forward {
   display: grid;
-  grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+  grid-template-columns: 1fr 1fr 7.5rem 1fr 1fr;
   grid-template-areas: "dropdown dropdown position submit submit";
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
   width: 100%;
   box-sizing: border-box;
 }
 
 .moves-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr 120px 1fr 1fr;
+  grid-template-columns: 1fr 1fr 7.5rem 1fr 1fr;
   grid-template-areas: ". . . undo undo";
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
   width: 100%;
   box-sizing: border-box;
 }
 
 /* Move Selection Dropdown */
 #selectedMove {
-  height: 38px;
-  padding: 0 10px;
-  border-radius: 5px;
-  border: 1px solid #4a5568;
+  height: 2.375rem;
+  padding: 0 0.625rem;
+  border-radius: 0.3125rem;
+  border: 0.0625rem solid #4a5568;
   background-color: white;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
-  background-size: 16px 12px;
+  background-size: 1rem 0.75rem;
   padding-right: 2.5rem;
   width: 100%;
   min-width: 0;
@@ -58,10 +58,10 @@
 }
 
 #selectedMove:focus {
-  outline: 3px solid #ffd700;
-  outline-offset: 2px;
+  outline: 0.1875rem solid #ffd700;
+  outline-offset: 0.125rem;
   border-color: #2b6cb0;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4);
   background-color: #fff3cd !important;
 }
 
@@ -75,13 +75,13 @@
 /* Move Input */
 #move {
   grid-area: position;
-  height: 38px;
-  padding: 0 10px;
-  border-radius: 5px;
-  border: 1px solid #4a5568;
+  height: 2.375rem;
+  padding: 0 0.625rem;
+  border-radius: 0.3125rem;
+  border: 0.0625rem solid #4a5568;
   background-color: white;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   width: 100%;
   margin: 0;
   box-sizing: border-box;
@@ -91,10 +91,10 @@
 }
 
 #move:focus {
-  outline: 3px solid #ffd700;
-  outline-offset: 2px;
+  outline: 0.1875rem solid #ffd700;
+  outline-offset: 0.125rem;
   border-color: #2b6cb0;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4);
   background-color: #fff3cd !important;
 }
 
@@ -112,12 +112,12 @@
 /* Submit Move Button */
 #submitMove {
   grid-area: submit;
-  height: 38px;
-  padding: 0 12px;
+  height: 2.375rem;
+  padding: 0 0.75rem;
   color: white;
-  font-size: 12px;
+  font-size: 0.75rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -145,12 +145,12 @@
 /* Undo Button */
 #undo {
   grid-area: undo;
-  height: 38px;
-  padding: 0 15px;
+  height: 2.375rem;
+  padding: 0 0.9375rem;
   color: white;
-  font-size: 12px;
+  font-size: 0.75rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -162,30 +162,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 #undo .keybinding {
   background: rgba(255, 255, 255, 0.2);
-  padding: 1px 4px;
-  border-radius: 3px;
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.1875rem;
   font-size: 0.75em;
   font-family: monospace;
   opacity: 0.8;
 }
 
 #undo:focus {
-  outline: 3px solid #ffd700;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  outline: 0.1875rem solid #ffd700;
+  outline-offset: 0.125rem;
+  box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4);
   background-color: #dc3545 !important;
   transform: scale(1.05);
 }
 
 #submitMove:focus {
-  outline: 3px solid #ffd700;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+  outline: 0.1875rem solid #ffd700;
+  outline-offset: 0.125rem;
+  box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4);
   transform: scale(1.05);
 }
 
@@ -209,13 +209,13 @@
   margin-top: 0.5rem;
   font-size: 0.875rem;
   padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   background-color: #fee;
-  border: 1px solid #fcc;
+  border: 0.0625rem solid #fcc;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .moves-layout {
     flex-direction: column;
     align-items: stretch;

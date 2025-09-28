@@ -1,9 +1,9 @@
 .visualization-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 50rem;
   background-color: #1f2937;
   border-radius: 0.5rem;
-  border: 1px solid #374151;
+  border: 0.0625rem solid #374151;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -11,11 +11,11 @@
 }
 
 .visualization-container--fixed-height {
-  height: 500px;
+  height: 31.25rem;
 }
 
 .visualization-container--auto-height {
-  min-height: 200px;
+  min-height: 12.5rem;
 }
 
 .visualization-content {
@@ -29,7 +29,7 @@
 
 .visualization-header {
   padding: 1rem;
-  border-bottom: 1px solid #374151;
+  border-bottom: 0.0625rem solid #374151;
   background-color: #111827;
   border-radius: 0.5rem 0.5rem 0 0;
   display: flex;
@@ -53,7 +53,7 @@
 
 .visualization-svg-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 50rem;
   display: flex;
   justify-content: center;
 }
@@ -61,8 +61,8 @@
 .visualization-svg {
   background-color: #374151;
   border-radius: 0.5rem;
-  border: 1px solid #4b5563;
-  height: 350px;
+  border: 0.0625rem solid #4b5563;
+  height: 21.875rem;
   width: 100%;
 }
 
@@ -72,15 +72,15 @@
 .inline-visualization-container {
   background-color: #1f2937;
   border-radius: 0.5rem;
-  border: 1px solid #374151;
+  border: 0.0625rem solid #374151;
   padding: 1rem;
   box-sizing: border-box;
   width: 100%;
-  max-width: 800px;
+  max-width: 50rem;
 }
 
 .container-with-border-bottom {
-  border-bottom: 1px solid #374151;
+  border-bottom: 0.0625rem solid #374151;
 }
 
 .container-top-radius-only {
@@ -99,7 +99,7 @@
   background-color: #1f2937;
   border-radius: 0.5rem;
   padding: 1rem;
-  border: 1px solid #374151;
+  border: 0.0625rem solid #374151;
 }
 
 .visualization-container svg text {
@@ -117,9 +117,9 @@
   text-transform: none !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .visualization-container--fixed-height {
-    height: 400px;
+    height: 25rem;
   }
 
   .visualization-header {

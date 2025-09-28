@@ -1,7 +1,7 @@
 .setup-mode-container {
   width: 100%;
   max-width: none;
-  height: 200px;
+  height: 12.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -9,22 +9,22 @@
 .mode-tabs {
   display: flex;
   gap: 0;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ddd;
+  margin-bottom: 1.25rem;
+  border-bottom: 0.125rem solid #ddd;
 }
 
 .tab {
-  padding: 10px 20px;
+  padding: 0.625rem 1.25rem;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 0.1875rem solid transparent;
   cursor: pointer;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: #666;
   transition: all 0.2s;
-  margin-bottom: -2px;
+  margin-bottom: -0.125rem;
 }
 
 .tab:hover {
@@ -88,28 +88,28 @@
 .analysis-controls {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
   flex: 1;
-  height: 110px;
+  height: 6.875rem;
   justify-content: flex-start;
 }
 
 .play-controls {
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: 0.75rem;
   flex: 1;
-  height: 110px;
+  height: 6.875rem;
   align-items: flex-start;
   flex-wrap: wrap;
 }
 
 .auth-required {
-  padding: 15px;
+  padding: 0.9375rem;
   background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   text-align: center;
-  min-height: 60px;
+  min-height: 3.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,10 +124,10 @@
 .play-status-row {
   display: flex;
   flex-direction: row;
-  gap: 12px;
-  padding: 10px;
+  gap: 0.75rem;
+  padding: 0.625rem;
   background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   flex: 1;
   align-items: flex-start;
   flex-wrap: wrap;
@@ -136,49 +136,49 @@
 .status-stack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   flex: 1;
-  min-width: 250px;
+  min-width: 15.625rem;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
   background-color: rgba(76, 175, 80, 0.1);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   font-family: monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   flex: 0 0 auto;
-  min-width: 220px;
-  max-width: 280px;
+  min-width: 13.75rem;
+  max-width: 17.5rem;
 }
 
 .quick-pairing {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
   background-color: rgba(0, 0, 0, 0.03);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   flex: 1;
-  min-width: 300px;
+  min-width: 18.75rem;
 }
 
 .quick-pairing-row {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 12px;
+  gap: 0.9375rem;
+  padding: 0.75rem;
   background-color: rgba(0, 0, 0, 0.03);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   flex-wrap: wrap;
 }
 
 .quick-pairing-label {
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   white-space: nowrap;
 }
@@ -186,25 +186,25 @@
 .time-control-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
   flex: 1;
 }
 
 .time-control-btn {
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   font-family: monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .time-control-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
 }
 
 .time-control-btn:disabled {
@@ -366,14 +366,14 @@
 .game-status-compact {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
   background-color: rgba(76, 175, 80, 0.15);
-  border: 1px solid #4caf50;
-  border-radius: 5px;
+  border: 0.0625rem solid #4caf50;
+  border-radius: 0.3125rem;
   font-family: monospace;
-  font-size: 13px;
-  min-height: 40px;
+  font-size: 0.8125rem;
+  min-height: 2.5rem;
   flex-wrap: wrap;
 }
 
@@ -385,16 +385,16 @@
 .seeking-status-compact {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
   background-color: rgba(255, 193, 7, 0.15);
-  border: 1px solid #ffc107;
-  border-radius: 5px;
+  border: 0.0625rem solid #ffc107;
+  border-radius: 0.3125rem;
   font-family: monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #856404;
   font-weight: 500;
-  min-height: 40px;
+  min-height: 2.5rem;
 }
 
 /* Theme-specific styles for game status */
@@ -457,24 +457,24 @@
 .game-result-compact {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
   background-color: rgba(103, 58, 183, 0.15);
-  border: 1px solid #673ab7;
-  border-radius: 5px;
+  border: 0.0625rem solid #673ab7;
+  border-radius: 0.3125rem;
   font-family: monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   flex: 0 0 auto;
-  min-height: 40px;
+  min-height: 2.5rem;
 }
 
 .result-icon {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .result-outcome {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .result-outcome.win {
@@ -492,31 +492,31 @@
 .result-reason {
   color: #666;
   font-style: italic;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .btn-success {
   background-color: #28a745;
   color: white;
-  padding: 12px 20px;
+  padding: 0.75rem 1.25rem;
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
 }
 
 .btn-success:hover {
   background-color: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
 }
 
 /* Theme-specific styles for game result */
@@ -597,18 +597,18 @@
 .game-notification {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  margin-top: 10px;
-  border-radius: 5px;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  margin-top: 0.625rem;
+  border-radius: 0.3125rem;
   font-family: monospace;
-  font-size: 13px;
-  border: 1px solid;
+  font-size: 0.8125rem;
+  border: 0.0625rem solid;
   background: rgba(255, 255, 255, 0.1);
 }
 
 .notification-icon {
-  font-size: 16px;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 
@@ -620,16 +620,16 @@
 .notification-close {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: inherit;
   cursor: pointer;
   padding: 0;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
+  border-radius: 0.1875rem;
   opacity: 0.7;
   transition: all 0.2s;
 }

@@ -34,29 +34,29 @@
   justify-content: flex-start;
   margin-bottom: 1rem;
 }
-/* Override the individual selector container padding */
+
 .dropdowns-container .selector-container {
   padding: 0;
 }
-/* Ensure proper sizing of selects */
+
 .dropdowns-container .select-control {
-  min-width: 180px;
+  min-width: 11.25rem;
   margin: 0;
 }
-/* Disclosure Sections */
+
 .fen-controls-disclosure,
 .view-controls-disclosure,
 .move-controls-disclosure,
 .combined-controls-disclosure {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.1);
 }
 
-/* Attached header styling - removes top border radius for seamless connection */
+
 .attached-header {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 0.0625rem solid rgba(255, 255, 255, 0.1);
   border-radius: 0 !important;
 }
 .disclosure-header {
@@ -78,8 +78,8 @@
   background: rgba(255, 255, 255, 0.05);
 }
 .disclosure-header:focus {
-  outline: 2px solid #007bff;
-  outline-offset: -2px;
+  outline: 0.125rem solid #007bff;
+  outline-offset: -0.125rem;
 }
 .disclosure-chevron {
   transition: transform 0.2s ease;
@@ -106,13 +106,13 @@
   padding: 0 1rem;
 }
 .disclosure-content.expanded {
-  max-height: 500px;
+  max-height: 31.25rem;
   padding: 0 1rem 1rem 1rem;
 }
-/* View Controls Grid - Horizontal Layout */
+
 .view-controls-grid {
   display: grid;
-  grid-template-columns: repeat(5, 200px);
+  grid-template-columns: repeat(5, 12.5rem);
   gap: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -123,17 +123,17 @@
   box-sizing: border-box;
 }
 .view-controls-grid .select-control {
-  width: 160px;
-  min-width: 160px;
-  max-width: 160px;
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
   margin: 0;
   box-sizing: border-box;
 }
-/* Remove old dropdowns container styles since it's now in sidebar */
+
 .dropdowns-container {
   display: none;
 }
-/* Main Content Layout - Two Column Layout */
+
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -143,33 +143,20 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  padding-bottom: 8px; /* Space for resize handle */
+  padding-bottom: 0.5rem;
 }
 
 .positional-section {
   grid-area: positional;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0; /* Important for flex children */
-  box-sizing: border-box;
-}
-
-.positional-section .view-container {
-  align-items: top;
-}
-
-.positional-section .view-container {
-  width: 100%;
-  flex: 1;
-  min-height: 0; /* Allow shrinking */
-  overflow: auto;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .historical-section {
@@ -178,14 +165,14 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  min-height: 0; /* Important for flex children */
+  min-height: 0;
   box-sizing: border-box;
 }
 
 .historical-section .view-container {
   width: 100%;
   flex: 1;
-  min-height: 0; /* Allow shrinking */
+  min-height: 0;
   overflow: auto;
   box-sizing: border-box;
   display: flex;
@@ -193,8 +180,8 @@
   align-items: center;
   justify-content: center;
 }
-/* Responsive design */
-@media (max-width: 1000px) {
+
+@media (max-width: 62.5rem) {
   .chess-container {
     max-width: 100%;
     padding: 0.5rem;
@@ -210,13 +197,13 @@
   .positional-section {
     order: 1;
     width: 100%;
-    min-height: 300px;
+    min-height: 18.75rem;
   }
 
   .historical-section {
     order: 2;
     width: 100%;
-    min-height: 300px;
+    min-height: 18.75rem;
   }
 
   .view-controls-grid {
@@ -224,11 +211,11 @@
     gap: 0.5rem;
   }
 }
-/* SelectStyle.css updates */
+
 .selector-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Change from center to flex-start */
+  align-items: flex-start;
 }
 .selector-label {
   color: white;
@@ -237,5 +224,5 @@
 }
 .selector-container {
   display: flex;
-  justify-content: flex-start; /* Change from center to flex-start */
+  justify-content: flex-start;
 }
