@@ -1,51 +1,18 @@
 import React from "react";
 import Selector from "../common/Selector";
-import "./ViewSelector.css";
+import "./HistoricalViewSelector.css";
 
-type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
-
-interface PositionalViewSelectorProps {
-  selectedView: PositionalViewType;
-  onViewChange: (view: PositionalViewType) => void;
-}
 
 interface HistoricalViewSelectorProps {
   selectedView: HistoricalViewType;
   onViewChange: (view: HistoricalViewType) => void;
 }
 
-const POSITIONAL_VIEW_OPTIONS = [
-  { value: "graph", label: "Graph" },
-  { value: "board", label: "Board" },
-  { value: "arc", label: "Arc" },
-  { value: "chord", label: "Chord" },
-  { value: "graphdag", label: "GraphDAG" },
-] as const;
-
 const HISTORICAL_VIEW_OPTIONS = [
   { value: "history", label: "🮁" },
   { value: "fencount", label: "🗠" },
 ] as const;
-
-export const PositionalViewSelector: React.FC<PositionalViewSelectorProps> = ({
-  selectedView,
-  onViewChange,
-}) => {
-  return (
-    <Selector
-      id="positional-view-selector"
-      label={
-        <span>
-          Pos<u>i</u>tional View
-        </span>
-      }
-      value={selectedView}
-      onChange={onViewChange}
-      options={POSITIONAL_VIEW_OPTIONS}
-    />
-  );
-};
 
 export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
   selectedView,
@@ -53,9 +20,7 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
 }) => {
   return (
     <div className="form-group">
-      <label className="form-label">
-        Historical View
-      </label>
+      <label className="form-label">Historical View</label>
       <div className="historical-view-button-group">
         {HISTORICAL_VIEW_OPTIONS.map((option) => (
           <button
@@ -74,7 +39,6 @@ export const HistoricalViewSelector: React.FC<HistoricalViewSelectorProps> = ({
   );
 };
 
-// Keep the old ViewSelector for backwards compatibility for now
 type ViewType =
   | "board"
   | "graph"

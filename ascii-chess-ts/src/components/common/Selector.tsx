@@ -37,7 +37,7 @@ function Selector<T extends string>({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value as T)}
-          className="select-control btn btn-info"
+          className="select-control btn btn-success"
           aria-label={
             ariaLabel ||
             `${typeof label === "string" ? label : "Selector"} Selection`

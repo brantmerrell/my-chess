@@ -18,12 +18,11 @@ interface ThemeSelectorProps {
 
 const THEME_OPTIONS = [
   { value: "cyborg", label: "Cyborg" },
-  { value: "vapor", label: "Vapor" },
-  { value: "journal", label: "Journal" },
-  { value: "solar", label: "Solar" },
   { value: "superhero", label: "Superhero" },
-  { value: "minty", label: "Minty" },
+  { value: "vapor", label: "Vapor" },
+  { value: "solar", label: "Solar" },
   { value: "quartz", label: "Quartz" },
+  { value: "journal", label: "Journal" },
 ] as const;
 
 // TODO

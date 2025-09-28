@@ -8,10 +8,10 @@ interface PieceViewSelectorProps {
 }
 
 const PIECE_VIEW_OPTIONS = [
-  { value: "full", label: "[♚♛]" },
-  { value: "symbols", label: "(♔♕)" },
-  { value: "letters", label: "(KQ)" },
-  { value: "masked", label: "(**)" },
+  { value: "full", label: "1.[♚♛]" },
+  { value: "symbols", label: "2.(♔♕)" },
+  { value: "letters", label: "3.(KQ)" },
+  { value: "masked", label: "4.(**)" },
 ] as const;
 
 const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
@@ -20,9 +20,7 @@ const PieceViewSelector: React.FC<PieceViewSelectorProps> = ({
 }) => {
   return (
     <div className="form-group">
-      <label className="form-label">
-        Piece View
-      </label>
+      <label className="form-label">Piece View</label>
       <div className="piece-view-button-group">
         {PIECE_VIEW_OPTIONS.map((option) => (
           <button

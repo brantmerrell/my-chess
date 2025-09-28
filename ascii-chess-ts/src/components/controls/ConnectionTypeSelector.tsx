@@ -7,10 +7,10 @@ interface ConnectionTypeSelectorProps {
 }
 
 const CONNECTION_TYPE_OPTIONS = [
-  { value: "none", label: "None" },
-  { value: "adjacencies", label: "Adjacencies" },
-  { value: "links", label: "Links" },
-  { value: "king_box", label: "King Box" },
+  { value: "none", label: "(N)one" },
+  { value: "adjacencies", label: "(A)djacencies" },
+  { value: "links", label: "L(i)nks" },
+  { value: "king_box", label: "Kin(g) Box" },
   // shadow
 ] as const;
 
@@ -20,9 +20,7 @@ const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
 }) => {
   return (
     <div className="form-group">
-      <label className="form-label">
-        Connection Type
-      </label>
+      <label className="form-label">Connection Type</label>
       <div className="connection-type-radio-group">
         {CONNECTION_TYPE_OPTIONS.map((option) => (
           <div key={option.value} className="form-check form-check-inline">

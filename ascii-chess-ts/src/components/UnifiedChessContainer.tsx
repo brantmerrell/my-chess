@@ -19,10 +19,7 @@ import React, { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./controls/SelectPosition";
 import SetupModeComponent from "./controls/SetupMode";
-import {
-  PositionalViewSelector,
-  HistoricalViewSelector,
-} from "./controls/ViewSelector";
+import { HistoricalViewSelector } from "./controls/HistoricalViewSelector";
 import VerticalResizer, {
   VerticalResizerHandle,
 } from "./common/VerticalResizer";
@@ -366,6 +363,17 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             behavior: "smooth",
           });
           break;
+        case "t":
+          e.preventDefault();
+          if (!showViewControls) setShowViewControls(true);
+          const themeSelector = document.querySelector(
+            "#theme-selector",
+          ) as HTMLSelectElement;
+          if (themeSelector) {
+            themeSelector.focus();
+          }
+          break;
+
         case "k":
           e.preventDefault();
           window.scrollBy({
@@ -438,16 +446,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             move.focus();
           }
           break;
-        case "t":
-          e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
-          const themeSelector = document.querySelector(
-            "#theme-selector",
-          ) as HTMLSelectElement;
-          if (themeSelector) {
-            themeSelector.focus();
-          }
-          break;
         case "?":
           setShowKeybindings(!showKeybindings);
           break;
@@ -471,6 +469,44 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             setShowGrid(!showGrid);
           }
           break;
+        // PieceViewSelector keybindings (1-4)
+        case "1":
+          e.preventDefault();
+          setDisplayMode("full");
+          break;
+        case "2":
+          e.preventDefault();
+          setDisplayMode("symbols");
+          break;
+        case "3":
+          e.preventDefault();
+          setDisplayMode("letters");
+          break;
+        case "4":
+          e.preventDefault();
+          setDisplayMode("masked");
+          break;
+        // ConnectionTypeSelector keybindings
+        case "n":
+        case "N":
+          e.preventDefault();
+          setConnectionType("none");
+          break;
+        case "a":
+        case "A":
+          e.preventDefault();
+          setConnectionType("adjacencies");
+          break;
+        case "i":
+        case "I":
+          e.preventDefault();
+          setConnectionType("links");
+          break;
+        case "g":
+        case "G":
+          e.preventDefault();
+          setConnectionType("king_box");
+          break;
       }
     };
 
@@ -486,6 +522,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     showMoveControls,
     showGrid,
     selectedPositionalView,
+    setDisplayMode,
+    setConnectionType,
   ]);
   React.useEffect(() => {
     const fetchData = async () => {
@@ -531,39 +569,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const game = new ChessGame(currentPosition, displayMode);
     return game.asciiView();
   };
-  const renderPositionalView = () => {
-    switch (selectedPositionalView) {
-      case "board":
-        return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
-      case "graph":
-        return (
-          <GraphView
-            linksData={linksData}
-            processedEdges={processedEdges}
-            displayMode={displayMode}
-            showGrid={showGrid}
-            flipBoard={flipBoard}
-            onMoveAttempt={handleMoveAttempt}
-          />
-        );
-      case "arc":
-        return (
-          <ArcView
-            linksData={linksData}
-            processedEdges={processedEdges}
-            displayMode={displayMode}
-          />
-        );
-      case "chord":
-        return (
-          <ChordDiagram nodes={linksData?.nodes || []} edges={processedEdges} />
-        );
-      case "graphdag":
-        return <GraphDagView edges={processedEdges} theme={theme} />;
-      default:
-        return <BoardDisplay board={getCurrentBoard()} theme={theme} />;
-    }
-  };
 
   const renderHistoricalView = () => {
     switch (selectedHistoricalView) {
@@ -606,7 +611,14 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       >
         <div className="main-content">
           <div className="positional-section">
-            <div className="view-container">{renderPositionalView()}</div>
+            <GraphView
+              linksData={linksData}
+              processedEdges={processedEdges}
+              displayMode={displayMode}
+              showGrid={showGrid}
+              flipBoard={flipBoard}
+              onMoveAttempt={handleMoveAttempt}
+            />
           </div>
           <div className="historical-section">
             <div className="view-container">{renderHistoricalView()}</div>
@@ -667,7 +679,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         onMoveAttempt={handleMoveAttempt}
         gameState={gameState}
       />
-      {showKeybindings && <KeybindingIndicators onDismiss={() => setShowKeybindings(false)} />}
+      {showKeybindings && (
+        <KeybindingIndicators onDismiss={() => setShowKeybindings(false)} />
+      )}
       {!showKeybindings && (
         /* TO-DO: migrate to css */
         <div
