@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../app/hooks";
 import {
@@ -14,9 +14,13 @@ const NavigationControls: React.FC = () => {
   const { positions, currentPositionIndex } = useSelector(
     (state: RootState) => state.chessGame,
   );
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [actionsPerMinute, setActionsPerMinute] = useState(20);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const canGoBackward = currentPositionIndex > 0;
   const canGoForward = currentPositionIndex < positions.length - 1;
+  const intervalMs = Math.round(60000 / actionsPerMinute);
 
   const handleBackward = () => {
     if (canGoBackward) {
@@ -38,8 +42,71 @@ const NavigationControls: React.FC = () => {
     dispatch(goToPosition(positions.length - 1));
   };
 
+  const togglePlayPause = useCallback(() => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    } else if (canGoForward) {
+      setIsPlaying(true);
+      intervalRef.current = setInterval(() => {
+        dispatch(goForward());
+      }, intervalMs);
+    }
+  }, [isPlaying, canGoForward, dispatch, intervalMs]);
+
+  useEffect(() => {
+    if (isPlaying && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        dispatch(goForward());
+      }, intervalMs);
+    }
+  }, [intervalMs, isPlaying, dispatch]);
+
+  const handlePaceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAPM = parseInt(e.target.value);
+    setActionsPerMinute(newAPM);
+  };
+
+  useEffect(() => {
+    if (isPlaying && !canGoForward) {
+      setIsPlaying(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+  }, [isPlaying, canGoForward]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="navigation-controls">
+      <div className="pace-control">
+        <label htmlFor="pace-slider" className="pace-label">
+          Pace: {actionsPerMinute} APM ({(intervalMs / 1000).toFixed(1)}s/move)
+        </label>
+        <input
+          id="pace-slider"
+          type="range"
+          min="5"
+          max="60"
+          step="10"
+          value={actionsPerMinute}
+          onChange={handlePaceChange}
+          className="pace-slider"
+          title="Adjust playback speed"
+        />
+      </div>
       <div className="navigation-buttons">
         <button
           onClick={handleGoToStart}
@@ -57,9 +124,14 @@ const NavigationControls: React.FC = () => {
         >
           ◀ <span className="keybinding">h</span>
         </button>
-        <span className="position-indicator">
-          {currentPositionIndex + 0} / {positions.length - 1}
-        </span>
+        <button
+          onClick={togglePlayPause}
+          disabled={!canGoForward && !isPlaying}
+          className={`nav-button play-pause-button ${isPlaying ? 'playing' : ''}`}
+          title={isPlaying ? "Pause (Space)" : "Play (Space)"}
+        >
+          {isPlaying ? "⏸" : "▶"}
+        </button>
         <button
           onClick={handleForward}
           disabled={!canGoForward}
