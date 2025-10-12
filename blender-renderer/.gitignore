@@ -1,0 +1,11 @@
+*.blend1
+*.blend2
+
+renders/
+*.png
+*.jpg
+*.exr
+
+__pycache__/
+*.pyc
+*.pyo
