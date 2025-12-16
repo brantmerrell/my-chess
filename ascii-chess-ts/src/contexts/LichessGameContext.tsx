@@ -7,7 +7,7 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../app/hooks";
 import { lichessGame } from "../services/lichess/game";
 import { lichessAuth } from "../services/lichess/auth";
 import { useLichessAuth } from "../hooks/useLichessAuth";
@@ -72,7 +72,7 @@ const LichessGameContext = createContext<LichessGameContextType | null>(null);
 export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { username, isAuthenticated } = useLichessAuth();
   const notificationCallbackRef = useRef<
     | ((
@@ -252,7 +252,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
           const to = uciMove.substring(2, 4);
           const promotion = uciMove.substring(4, 5);
 
-          const legalMoves = cache.gameInstance.getVerboseMoves();
+          const legalMoves = cache.gameInstance.getMoves();
           console.log(
             `[LichessGameContext] Processing UCI move: ${uciMove}, from: ${from}, to: ${to}, promotion: ${promotion}`,
           );
@@ -264,7 +264,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
           if (isCastling) {
             console.log(`[LichessGameContext] CASTLING DETECTED: ${uciMove}`);
             console.log(
-              `[LichessGameContext] Current FEN before move: ${cache.gameInstance.toFen()}`,
+              `[LichessGameContext] Current FEN before move: ${cache.gameInstance.getFen()}`,
             );
             console.log(
               `[LichessGameContext] Available castling moves:`,
@@ -303,7 +303,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
               );
               if (isCastling) {
                 console.log(
-                  `[LichessGameContext] FEN after castling: ${cache.gameInstance.toFen()}`,
+                  `[LichessGameContext] FEN after castling: ${cache.gameInstance.getFen()}`,
                 );
               }
               dispatch(makeMove(matchingMove.san));
@@ -340,7 +340,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
               console.error(
                 `[LichessGameContext] Castling rights and position:`,
                 {
-                  fen: cache.gameInstance.toFen(),
+                  fen: cache.gameInstance.getFen(),
                   availableMoves: legalMoves
                     .map((m: any) => `${m.from}-${m.to}`)
                     .slice(0, 10),
@@ -522,7 +522,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
 
       // Validate move against current position
       const cache = moveCacheRef.current;
-      const legalMoves = cache.gameInstance.getVerboseMoves();
+      const legalMoves = cache.gameInstance.getMoves();
       const moveIsLegal = legalMoves.some(
         (m: any) =>
           m.from === from &&

@@ -9,11 +9,11 @@ import {
   StaticPositionSetup,
 } from "../../models/SetupOptions";
 import { setSelectedSetup } from "../../reducers/setups/setups.actions";
-import { BootstrapTheme } from "../controls/ThemeSelector";
+import { BootswatchTheme } from "../controls/ThemeSelector";
 import "./SelectPosition.css";
 
 interface SelectPositionProps {
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
   setFen: (fen: string) => void;
 }
 

@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Move } from "chess.js";
 import { ChessGame } from "../../chess/chessGame";
 import { Position } from "../../types/chess";
 import { STANDARD_FEN } from "../../models/SetupOptions";
 
 export interface ChessGameState {
   fen: string;
-  moves: string[];
+  moves: Move[];
   history: string[];
   positions: Position[];
   currentPositionIndex: number;
@@ -76,7 +77,7 @@ export const chessGameSlice = createSlice({
             game.makeMove(moveText);
           });
         } else {
-          game.loadFen(action.payload.fen);
+          game.setFen(action.payload.fen);
           state.fen = action.payload.fen;
           state.history = [];
           state.positions = [
@@ -102,7 +103,7 @@ export const chessGameSlice = createSlice({
         // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each makeMove
         game.makeMove(action.payload);
 
-        const newFen = game.toFen();
+        const newFen = game.getFen();
         const [, activeColor, , , , fullmoveStr] = state.fen.split(" ");
         const moveNumber = parseInt(fullmoveStr);
         const formattedSan =

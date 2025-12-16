@@ -70,9 +70,9 @@ const MoveControls: React.FC<MoveControlsProps> = ({
   const setMoveInput = (value: string) => {
     if (onExternalMoveInputChange) {
       onExternalMoveInputChange(value);
-      if (onExternalMoveDropdownChange && moves.includes(value)) {
+      if (onExternalMoveDropdownChange && moves.some((m) => m.san === value)) {
         onExternalMoveDropdownChange(value);
-      } else if (onExternalMoveDropdownChange && !moves.includes(value)) {
+      } else if (onExternalMoveDropdownChange && !moves.some((m) => m.san === value)) {
         onExternalMoveDropdownChange("");
       }
     } else {
@@ -110,14 +110,14 @@ const MoveControls: React.FC<MoveControlsProps> = ({
 
         if (currentFen) {
           const game = new ChessGame(currentFen, displayMode);
-          const verboseMoves = game.getVerboseMoves();
+          const legalMoves = game.getMoves();
 
           // Try to find the move - could be SAN (e4) or UCI (e2e4)
-          let matchingMove = verboseMoves.find((m: any) => m.san === move);
+          let matchingMove = legalMoves.find((m) => m.san === move);
 
           if (!matchingMove) {
             // Try as UCI move
-            matchingMove = verboseMoves.find((m: any) => {
+            matchingMove = legalMoves.find((m) => {
               const uci = m.from + m.to + (m.promotion || "");
               return uci === move;
             });
@@ -202,8 +202,8 @@ const MoveControls: React.FC<MoveControlsProps> = ({
             </option>
             {isAtLatestPosition &&
               moves.map((move, index) => (
-                <option key={index} value={move}>
-                  {move}
+                <option key={index} value={move.san}>
+                  {move.san}
                 </option>
               ))}
           </select>

@@ -1,12 +1,12 @@
 import React from "react";
 import "./BoardDisplay.css";
-import { BootstrapTheme } from "../controls/ThemeSelector";
+import { BootswatchTheme } from "../controls/ThemeSelector";
 import { processUnicodeChars, cleanChessPieceUnicode } from "../../utils";
 import { createWhitePieceMapBySymbol } from "../../utils/chessDisplay";
 
 interface BoardDisplayProps {
   board: string;
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
 }
 
 const BoardDisplay: React.FC<BoardDisplayProps> = ({ board, theme }) => {

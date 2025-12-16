@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import type { BootstrapTheme } from "../components/controls/ThemeSelector";
+import type { BootswatchTheme } from "../components/controls/ThemeSelector";
 
-export const useTheme = (initialTheme: BootstrapTheme = "solar") => {
-  const [theme, setTheme] = useState<BootstrapTheme>(() => {
+export const useTheme = (initialTheme: BootswatchTheme = "solar") => {
+  const [theme, setTheme] = useState<BootswatchTheme>(() => {
     const savedTheme = localStorage.getItem("chess-theme");
-    return (savedTheme as BootstrapTheme) || initialTheme;
+    return (savedTheme as BootswatchTheme) || initialTheme;
   });
 
   useEffect(() => {

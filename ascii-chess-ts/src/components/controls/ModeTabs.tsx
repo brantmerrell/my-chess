@@ -1,11 +1,11 @@
 import React from "react";
-import { BootstrapTheme } from "./ThemeSelector";
+import { BootswatchTheme } from "./ThemeSelector";
 
 type SetupMode = "analysis" | "play";
 
 interface ModeTabsProps {
   mode: SetupMode;
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
   onModeChange: (mode: SetupMode) => void;
 }
 

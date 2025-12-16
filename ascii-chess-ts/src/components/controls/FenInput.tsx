@@ -1,12 +1,12 @@
 import React from "react";
 import "./FenInput.css";
-import { BootstrapTheme } from "./ThemeSelector";
+import { BootswatchTheme } from "./ThemeSelector";
 
 interface FenInputProps {
   fen: string;
   onFenChange: (fen: string) => void;
   onSubmitFen: () => void;
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
 }
 
 const FenInput: React.FC<FenInputProps> = ({

@@ -29,10 +29,10 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
 
   const fenHistory = useMemo(() => {
     const game = new ChessGame(state.positions[0].fen);
-    const fens = [game.toFen()];
+    const fens = [game.getFen()];
     state.history.forEach((move: string) => {
       game.makeMove(move);
-      fens.push(game.toFen());
+      fens.push(game.getFen());
     });
     return fens;
   }, [state.positions, state.history]);

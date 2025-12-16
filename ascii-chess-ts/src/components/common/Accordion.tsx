@@ -1,5 +1,5 @@
 import React from "react";
-import { BootstrapTheme } from "../controls/ThemeSelector";
+import { BootswatchTheme } from "../controls/ThemeSelector";
 import "./Accordion.css";
 
 interface AccordionProps {
@@ -7,7 +7,7 @@ interface AccordionProps {
   isExpanded: boolean;
   onToggle: () => void;
   children: React.ReactNode;
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
   className?: string;
 }
 

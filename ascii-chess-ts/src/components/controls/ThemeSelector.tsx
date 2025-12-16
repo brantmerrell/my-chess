@@ -1,8 +1,7 @@
 import React from "react";
 import Selector from "../common/Selector";
 
-// I think BootstrapTheme should be called BootswatchTheme
-export type BootstrapTheme =
+export type BootswatchTheme =
   | "cyborg"
   | "vapor"
   | "journal"
@@ -12,8 +11,8 @@ export type BootstrapTheme =
   | "quartz";
 
 interface ThemeSelectorProps {
-  currentTheme: BootstrapTheme;
-  onThemeChange: (theme: BootstrapTheme) => void;
+  currentTheme: BootswatchTheme;
+  onThemeChange: (theme: BootswatchTheme) => void;
 }
 
 const THEME_OPTIONS = [

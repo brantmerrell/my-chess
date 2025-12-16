@@ -11,23 +11,23 @@ describe("ChessGame Class", () => {
 
   test("makeMove updates the game state correctly", () => {
     chessGame.makeMove("e5");
-    expect(chessGame.toFen()).toBe(
+    expect(chessGame.getFen()).toBe(
       "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
     );
   });
 
-  test("loadFen loads the FEN string correctly", () => {
+  test("setFen loads the FEN string correctly", () => {
     const startingFen =
       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    chessGame.loadFen(startingFen);
-    expect(chessGame.toFen()).toBe(startingFen);
+    chessGame.setFen(startingFen);
+    expect(chessGame.getFen()).toBe(startingFen);
   });
 
   test("undoMove undoes the last move correctly", () => {
-    const originalFen = chessGame.toFen();
+    const originalFen = chessGame.getFen();
     chessGame.makeMove("e5");
     chessGame.undo();
-    expect(chessGame.toFen()).toBe(originalFen);
+    expect(chessGame.getFen()).toBe(originalFen);
   });
 
   test("getLastUCI returns the correct UCI for the last move", () => {

@@ -140,10 +140,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
-    const fens = [game.toFen()];
+    const fens = [game.getFen()];
     chessGameState.history.forEach((move) => {
       game.makeMove(move);
-      fens.push(game.toFen());
+      fens.push(game.getFen());
     });
     return fens;
   }, [chessGameState.positions, chessGameState.history]);
@@ -222,12 +222,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       if (gameState.isPlaying && gameState.gameId) {
         // In Lichess game - use the cache position
         game = getCurrentPosition();
-        verboseMoves = game.getVerboseMoves();
+        verboseMoves = game.getMoves();
         console.log("Using Lichess cache position for move validation");
       } else {
         // In analysis mode - use Redux state
         game = new ChessGame(chessGameState.fen, displayMode);
-        verboseMoves = game.getVerboseMoves();
+        verboseMoves = game.getMoves();
         console.log("Using Redux state position for move validation");
       }
 
@@ -246,7 +246,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           showNotification("It's not your turn", "warning");
         } else {
           // Get the current turn from FEN
-          const fenParts = game.toFen().split(" ");
+          const fenParts = game.getFen().split(" ");
           const currentTurn = fenParts[1]; // 'w' or 'b'
           const turnColor = currentTurn === "w" ? "white" : "black";
 

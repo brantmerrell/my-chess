@@ -15,7 +15,7 @@ export class LiChessPuzzleViewModel {
         ply: 0,
         san: "-",
         uci: "-",
-        fen: game.toFen(),
+        fen: game.getFen(),
       },
     ];
 
@@ -28,7 +28,7 @@ export class LiChessPuzzleViewModel {
       if (movesApplied > this.liChessPuzzleResponse.puzzle.initialPly) {
         break;
       }
-      const lastFen = game.toFen();
+      const lastFen = game.getFen();
       const [, activeColor, , , , fullmoveStr] = lastFen.split(" ");
       const moveNumber = parseInt(fullmoveStr);
 
@@ -42,7 +42,7 @@ export class LiChessPuzzleViewModel {
             ? `${moveNumber}.${move}`
             : `${moveNumber}...${move}`,
         uci: game.getLastUCI(),
-        fen: game.toFen(),
+        fen: game.getFen(),
       });
     }
 
@@ -53,7 +53,7 @@ export class LiChessPuzzleViewModel {
       puzzlePlays: this.liChessPuzzleResponse.puzzle.plays,
       solution: this.liChessPuzzleResponse.puzzle.solution,
       themes: this.liChessPuzzleResponse.puzzle.themes,
-      initialPuzzleFEN: game.toFen(),
+      initialPuzzleFEN: game.getFen(),
       setupHistory,
       fetchStatus: {
         loading: false,

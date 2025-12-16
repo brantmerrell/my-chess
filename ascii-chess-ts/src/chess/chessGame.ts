@@ -1,4 +1,4 @@
-import { Chess } from "chess.js";
+import { Chess, Move } from "chess.js";
 import { PieceDisplayMode, PIECE_SYMBOLS } from "../types/chess";
 export class ChessGame {
   private game: Chess;
@@ -12,19 +12,19 @@ export class ChessGame {
     this.displayMode = displayMode;
   }
   public getMobilityForBothSides(): { white: number; black: number } {
-    const originalFen = this.toFen();
+    const originalFen = this.getFen();
     const [position, activeColor, castling, enPassant, halfMove, fullMove] =
       originalFen.split(" ");
-    const currentMoves = this.getMoves().length;
+    const currentMoveCount = this.getMoves().length;
     const switchedColor = activeColor === "w" ? "b" : "w";
     const switchedFen = `${position} ${switchedColor} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
     try {
       const tempGame = new ChessGame(switchedFen, this.displayMode);
-      const opponentMoves = tempGame.getMoves().length;
+      const opponentMoveCount = tempGame.getMoves().length;
       if (activeColor === "w") {
-        return { white: currentMoves, black: opponentMoves };
+        return { white: currentMoveCount, black: opponentMoveCount };
       } else {
-        return { white: opponentMoves, black: currentMoves };
+        return { white: opponentMoveCount, black: currentMoveCount };
       }
     } catch (error) {
       console.warn(
@@ -32,9 +32,9 @@ export class ChessGame {
         switchedFen,
       );
       if (activeColor === "w") {
-        return { white: currentMoves, black: 0 };
+        return { white: currentMoveCount, black: 0 };
       } else {
-        return { white: 0, black: currentMoves };
+        return { white: 0, black: currentMoveCount };
       }
     }
   }
@@ -82,20 +82,20 @@ export class ChessGame {
     }
     return { white: whitePieces, black: blackPieces };
   }
-  public loadFen(fen: string) {
+  public setFen(fen: string) {
     return this.game.load(fen);
   }
-  public toFen() {
+  public getFen() {
     return this.game.fen();
   }
   public undo() {
     return this.game.undo();
   }
-  public getMoves() {
-    return this.game.moves();
-  }
-  public getVerboseMoves() {
+  public getMoves(): Move[] {
     return this.game.moves({ verbose: true });
+  }
+  public getHistory() {
+    return this.game.history();
   }
   private convertPieces(ascii: string): string {
     if (this.displayMode === "letters") return ascii;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Move } from "chess.js";
 import {
   RootState,
   loadFen,
@@ -18,7 +19,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
   const chessGameState = useSelector((state: RootState) => state.chessGame);
 
   const [state, setState] = useState({
-    moves: [] as string[],
+    moves: [] as Move[],
     selectedMove: "",
     errorMessage: "",
     undoMessage: "",

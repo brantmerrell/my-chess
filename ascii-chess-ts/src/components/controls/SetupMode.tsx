@@ -8,15 +8,15 @@ import TimeControlButtons, {
 import GameStatus from "../lichess-play/GameStatus";
 import GameResult from "../lichess-play/GameResult";
 import UserInfo from "../lichess-play/UserInfo";
-import { BootstrapTheme } from "./ThemeSelector";
+import { BootswatchTheme } from "./ThemeSelector";
 import { useLichessAuth } from "../../hooks/useLichessAuth";
 import { useLichessGame } from "../../contexts/LichessGameContext";
 import { LichessGameLink } from "../lichess-play/LichessGameLink";
 import LichessLogin from "../auth/LichessLogin";
 import "./SetupMode.css";
-type SetupMode = "analysis" | "play";
+type SetupModeType = "analysis" | "play";
 interface SetupModeProps {
-  theme: BootstrapTheme;
+  theme: BootswatchTheme;
   fen: string;
   setFen: (fen: string) => void;
   submitFen: () => void;
@@ -26,7 +26,7 @@ interface SetupModeProps {
   };
   clearNotification: () => void;
 }
-const SetupModeComponent: React.FC<SetupModeProps> = ({
+const SetupMode: React.FC<SetupModeProps> = ({
   theme,
   fen,
   setFen,
@@ -34,7 +34,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   notification,
   clearNotification,
 }) => {
-  const [mode, setMode] = useState<SetupMode>("analysis");
+  const [mode, setMode] = useState<SetupModeType>("analysis");
   const { isAuthenticated, username, logout } = useLichessAuth();
   const { gameState, createSeek, startNewGame, resign } = useLichessGame();
   const handleQuickPairing = async (timeControl: TimeControl) => {
@@ -185,4 +185,4 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
     </div>
   );
 };
-export default SetupModeComponent;
+export default SetupMode;
