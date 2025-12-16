@@ -43,61 +43,31 @@
   font-weight: 600;
 }
 
-/* Theme-specific title colors */
+/* Dark themes */
 .accordion-title--cyborg,
-.accordion-title--darkly,
-.accordion-title--slate,
-.accordion-title--superhero,
 .accordion-title--vapor,
 .accordion-title--solar,
+.accordion-title--superhero,
 .accordion-title--quartz {
-  color: #e2e8f0; /* Light text for dark themes */
+  color: #e2e8f0;
 }
 
-.accordion-title--cerulean,
-.accordion-title--cosmo,
-.accordion-title--flatly,
-.accordion-title--journal,
-.accordion-title--litera,
-.accordion-title--lumen,
-.accordion-title--materia,
-.accordion-title--minty,
-.accordion-title--pulse,
-.accordion-title--sandstone,
-.accordion-title--simplex,
-.accordion-title--sketchy,
-.accordion-title--spacelab,
-.accordion-title--united,
-.accordion-title--yeti {
-  color: #1a202c; /* Dark text for light themes */
-}
-
-/* Header theme-specific styling */
 .accordion-header--cyborg,
-.accordion-header--darkly,
-.accordion-header--slate,
-.accordion-header--superhero,
 .accordion-header--vapor,
 .accordion-header--solar,
+.accordion-header--superhero,
 .accordion-header--quartz {
   color: #e2e8f0;
 }
 
-.accordion-header--cerulean,
-.accordion-header--cosmo,
-.accordion-header--flatly,
+/* Light themes */
+.accordion-title--journal,
+.accordion-title--minty {
+  color: #1a202c;
+}
+
 .accordion-header--journal,
-.accordion-header--litera,
-.accordion-header--lumen,
-.accordion-header--materia,
-.accordion-header--minty,
-.accordion-header--pulse,
-.accordion-header--sandstone,
-.accordion-header--simplex,
-.accordion-header--sketchy,
-.accordion-header--spacelab,
-.accordion-header--united,
-.accordion-header--yeti {
+.accordion-header--minty {
   color: #1a202c;
 }
 
