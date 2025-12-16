@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   Tooltip,
   Legend,
-  annotationPlugin,
+  annotationPlugin
 );
 
 interface SequenceMetricsProps {
@@ -45,15 +45,15 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
       positions
         ? positions.map((pos) => pos.san || `${pos.ply}`)
         : fenHistory.map((_, index) => `${index}`),
-    [positions, fenHistory],
+    [positions, fenHistory]
   );
   const pieceData = useMemo(
     () => fenHistory.map(ChessGame.countPiecesFromFen),
-    [fenHistory],
+    [fenHistory]
   );
   const mobilityData = useMemo(
     () => fenHistory.map(ChessGame.calculateMobilityFromFen),
-    [fenHistory],
+    [fenHistory]
   );
 
   const pointData = useMemo(() => {
