@@ -1,41 +1,44 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../app/hooks";
-import {
-  RootState,
-  goForward,
-  goBackward,
-  goToPosition,
-} from "../../app/store";
+import { PieceDisplayMode } from "../../types/chess";
+import { useMoveHistory } from "../../hooks/useMoveHistory";
 import "./NavigationControls.css";
 
-const NavigationControls: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { positions, currentPositionIndex } = useSelector(
-    (state: RootState) => state.chessGame,
-  );
+interface NavigationControlsProps {
+  displayMode: PieceDisplayMode;
+}
+
+const NavigationControls: React.FC<NavigationControlsProps> = ({
+  displayMode,
+}) => {
+  const {
+    positions,
+    currentPositionIndex,
+    navigateForward,
+    navigateBackward,
+    navigateToPosition,
+  } = useMoveHistory(displayMode);
 
   const canGoBackward = currentPositionIndex > 0;
   const canGoForward = currentPositionIndex < positions.length - 1;
 
   const handleBackward = () => {
     if (canGoBackward) {
-      dispatch(goBackward());
+      navigateBackward();
     }
   };
 
   const handleForward = () => {
     if (canGoForward) {
-      dispatch(goForward());
+      navigateForward();
     }
   };
 
   const handleGoToStart = () => {
-    dispatch(goToPosition(0));
+    navigateToPosition(0);
   };
 
   const handleGoToEnd = () => {
-    dispatch(goToPosition(positions.length - 1));
+    navigateToPosition(positions.length - 1);
   };
 
   return (

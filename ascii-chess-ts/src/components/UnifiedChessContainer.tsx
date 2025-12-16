@@ -669,7 +669,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           </div>
         </div>
       </Accordion>
-      <NavigationControls />
+      <NavigationControls displayMode={displayMode} />
       <MoveControls
         displayMode={displayMode}
         externalMoveInput={moveInput || undefined}

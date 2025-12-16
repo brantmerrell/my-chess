@@ -2,19 +2,14 @@ import "./HistoryTable.css";
 import React, { useEffect, useRef } from "react";
 import { PieceDisplayMode } from "../../types/chess";
 import { Position } from "../../types/chess";
-import { RootState } from "../../app/store";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
-import { useSelector } from "react-redux";
 
 interface HistoryTableProps {
   displayMode: PieceDisplayMode;
 }
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ displayMode }) => {
-  const { positions } = useMoveHistory(displayMode);
-  const currentPositionIndex = useSelector(
-    (state: RootState) => state.chessGame.currentPositionIndex,
-  );
+  const { positions, currentPositionIndex } = useMoveHistory(displayMode);
 
   const tableWrapperRef = useRef<HTMLDivElement>(null);
   const currentRowRef = useRef<HTMLTableRowElement>(null);

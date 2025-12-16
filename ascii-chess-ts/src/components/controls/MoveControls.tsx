@@ -1,8 +1,6 @@
 import React from "react";
 import { PieceDisplayMode } from "../../types/chess";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
 import { ChessGame } from "../../chess/chessGame";
 import "./MoveControls.css";
 
@@ -46,6 +44,9 @@ const MoveControls: React.FC<MoveControlsProps> = ({
     setSelectedMove: setInternalSelectedMove,
     makeSelectedMove,
     undoLastMove,
+    positions,
+    currentPositionIndex,
+    isAtLatestPosition,
   } = useMoveHistory(displayMode);
 
   const selectedMove =
@@ -79,10 +80,6 @@ const MoveControls: React.FC<MoveControlsProps> = ({
     }
   };
 
-  const { currentPositionIndex, positions } = useSelector(
-    (state: RootState) => state.chessGame,
-  );
-  const isAtLatestPosition = currentPositionIndex === positions.length - 1;
   const hasHistory = positions.length > 1;
 
   const handleMoveSubmit = () => {
