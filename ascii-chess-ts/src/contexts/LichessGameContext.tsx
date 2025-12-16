@@ -188,9 +188,9 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const handleEventConnectionChange = useCallback(
-    (connected: boolean, error?: string) => {
-      if (!connected && error) {
-        console.error("Event stream connection error:", error);
+    (connected: boolean, message?: string) => {
+      if (!connected && message && message !== "Connecting...") {
+        console.error("Event stream connection error:", message);
       }
     },
     [],
@@ -634,15 +634,9 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
     [startGameStream],
   );
 
-  // Start event stream when component mounts with reconnection support
+  // Clean up streams on unmount
+  // Note: Event stream connection is disabled while Lichess play is in "Coming Soon" mode
   useEffect(() => {
-    if (lichessAuth.isAuthenticated()) {
-      eventStreamRef.current = lichessGame.streamEvents(
-        handleEvent,
-        handleEventConnectionChange,
-      );
-    }
-
     return () => {
       if (eventStreamRef.current) {
         eventStreamRef.current.close();
@@ -651,7 +645,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
         gameStreamRef.current.close();
       }
     };
-  }, [handleEvent, handleEventConnectionChange]);
+  }, []);
 
   // Create a seek and wait for pairing
   const createSeek = useCallback(
