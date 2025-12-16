@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Chart as ChartJS,
   LineElement,
@@ -40,46 +40,56 @@ const SequenceMetrics: React.FC<SequenceMetricsProps> = ({
 }) => {
   const [selectedMetric, setSelectedMetric] =
     React.useState<MetricType>("piece_count");
-  const labels = positions
-    ? positions.map((pos) => pos.san || `${pos.ply}`)
-    : fenHistory.map((_, index) => `${index}`);
-  const pieceData = fenHistory.map(ChessGame.countPiecesFromFen);
-  const mobilityData = fenHistory.map(ChessGame.calculateMobilityFromFen);
+  const labels = useMemo(
+    () =>
+      positions
+        ? positions.map((pos) => pos.san || `${pos.ply}`)
+        : fenHistory.map((_, index) => `${index}`),
+    [positions, fenHistory],
+  );
+  const pieceData = useMemo(
+    () => fenHistory.map(ChessGame.countPiecesFromFen),
+    [fenHistory],
+  );
+  const mobilityData = useMemo(
+    () => fenHistory.map(ChessGame.calculateMobilityFromFen),
+    [fenHistory],
+  );
 
-  const piecePointValues: { [key: string]: number } = {
-    k: 0,
-    K: 0,
-    q: 9,
-    Q: 9,
-    r: 5,
-    R: 5,
-    b: 3,
-    B: 3,
-    n: 3,
-    N: 3,
-    p: 1,
-    P: 1,
-  };
+  const pointData = useMemo(() => {
+    const piecePointValues: { [key: string]: number } = {
+      k: 0,
+      K: 0,
+      q: 9,
+      Q: 9,
+      r: 5,
+      R: 5,
+      b: 3,
+      B: 3,
+      n: 3,
+      N: 3,
+      p: 1,
+      P: 1,
+    };
 
-  const calculatePointCount = (fen: string) => {
-    const position = fen.split(" ")[0];
-    let whitePoints = 0;
-    let blackPoints = 0;
+    return fenHistory.map((fen) => {
+      const position = fen.split(" ")[0];
+      let whitePoints = 0;
+      let blackPoints = 0;
 
-    for (const char of position) {
-      if (piecePointValues[char] !== undefined) {
-        if (char === char.toUpperCase()) {
-          whitePoints += piecePointValues[char];
-        } else {
-          blackPoints += piecePointValues[char];
+      for (const char of position) {
+        if (piecePointValues[char] !== undefined) {
+          if (char === char.toUpperCase()) {
+            whitePoints += piecePointValues[char];
+          } else {
+            blackPoints += piecePointValues[char];
+          }
         }
       }
-    }
 
-    return { white: whitePoints, black: blackPoints };
-  };
-
-  const pointData = fenHistory.map(calculatePointCount);
+      return { white: whitePoints, black: blackPoints };
+    });
+  }, [fenHistory]);
 
   const getDatasets = () => {
     switch (selectedMetric) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Move } from "chess.js";
 import {
@@ -19,7 +19,6 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
   const chessGameState = useSelector((state: RootState) => state.chessGame);
 
   const [state, setState] = useState({
-    moves: [] as Move[],
     selectedMove: "",
     errorMessage: "",
     undoMessage: "",
@@ -28,23 +27,16 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
 
   const isAtLatestPosition =
     chessGameState.currentPositionIndex === chessGameState.positions.length - 1;
-  useEffect(() => {
+
+  // Compute moves from FEN - memoized to avoid recalculation
+  const moves: Move[] = useMemo(() => {
     try {
       const game = new ChessGame(chessGameState.fen, displayMode);
-      setState((prev) => ({
-        ...prev,
-        moves: game.getMoves(),
-        isProcessing: false,
-        selectedMove: isAtLatestPosition ? prev.selectedMove : "",
-      }));
+      return game.getMoves();
     } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        errorMessage: "Error calculating available moves",
-        isProcessing: false,
-      }));
+      return [];
     }
-  }, [chessGameState.fen, displayMode, isAtLatestPosition]);
+  }, [chessGameState.fen, displayMode]);
 
   const setSelectedMove = (move: string) => {
     if (!isAtLatestPosition) return;
@@ -154,7 +146,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
   };
 
   return {
-    moves: state.moves,
+    moves,
     selectedMove: state.selectedMove,
     errorMessage: state.errorMessage,
     undoMessage: state.undoMessage,

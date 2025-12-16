@@ -1,12 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Move } from "chess.js";
 import { ChessGame } from "../../chess/chessGame";
 import { Position } from "../../types/chess";
 import { STANDARD_FEN } from "../../models/SetupOptions";
 
 export interface ChessGameState {
   fen: string;
-  moves: Move[];
   history: string[];
   positions: Position[];
   currentPositionIndex: number;
@@ -19,7 +17,6 @@ interface LoadFenPayload {
 
 const initialGameState: ChessGameState = {
   fen: STANDARD_FEN,
-  moves: [],
   history: [],
   positions: [
     {
@@ -90,7 +87,6 @@ export const chessGameSlice = createSlice({
           ];
         }
 
-        state.moves = game.getMoves();
         state.currentPositionIndex = state.positions.length - 1;
       } catch (error) {
         console.error("Invalid FEN string or move history", error);
@@ -100,7 +96,6 @@ export const chessGameSlice = createSlice({
     makeMove(state, action) {
       try {
         const game = createGameFromState(state);
-        // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each makeMove
         game.makeMove(action.payload);
 
         const newFen = game.getFen();
@@ -112,7 +107,6 @@ export const chessGameSlice = createSlice({
             : `${moveNumber}...${action.payload}`;
 
         state.fen = newFen;
-        state.moves = game.getMoves();
         state.history.push(action.payload);
         state.positions.push({
           ply: state.positions.length,
@@ -132,37 +126,26 @@ export const chessGameSlice = createSlice({
         state.positions.pop();
         const previousPosition = state.positions[state.positions.length - 1];
         state.fen = previousPosition.fen;
-
-        const game = createGameFromState(state);
-        // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each undoMove
-        state.moves = game.getMoves();
-        state.currentPositionIndex = state.positions.length - 1; // Update index after undo
+        state.currentPositionIndex = state.positions.length - 1;
       }
     },
-    // New navigation actions
     goToPosition(state, action: PayloadAction<number>) {
       const index = action.payload;
       if (index >= 0 && index < state.positions.length) {
         state.currentPositionIndex = index;
-        const game = createGameUpToIndex(state, index);
         state.fen = state.positions[index].fen;
-        state.moves = game.getMoves();
       }
     },
     goForward(state) {
       if (state.currentPositionIndex < state.positions.length - 1) {
         state.currentPositionIndex++;
-        const game = createGameUpToIndex(state, state.currentPositionIndex);
         state.fen = state.positions[state.currentPositionIndex].fen;
-        state.moves = game.getMoves();
       }
     },
     goBackward(state) {
       if (state.currentPositionIndex > 0) {
         state.currentPositionIndex--;
-        const game = createGameUpToIndex(state, state.currentPositionIndex);
         state.fen = state.positions[state.currentPositionIndex].fen;
-        state.moves = game.getMoves();
       }
     },
   },

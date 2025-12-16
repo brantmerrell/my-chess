@@ -11,16 +11,19 @@ export class ChessGame {
     }
     this.displayMode = displayMode;
   }
+  public getMoveCount(): number {
+    return this.game.moves().length;
+  }
   public getMobilityForBothSides(): { white: number; black: number } {
     const originalFen = this.getFen();
     const [position, activeColor, castling, enPassant, halfMove, fullMove] =
       originalFen.split(" ");
-    const currentMoveCount = this.getMoves().length;
+    const currentMoveCount = this.getMoveCount();
     const switchedColor = activeColor === "w" ? "b" : "w";
     const switchedFen = `${position} ${switchedColor} ${castling} ${enPassant} ${halfMove} ${fullMove}`;
     try {
       const tempGame = new ChessGame(switchedFen, this.displayMode);
-      const opponentMoveCount = tempGame.getMoves().length;
+      const opponentMoveCount = tempGame.getMoveCount();
       if (activeColor === "w") {
         return { white: currentMoveCount, black: opponentMoveCount };
       } else {
