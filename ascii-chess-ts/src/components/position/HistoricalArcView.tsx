@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import { ChessGame } from "../../chess/chessGame";
+import { selectFenHistory } from "../../app/selectors";
 import { LinksResponse, ProcessedEdge } from "../../models/LinksResponse";
 import { PieceDisplayMode } from "../../types/chess";
 import { fetchLinks } from "../../services/connector";
@@ -22,20 +21,10 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
       processedEdges: ProcessedEdge[];
     }[]
   >([]);
-  const state = useSelector((state: RootState) => state.chessGame);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const { positions } = useMoveHistory(displayMode);
-
-  const fenHistory = useMemo(() => {
-    const game = new ChessGame(state.positions[0].fen);
-    const fens = [game.getFen()];
-    state.history.forEach((move: string) => {
-      game.makeMove(move);
-      fens.push(game.getFen());
-    });
-    return fens;
-  }, [state.positions, state.history]);
+  const fenHistory = useSelector(selectFenHistory);
 
   useEffect(() => {
     const fetchHistoricalData = async () => {
@@ -110,7 +99,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
         .text(
           index === 0
             ? "Initial Position"
-            : `${positions[index].san} (${positions[index].uci})`,
+            : `${positions[index].san} (${positions[index].uci})`
         );
 
       const segmentSquares = data.linksData.nodes
@@ -158,7 +147,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
               (sourceX + targetX) / 2,
               baseY + arcDirection * arcHeight,
               targetX,
-              baseY,
+              baseY
             );
 
             arcGroup
@@ -167,7 +156,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
               .attr("fill", "none")
               .attr(
                 "stroke",
-                edge.type === "threat" ? "darkred" : "springgreen",
+                edge.type === "threat" ? "darkred" : "springgreen"
               )
               .attr("stroke-width", 1)
               .attr("opacity", 0.6);
@@ -217,7 +206,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
             "stroke-width",
             node.square === destinationSquare || node.square === originSquare
               ? 2
-              : 1,
+              : 1
           );
 
         if (displayMode === "symbols") {
@@ -264,7 +253,7 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
             (originX + destX) / 2,
             midY - arcHeight,
             destX,
-            currentBaseY,
+            currentBaseY
           );
 
           svg

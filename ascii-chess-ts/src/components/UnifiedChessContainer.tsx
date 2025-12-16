@@ -15,7 +15,7 @@ import MoveControls from "./controls/MoveControls";
 import NavigationControls from "./controls/NavigationControls";
 import PieceViewSelector from "./controls/PieceViewSelector";
 import PromotionDialog from "./PromotionDialog";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useAppDispatch } from "../app/hooks";
 import SelectPosition from "./controls/SelectPosition";
 import SetupModeComponent from "./controls/SetupMode";
@@ -137,16 +137,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     setNotificationCallback(showNotification);
     return () => setNotificationCallback(null);
   }, [setNotificationCallback, showNotification]);
-
-  const fenHistory = useMemo(() => {
-    const game = new ChessGame(chessGameState.positions[0].fen);
-    const fens = [game.getFen()];
-    chessGameState.history.forEach((move) => {
-      game.makeMove(move);
-      fens.push(game.getFen());
-    });
-    return fens;
-  }, [chessGameState.positions, chessGameState.history]);
 
   const clearNotification = () => {
     setNotification({ message: "", type: "info" });
@@ -575,13 +565,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       case "history":
         return <HistoryTable displayMode={displayMode} />;
       case "fencount":
-        return (
-          <SequenceMetrics
-            fenHistory={fenHistory}
-            positions={chessGameState.positions}
-            currentPositionIndex={chessGameState.currentPositionIndex}
-          />
-        );
+        return <SequenceMetrics />;
       //case "historicalArc":
       //    return <HistoricalArcView displayMode={displayMode} />;
       default:
