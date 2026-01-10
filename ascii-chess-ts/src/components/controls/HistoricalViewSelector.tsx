@@ -1,5 +1,4 @@
 import React from "react";
-import Selector from "../common/Selector";
 import "./HistoricalViewSelector.css";
 
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./GraphView.css";
 import * as d3 from "d3";
 import {
@@ -76,9 +76,6 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("preserveAspectRatio", "xMidYMid meet");
 
     const g = svg.append("g");
-
-    const margin = 50;
-    const gridSize = Math.min(width - 2 * margin, height - 2 * margin) / 8;
 
     if (showGrid) {
       renderGrid(g, width, height);

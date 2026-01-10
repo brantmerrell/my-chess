@@ -1,14 +1,8 @@
 import "./UnifiedChessContainer.css";
 import Accordion from "./common/Accordion";
-import ArcView from "./position/ArcView";
-import BoardDisplay from "./position/BoardDisplay";
-import ChordDiagram from "./position/ChordDiagram";
 import ConnectionTypeSelector from "./controls/ConnectionTypeSelector";
 import SequenceMetrics from "./history/SequenceMetrics";
-import FenInput from "./controls/FenInput";
 import GraphView from "./position/GraphView";
-import GraphDagView from "./position/GraphDagView";
-import HistoricalArcView from "./position/HistoricalArcView";
 import HistoryTable from "./history/HistoryTable";
 import KeybindingIndicators from "./common/KeybindingIndicators";
 import MoveControls from "./controls/MoveControls";
@@ -17,14 +11,13 @@ import PieceViewSelector from "./controls/PieceViewSelector";
 import PromotionDialog from "./PromotionDialog";
 import React, { useEffect, useMemo } from "react";
 import { useAppDispatch } from "../app/hooks";
-import SelectPosition from "./controls/SelectPosition";
 import SetupModeComponent from "./controls/SetupMode";
 import { HistoricalViewSelector } from "./controls/HistoricalViewSelector";
 import VerticalResizer, {
   VerticalResizerHandle,
 } from "./common/VerticalResizer";
 import { ChessGame } from "../chess/chessGame";
-import { ConnectionType, AdjacenciesResponse } from "../types/visualization";
+import { ConnectionType } from "../types/visualization";
 import { LinksResponse, ProcessedEdge } from "../types/visualization";
 import { PieceDisplayMode } from "../types/chess";
 import {
@@ -34,7 +27,6 @@ import {
   goToPosition,
   makeMove,
 } from "../app/store";
-import { setSelectedSetup } from "../reducers/setups/setups.actions";
 import {
   fetchLinks,
   fetchAdjacencies,
@@ -565,10 +557,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
 
     fetchData();
   }, [chessGameState.fen, connectionType]);
-  const getCurrentBoard = () => {
-    const game = new ChessGame(currentPosition, displayMode);
-    return game.asciiView();
-  };
 
   const renderHistoricalView = () => {
     switch (selectedHistoricalView) {

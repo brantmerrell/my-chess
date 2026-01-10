@@ -134,10 +134,6 @@ export class ChessGame {
       })
       .join("\n");
   }
-  public history() {
-    return this.game.history();
-  }
-
   public getLastUCI(): string {
     const moves = this.game.history({ verbose: true });
     if (moves.length === 0) return "-";
@@ -172,12 +168,3 @@ function asciiSub(
   });
 }
 
-function wrapString(str: string, maxLen: number) {
-  const regex = new RegExp(`(.{1,${maxLen}})(\\s+|.{1,${maxLen}}$)`, "g");
-  const matches = str.match(regex);
-  if (matches) {
-    return matches.join("\n");
-  } else {
-    return "";
-  }
-}

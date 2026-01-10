@@ -79,7 +79,6 @@ ascii-chess-ts/:
             requires: ascii string
             returns: asterisks, symbols, or letters
             supports: ascii accessor
-          history: accessor returning the result of ChessGame's history method (TODO- apply accessor naming convention, ie. getHistory)
           getLastUCI: accessor with logic for acquiring most recent UCI; relies on ChessGame's history method
           ascii: accessor that uses ChessGame's ascii and convertPieces methods to support asciiView (TODO- naming convention; also seems redundant)
           asciiView: uses ChessGame's ascii method and the local asciiSub helper method to return boardLines
@@ -87,10 +86,6 @@ ascii-chess-ts/:
           requires: patternAscii, replacementAscii, asciiLines array
           uses: RegExp class, .map() method, string .replace method
           returns: modified asciiLines array
-        wrapString:
-          requires: string to wrap and the maxLength of the string
-          uses: RegExp class, string match method
-          returns: newline-separated string
     components/:
       auth/:
         AuthCallback.css:
@@ -770,7 +765,6 @@ ascii-chess-ts/:
           handleMoveAttempt: validates and executes moves via drag-drop or input
           handleGlobalKeyDown effect: keyboard shortcuts (vim-style navigation, controls)
           fetchData effect: fetches graph data based on connectionType
-          getCurrentBoard: creates ChessGame and returns asciiView
           renderHistoricalView: renders HistoryTable or SequenceMetrics
           jsx:
             - SetupMode
@@ -992,14 +986,6 @@ ascii-chess-ts/:
               fetchStatus:
                 loading: false
                 error: null
-      LinksResponse.ts:
-        TODO: rename file because LinksResponse is one of only 6 exports
-        LinkNode: extension of d3 library's SimulationNodeDatum; new properties are square, piece_type, color, x, y, fx, and fy
-        LinkEdge: extension of d3 library's SimulationLinkDatum; new properties are type, source, and target
-        LinksResponse: list of LinkNode, list of LinkEdge
-        ProcessedEdge: source, target, type
-        EdgeSource: square (why wrap a single string?)
-        EdgeData: source, target, type (why make string and EdgeSource both options?)
       SetupOptions.ts:
         ChessSetup: abstract class with constructor accepting id, displayName, category and an abstract load method
         StaticPositionSetup:
@@ -1214,11 +1200,6 @@ ascii-chess-ts/:
         calculateNodeCheckStatus: checks if king node is under threat
         getNodeFontSize: returns font size based on displayMode and showGrid
         getNodeTextPositioning: returns dy positioning based on displayMode and showGrid
-      pieceDisplay.ts:
-        PIECE_TO_FILLED_SYMBOL: maps all piece letters to filled unicode
-        getPieceDisplay: converts piece to display character based on mode
-        isPieceWhite: checks if piece is uppercase
-        getPieceColor: returns "white" or "black" based on piece case
     utils.ts:
       findIndexWithinRank: finds string index of square within FEN rank string
       findIndexOfRank: finds starting index of rank in FEN position string

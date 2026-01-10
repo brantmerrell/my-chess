@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../app/hooks";
 import {
   RootState,
   loadFen,
@@ -14,7 +15,7 @@ import { PieceDisplayMode } from "../types/chess";
 import { Position } from "../types/chess";
 
 export const useMoveHistory = (displayMode: PieceDisplayMode) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
 
   const [state, setState] = useState({

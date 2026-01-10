@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { ChessGame } from "../../chess/chessGame";
-import { LinksResponse, ProcessedEdge } from "../../models/LinksResponse";
+import { LinksResponse, ProcessedEdge } from "../../types/visualization";
 import { PieceDisplayMode } from "../../types/chess";
 import { fetchLinks } from "../../services/connector";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
