@@ -1,0 +1,22 @@
+hooks:
+  useMoveHistory.ts:
+    ChessGame: imported from ../chess/chessGame (but wrong casing)
+    chessGameState: selector hook initialized with state.chessGame
+reducers:
+  positions:
+    positions.reducers.ts:
+      ChessGame: imported from ../chess/chessGame (but wrong casing)
+      chessGameSlice:
+        name: chessGame
+components:
+  list:
+    - controls/MoveControls.tsx
+    - controls/NavigationControls.tsx
+    - history/HistoryTable.tsx
+    - history/HistoricalArcView.tsx
+    - UnifiedChessContainer.tsx
+  description: use imported state and selector hook to create constants currentPositionIndex and positions
+app:
+  store.ts:
+    rootReducer:
+      chessGame: chessGameSlice.reducer (how does this work?)

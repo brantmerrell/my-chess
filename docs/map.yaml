@@ -1,0 +1,1254 @@
+ascii-chess-ts/:
+  d2/:
+  public/:
+  src/:
+    app/:
+      hooks.ts:
+        useAppDispatch: wraps react-redux's dispatch hook using store's AppDispatch type
+        useAppSelector: assigns store's RootState type using react-redux's typed selector hook
+      selectors.ts:
+        selectChessGame: base selector for chessGame state
+        selectPositions: base selector for positions array
+        selectHistory: base selector for history array
+        selectCurrentPositionIndex: base selector for current position index
+        selectFenHistory:
+          uses: createSelector memoization
+          requires: selectPositions, selectHistory
+          returns: array of FEN strings for each position
+        selectPieceData:
+          uses: createSelector, ChessGame.countPiecesFromFen
+          returns: memoized piece counts for all positions
+        selectMobilityData:
+          uses: createSelector, ChessGame.calculateMobilityFromFen
+          returns: memoized mobility data for all positions
+        selectPointData:
+          uses: createSelector, piecePointValues map
+          returns: memoized point counts (white/black) for all positions
+        selectIsAtLatestPosition:
+          uses: createSelector
+          returns: boolean comparing currentIndex to positions length
+      store.ts:
+        rootReducer:
+          chessGame: chessGameSlice.reducer
+          liChessPuzzle: liChessPuzzleSlice.reducer
+          chessComPuzzle: chessComPuzzleSlice.reducer
+          selectedSetup: selectedSetupReducer
+        store:
+          reducer: rootReducer
+        chessGameSlice.actions:
+          - loadFen
+          - makeMove
+          - undoMove
+          - goToPosition
+          - goForward
+          - goBackward
+        AppDispatch: typeof store.dispatch
+        RootState: ReturnType of type store.getState
+    chess/:
+      chessGame.test.ts:
+        - ChessGame Class makeMove method updates the game state correctly
+        - ChessGame Class setFen loads the FEN string correctly
+        - ChessGame Class undoMove undoes the last move correctly
+        - ChessGame Class getLastUCI returns the correct UCI for the last move
+        - ChessGame Class asciiView returns the correct ASCII representation of the board
+      chessGame.ts:
+        ChessGame:
+          getMobilityForBothSides:
+            requires: white and black number parameters
+            uses: getFen, getMoves, ChessGame class
+            returns: an object of white and black move counts
+          calculateMobilityFromFen:
+            requires: fen string
+            uses: ChessGame's getMobilityForBothSides method
+            returns: untyped object with 3 counts - totalMoves, white, and black
+          setDisplayMode: accessor connecting input PieceDisplayMode to instance PieceDisplayMode
+          makeMove:
+            requires: PGN string
+            uses: ChessGame's move method
+            returns: the result of the ChessGame.move method (with no type specification)
+          countPiecesFromFen:
+            requires: FEN string
+            uses: hardcoded regex and iteration logic
+            returns: an untyped object with white and black counts
+          setFen: loads FEN string into game instance
+          getFen: returns current FEN string from game instance
+          undo: calls ChessGame instance's undo method and returns result
+          getMoves: returns Move[] (verbose moves with from, to, san, promotion, etc.)
+          getHistory: returns array of SAN moves from game history
+          convertPieces:
+            requires: ascii string
+            returns: asterisks, symbols, or letters
+            supports: ascii accessor
+          history: accessor returning the result of ChessGame's history method (TODO- apply accessor naming convention, ie. getHistory)
+          getLastUCI: accessor with logic for acquiring most recent UCI; relies on ChessGame's history method
+          ascii: accessor that uses ChessGame's ascii and convertPieces methods to support asciiView (TODO- naming convention; also seems redundant)
+          asciiView: uses ChessGame's ascii method and the local asciiSub helper method to return boardLines
+        asciiSub:
+          requires: patternAscii, replacementAscii, asciiLines array
+          uses: RegExp class, .map() method, string .replace method
+          returns: modified asciiLines array
+        wrapString:
+          requires: string to wrap and the maxLength of the string
+          uses: RegExp class, string match method
+          returns: newline-separated string
+    components/:
+      auth/:
+        AuthCallback.css:
+          - .auth-callback
+          - .auth-callback__title
+          - .auth-callback__icon
+          - .auth-callback__subtitle
+          - .auth-callback__error-message
+          - .auth-callback__redirect-notice
+          - .auth-callback__title--success
+          - .auth-callback__title--error
+          - .cyborg .auth-callback__title
+          - .cyborg .auth-callback__title--success
+          - .cyborg .auth-callback__title--error
+          - .vapor .auth-callback__title
+          - .vapor .auth-callback__title--success
+          - .vapor .auth-callback__title--error
+          - .solar .auth-callback__title
+          - .solar .auth-callback__title--success
+          - .solar .auth-callback__title--error
+          - .superhero .auth-callback__title
+          - .superhero .auth-callback__title--success
+          - .superhero .auth-callback__title--error
+        AuthCallback.tsx:
+          AuthCallBack:
+            navigate: navigate hook from react-router-dom library
+            status and setStatus: state hook that recognizes strings for processing, success, and error (TODO- wrap in type)
+            errorMessage and setErrorMessage: state hook
+            effect hook on navigate:
+              handleCallback: calls lichessAuth's handleCallback function; uses setStatus and setErrorMessage in wrapper logic
+            jsx:
+              auth-callback:
+                processing: notifies user that authentication is pending
+                success: notifies user that authentication succeeded and automatic redirecting is occurring
+                error: notifies user that authentication failed and automatic redirecting is occurring
+        LichessLogin.css:
+          - .lichess-login
+          - .lichess-login__loading
+          - .lichess-login__icon
+          - .lichess-login__text
+          - .lichess-login__username
+          - .lichess-login__logout-btn
+          - .lichess-login__logout-btn:hover
+          - .lichess-login__not-logged-in
+          - .lichess-login__login-btn
+          - .lichess-login__login-btn:hover
+          - .cyborg .lichess-login
+          - .cyborg .lichess-login__text
+          - .cyborg .lichess-login__not-logged-in
+          - .vapor .lichess-login
+          - .vapor .lichess-login__text
+          - .vapor .lichess-login__not-logged-in
+          - .solar .lichess-login
+          - .solar .lichess-login__text
+          - .solar .lichess-login__not-logged-in
+          - .superhero .lichess-login
+          - .superhero .lichess-login__text
+          - .superhero .lichess-login__not-logged-in
+        LichessLogin.tsx:
+          LichessLoginProps: just has one property - an optional onAuthChange boolean (TODO- improve this description)
+          LichessLogin:
+            onAuthChange: optional boolean defined in LichessLoginProps
+            ../../hooks/useLichessAuth: isAuthenticated, username, loading, login, logout
+            useEffect:
+              effect: connects the isAuthenticated state to the onAuthChange prop
+              listens: isAuthenticated, onAuthChange
+            jsx loading: displays "Loading..." if useLichessAuth state's loading is truthy
+            jsx:
+              lichess-login: if isAuthenticated, display username and option to logout; else display option to log in
+      common/:
+        Accordion.css: TODO- refactor 121 lines of highly redundant css
+        Accordion.tsx:
+          AccordionProps: title, isExpanded, onToggle, children, theme, className
+          Accordion:
+            jsx:
+              header button: toggles on click, uses regex replacement on title (why?), displays "accordion" if title type is not string (why?)
+              content div: sets id with (near?) identical logic as title (why?)
+        KeybindingIndicators.css:
+          - .keybinding-indicators
+          - .keybinding-indicators:hover
+          - .keybinding-header
+          - .keybinding-list
+          - .keybinding-item
+          - .keybinding-key
+          - .keybinding-description
+        KeybindingIndicators.tsx:
+          KeybindingIndicatorsProps: onDismiss (what does this do?)
+          keybindings:
+            j: Scroll down
+            k: Scroll up
+            \]: Zoom in
+            \[: Zoom out
+            f: focus position selector
+            F: focus FEN input
+            ?: Toggle shortcuts panel
+            Esc: Unfocus current element
+          jsx:
+            keybinding-indicators:
+              header: Other Shortcuts
+              list: keybindings.map
+        Selector.tsx:
+          SelectorOption: value and label properties
+          SelectorProps: id, label, value, onChange, options, ariaLabel, className
+          Selector:
+            jsx:
+              selector-label: displays label
+              selector-container:
+                select:
+                  aria-label: label or "Selector"
+                  onKeyDown e:
+                    - preventDefault
+                    - showPicker or simulate click
+                  options.map: values and labels
+                  questions:
+                    - why selectElement.click() in `catch` and `else`?
+        SelectStyle.css:
+          - .selector-container
+          - .selector-wrapper
+          - .selector-label
+          - .select-control
+          - select.select-control.btn
+          - select.select-control.btn:focus
+        VerticalResizer.css:
+          - .vertical-resizer-container
+          - .vertical-resizer-content
+          - .vertical-resizer-handle
+          - .vertical-resizer-handle:hover
+          - .vertical-resizer-handle.dragging
+          - .vertical-resizer-grip
+          - .vertical-resizer-grip::before
+          - .vertical-resizer-handle:hover .vertical-resizer-grip::before
+          - .vertical-resizer-handle.dragging .vertical-resizer-grip::before
+          - "@media (max-width) {.vertical-resizer-container, .vertical-resizer-handle}"
+        VerticalResizer.tsx:
+          VerticalResizerProps: children, initialHeight, minHeight, maxHeight
+          VerticalResizerHandle: increaseHeight, decreaseHeight, setHeight
+          VerticalResizer:
+            height state hook: height, setHeight
+            dragS state hook: isDragging, setIsDragging
+            containerRef: ref hook
+            useImperativeHandle:
+              requires: ref, increaseHeight amount, decreaseHeight amount, setHeight
+              mechanism: defined by react
+              listen: minHeight, maxHeight
+              questions: what does this thing even do?
+            handleMouseDown:
+              preventDefault:
+              setIsDragging: true
+              listens: \[] (?)
+            handleMouseMove:
+              MouseEvent:
+                - if isDragging, define and set new height
+              listens: isDragging, minHeight, maxHeight
+            handleMouseUp:
+              setIsDragging: true
+              listens: \[] (?)
+            useEffect:
+              if isDragging:
+                - add and remove event listeners for mousemove, mouseup
+                - define cursor and userSelect as ns-resize and none (why?)
+                - return cursor and userSelect as empty strings
+              listens: isDragging, handleMouseMove, handleMouseUp
+            jsx:
+              vertical-resizer-container: what does this do?
+      controls/:
+        ConnectionTypeSelector.tsx:
+          ConnectionTypeSelectorProps: connectionType, onConnectionTypeChange
+          CONNECTION_TYPE_OPTIONS: none, adjacencies, links, king_box
+          ConnectionTypeSelector:
+            jsx:
+              form-group:
+                label: ConnectionType
+                radio group: CONNECTION_TYPE_OPTIONS.map
+        FenInput.css:
+          - .fen-layout
+          - .fen-controls
+          - #edit-string
+          - .fen-input--quartz
+          - #submitFen
+        FenInput.tsx:
+          FenInputProps: fen, onFenChange, onSubmitFen, theme
+          FenInput:
+            jsx:
+              input: fen string
+              button: Submit FEN
+        HistoricalViewSelector.css:
+          - .selector-wrapper
+          - .selector-label
+          - .selector-container
+          - .select-control
+          - .select-control:focus
+          - .select-control:hover
+          - .select-control option
+          - .select-control::-ms-expand
+          - .select-control
+          - .historical-view-button-group
+          - .historical-view-button
+          - .historical-view-button:hover
+          - .historical-view-button:active
+        HistoricalViewSelector.tsx:
+          HistoricalViewType: history, fencount
+          HistoricalViewSelectorProps: selectedView, onViewChange
+          HISTORICAL_VIEW_OPTIONS: history, fencount
+          HistoricalViewSelector:
+            jsx:
+              label: Historical View
+              buttons: HISTORICAL_VIEW_OPTIONS.map
+        ModeTabs.tsx:
+          ModeTabsProps: mode, theme, onModeChange
+          ModeTabs:
+            - analysis
+            - active
+        MoveControls.css:
+          - .moves-layout
+          - .moves-forward
+          - .moves-buttons
+          - #selectedMove
+          - #selectedMove:focus
+          - #selectedMove:disabled
+          - #move
+          - #move:focus
+          - #move:disabled
+          - #move:disabled::placeholder
+          - #submitMove
+          - #submitMove:hover:not
+          - #submitMove:active:not
+          - #submitMove:disabled
+          - #undo
+          - #undo .keybinding
+          - #undo:focus
+          - #submitMove:focus
+          - #undo:hover:not(:disabled)
+          - #undo:active:not(:disabled)
+          - #undo:disabled
+          - .move-error
+          - .undo-message
+          - \@media(max-width) .moves-layout, .moves-forward, #selectedMove, #move, #submitMove, #undo, #undo (TODO- dedupliate)
+        MoveControls.tsx:
+          GameState:
+            - gameId
+            - isPlaying
+            - color
+            - opponentName
+            - status
+            - timeLeft
+          MoveControlsProps:
+            - displayMode
+            - externalMoveInput
+            - externalMoveDropdown
+            - onExternalMoveInputChange
+            - onExternalMoveDropdownChange
+            - onMoveAttempt
+            - gameState
+          MoveControls:
+            useMoveHistory:
+              requires: displayMode
+              defines: moves (Move[]), selectedMove, errorMessage, undoMessage, setSelectedMove, makeSelectedMove, undoLastMove, positions, currentPositionIndex, isAtLatestPosition
+            selectedMove: externalMoveDrop or internalSelectedMove
+            moveInput: externalMoveInput or selectedMove
+            setSelectedMove: updates internal or external state based on props
+            setMoveInput: updates input and syncs with dropdown if move.san matches
+            handleMoveSubmit: wraps handleMove in conditional logic (TODO- deduplicate)
+            handleKeyDown: wraps handleMove in conditional logic (TODO- deduplicate)
+            handleMove:
+              - get current FEN from redux state
+              - initialize new ChessGame with currentFen and displayMode
+              - uses ChessGame's getMoves method to find matchingMove by SAN
+              - uses ChessGame's getMoves method to find matchingMove by UCI
+              - uses onMoveAttempt callback if provided
+              - passes move to makeSelectedMove for local state update
+            handleUndoMove: wraps undoLastMove with requirement that isAtLatestPosition be false
+            jsx:
+              TODO: deduplicate titles
+              moves-forward:
+                selectedMove select:
+                  title: '"Navigate to latest position to make moves" or "Select a move (c)"'
+                  onKeyDown: space or enter results in showPicker or click (there are two click calls - one in the catch and one in the else. Are they both necessary?)
+                  option: first option is '"Sele(c)t" or "Navigate to latest position"'
+                  options: additional options derived from moves.map
+                move input:
+                  title: '"Navigate to latest position to make moves" or "Enter a move (M)"'
+                  placeholder: '"(M)ove" or empty string'
+                submitMove button:
+                  title: '"Navigate to latest position to make moves" or "Submit move"'
+                  text: Submit Move
+              moves-buttons:
+                undo:
+                  disabled: if either isAtLatestPosition or hasHistory are false
+                  title: '"Navigate to latest position to undo moves" or "No moves to undo" or "Undo last move (u)"'
+                  text: Undo Move
+              undo-message: displays undoMessage if undoMessage exists (depends on useMoveHistory)
+              move-error: displays errorMessage if errorMessage exists (depends on useMoveHistory)
+        NavigationControls.css:
+          - .navigation-controls
+          - .navigation-buttons
+          - .nav-button
+          - .nav-button .keybinding
+          - .nav-button:focus
+          - .start-button
+          - .backward-button
+          - .forward-button
+          - .end-button
+          - .nav-button:hover:not(:disabled)
+          - .nav-button:disabled
+          - .position-indicator
+          - .navigation-controls
+          - \@media - .navigation-buttons, .nav-button, .position-indicator
+        NavigationControls.tsx:
+          NavigationControlsProps: displayMode (PieceDisplayMode)
+          NavigationControls:
+            useMoveHistory:
+              requires: displayMode
+              defines: positions, currentPositionIndex, navigateForward, navigateBackward, navigateToPosition
+            canGoBackward: depends whether currentPositionIndex > 0
+            canGoForward: depends whether currentPositionIndex < length (-1 for zero-index adjustment)
+            handleBackward: calls navigateBackward if canGoBackward
+            handleForward: calls navigateForward if canGoForward
+            handleGoToStart: calls navigateToPosition(0)
+            handleGoToEnd: calls navigateToPosition(positions.length - 1)
+            jsx:
+              ⏮: handleGoToStart
+              ◀: handleBackward
+              position-indicator: currentPositionIndex / zero-indexed length
+              ▶: handleForward
+              ⏭: handleGoToEnd
+        PieceViewSelector.css:
+          - .piece-view-button-group
+          - .piece-view-button
+          - .piece-view-button:hover
+          - .piece-view-button.active
+          - .piece-view-button.large
+        PieceViewSelector.tsx:
+          PieceViewSelectorProps: displayMode, onDisplayModeChange derived from chess types
+          PIECE_VIEW_OPTIONS: full, symbols, letters, masked (TODO- refactor to avoid duplicating definitions)
+          PieceViewSelector:
+            jsx:
+              label: Piece View
+              piece-view-button-group: PIECE_VIEW_OPTIONS.map
+        SelectPosition.css:
+          - body {.start-fen}
+          - .position-layout
+          - .position-select
+          - .position-select--quartz
+          - .position-select:focus
+          - .position-select:hover
+          - .position-select option
+          - .position-select::-ms-expand
+          - \@media .position-layout
+        SelectPosition.test.tsx:
+          - renders SelectPositionComponent
+          - changes selected setup on option change
+        SelectPosition.tsx:
+          SelectPositionProps: theme, setFen
+          SelectPosition:
+            dispatch: useAppDispatch from custom hooks
+            useSelector:
+              defines: selectedSetup
+              requires: RootState
+            handleOptionChange: what does this logic do?
+            jsx:
+              position-selector: what does this logic do?
+        SetupMode.css:
+          - :root
+          - .cyborg
+          - .vapor
+          - .solar
+          - .superhero
+          - .quartz
+          - .journal
+          - .setup-mode-container
+          - .mode-tabs
+          - .tab
+          - .tab:hover
+          - .tab.active
+          - .analysis-controls
+          - .play-controls
+          - .auth-required
+          - .auth-required
+          - .play-status-row
+          - .status-stack
+          - .user-info
+          - .quick-pairing
+          - .quick-pairing-row
+          - .quick-pairing-label
+          - .time-control-buttons
+          - .time-control-btn
+          - .time-control-btn:hover:not(:disabled)
+          - .time-control-btn:disabled
+          - .btn-info
+          - .btn-info:hover:not(:disabled)
+          - .btn-primary
+          - .btn-primary:hover:not(:disabled)
+          - .btn-danger
+          - .btn-danger:hover:not(:disabled)
+          - .btn-success
+          - .btn-sm
+          - .btn-success:hover
+          - .game-status-compact
+          - .game-active
+          - .seeking-status-compact
+          - .game-result-compact
+          - .result-icon
+          - .result-outcome
+          - .result-outcome.win
+          - .result-outcome.loss
+          - .result-outcome.draw
+          - .result-reason
+          - .game-notification
+          - .notification-icon
+          - .notification-text
+          - .notification-close
+          - .notification-close:hover
+          - .game-notification-error
+          - .game-notification-warning
+          - .game-notification-success
+          - .game-notification-info
+        SetupMode.tsx:
+          SetupModeType: analysis or play
+          SetupModeProps: theme (BootswatchTheme), fen, setFen, submitFen, notification, clearNotification
+          SetupMode:
+            useState: defines mode and setMode of type SetupModeType defaulting to analysis
+            useLichessAuth:
+              definition: ../../hooks/useLichessAuth.ts
+              defines: isAuthenticated, username, logout
+            useLichessGame:
+              definition: ../../contexts/LichessGameContext.ts
+              defines: gameState, createSeek, startNewGame, resign
+            handleQuickPairing: wraps createSeek
+            handleResign: wraps resign
+            jsx:
+              ModeTabs:
+              analysis-controls:
+              play-controls: temporary overlay, auth conditions,
+        ThemeSelector.css:
+          - .theme-selector-wrapper
+          - .theme-selector-container
+          - .theme-selector .select-control
+        ThemeSelector.tsx:
+          BootswatchTheme: cyborg, vapor, journal, solar, superhero, minty, quartz
+          ThemeSelectorProps: currentTheme, onThemeChange (both use BootswatchTheme type)
+          THEME_OPTIONS: maps BootswatchTheme values to labels
+          ThemeSelector:
+            jsx: passes props and options to Selector from ../common/Selector.ts
+      history/:
+        HistoryTable.css: TODO- refactor these 193 lines of css
+        HistoryTable.tsx:
+          HistoryTableProps: displayMode
+          HistoryTable:
+            useMoveHistory:
+              requires: displayMode
+              defines: positions, currentPositionIndex
+            tableWrapperRef: Ref hook of type HTMLDivElement
+            currentRowRef: Ref hook of type HTMLTableRowElement
+            useEffect:
+              effect: centers position
+              listens: currentPositionIndex
+            jsx:
+              header: Move History, Position
+              table: positions.map,
+        SequenceMetrics.tsx:
+          ChartJS.register: registers chart.js components
+          MetricType: fen_length, piece_count, mobility, point_count
+          SequenceMetrics:
+            useSelector with memoized selectors:
+              - selectFenHistory: memoized FEN history from positions/history
+              - selectPieceData: memoized piece counts per position
+              - selectMobilityData: memoized mobility per position
+              - selectPointData: memoized point counts per position
+              - positions and currentPositionIndex from chessGame state
+            useState: selectedMetric, setSelectedMetric of type MetricType
+            labels: maps positions into SAN, ply, index
+            getDatasets:
+              switch selectedMetric:
+                fen_length: fenHistory.map of fen.length
+                piece_count: pieceData by color w/ diff
+                point_count: pointData by color w/ diff
+                mobility: mobilityData by color w/ diff
+                default: empty array
+            data: combines labels with getDataSets
+            options: responsive, scales, plugins (annotations, legend, tooltip)
+            jsx:
+              - Metric selector buttons
+              - Line chart
+      lichess-play/:
+        ConnectionStatus.css:
+          - .connection-status
+          - .connection-status__icon
+          - .connection-status__text
+          - .connection-status--connected
+          - .connection-status--connecting
+          - .connection-status--disconnected
+          - .connection-status--error
+          - \@keyframes pulse (what does this do?)
+        ConnectionStatus.tsx:
+          ConnectionStatusProps:
+            connectionStatus: connected, connecting, disconnected, error
+            connectionError: optional string
+          ConnectionStatus:
+            getStatusIcon: maps connection status to colored circles (why a function though?)
+            getStatusText: maps connection status to display messages (why a function though?)
+            jsx: displays colored circles and text based on connection status
+        GameResult.tsx:
+          GameResultProps:
+            result: win, loss, draw
+            reason: mate, resign, timeout, draw, stalemate, insufficient, abort, unknown
+            onNewGame: arrow function undefined (why?)
+          GameResult:
+            reasonDisplayMap: mate to checkmate, draw to agreement, etc.
+            jsx: displays whether the game was won, lost, or drawn
+        GameStatus.tsx:
+          GameStatusProps: color, opponentName, status, timeLeft, notification, onResign, onClearNotification
+          GameStatus:
+            jsx:
+              - game-active
+              - players
+              - status
+              - time left
+        LichessGameLink.css: TODO- refactor the 126 lines of css here
+        LichessGameLink.tsx:
+          LichessGameLinkProps: gameUrl, gameId, isPlaying
+          LichessGameLink:
+            handleClick: passes gameUrl to window.open
+            handleCopy: passes gameUrl to navigator.clipboard.writeText
+            jsx:
+              actions:
+                - open game on lichess
+                - copy game linke
+              game id: game ID
+        TimeControlButtons.tsx:
+          TimeControlButtonsProps: onTimeControlSelect, disabled
+          TimeControlButtons:
+            timeControls:
+              - 10+0 Rapid
+              - 10+5 Rapid
+              - 15+10 Rapid
+              - 30+0 Classical
+              - 30+20 Classical
+            jsx:
+              - quick-pairing label
+              - timeControls.map
+        UserInfo.tsx:
+          UserInfoProps: username, connectionStatus, connectionError, onLogout
+          UserInfo:
+            jsx:
+              div:
+                - Playing as
+                - Logout button
+              ConnectionStatus: from neighboring component
+      position/:
+        ArcView.css:
+          - .arc-view-container
+          - .arc-view-controls
+          - .arc-view-svg-container
+          - .arc-view-svg
+        ArcView.tsx:
+          ArcViewProps: linksData, processedEdges, displayMode
+          ColorScheme: file or rank
+          ArcView:
+            fileColors: maps files (a-h) to colors
+            rankColors: maps ranks (1-8) to colors
+            getNodeColor: returns color based on colorScheme
+            useEffect: d3-based arc visualization with nodes and arcs
+            jsx: VisualizationContainer with color scheme selector and svg
+        BoardDisplay.css:
+          - .board-display
+          - .ascii-board variants for each theme
+        BoardDisplay.tsx:
+          BoardDisplayProps: board, theme
+          BoardDisplay:
+            whitePieceMap: uses createWhitePieceMapBySymbol
+            processChar: converts chess unicode to styled spans
+            processRow: maps characters through processChar
+            jsx: renders ASCII board with themed styling
+        ChordDiagram.css:
+          - .chord-diagram-container
+          - .chord-diagram
+        ChordDiagram.tsx:
+          ChordDiagramProps: nodes, edges
+          ExtendedChordGroup: extends d3.ChordGroup with angle
+          ChordDiagram:
+            useEffect: d3-based chord diagram with matrix, ribbons, and labels
+            jsx: visualization-container with svg element
+        GraphDagView.tsx:
+          GraphDagViewProps: edges, theme
+          GraphDagView:
+            asciiArt state: stores ASCII art from API
+            loading/error states: for API status
+            useEffect: fetches graphdag visualization from connector service
+            jsx: displays ASCII DAG representation of edges
+        GraphGrid.ts:
+          renderGrid: draws 8x8 chess grid lines using d3
+          renderCoordinates: draws file (a-h) and rank (1-8) labels with flip support
+        GraphNodes.ts:
+          SimulationNode: LinkNode with d3 simulation properties
+          SimulationLink: source, target, type
+          renderNodes:
+            requires: g selection, visibleNodes, links, displayMode, showGrid, dragBehavior
+            uses: calculateNodeCheckStatus, getNodeFontSize, getPieceDisplay
+            returns: d3 selection of node groups with circles and text
+          renderPhantomMarkers:
+            requires: g selection, phantomNodes, links
+            returns: d3 selection of phantom square markers
+        GraphView.css:
+          - .graph-view-container
+          - .graph-view
+        GraphView.tsx:
+          GraphViewProps: linksData, processedEdges, displayMode, showGrid, flipBoard, onMoveAttempt
+          GraphView:
+            svgRef, containerRef: ref hooks for SVG and container
+            dimensions state: width/height for responsive sizing
+            useEffect resize: ResizeObserver for container resizing
+            useEffect render: d3-based graph with nodes, links, grid, drag behavior
+            dragBehavior: supports piece dragging for moves when showGrid is true
+            jsx: VisualizationContainer with svg element
+        HistoricalArcView.css:
+          - .historical-arc-view
+          - .historical-arc-header
+          - .historical-arc-wrapper
+          - .historical-arc-content
+        HistoricalArcView.tsx:
+          HistoricalArcViewProps: displayMode
+          HistoricalArcView:
+            historicalData state: array of linksData/processedEdges per position
+            useMoveHistory: gets positions
+            useSelector: gets fenHistory from selectors
+            useEffect fetch: fetches links data for each FEN in history
+            useEffect render: d3-based multi-segment arc visualization
+            jsx: scrollable view of historical move arcs
+        VisualizationContainer.css:
+          - .visualization-container
+          - .visualization-container--centered
+          - .visualization-container--with-padding
+        VisualizationContainer.tsx:
+          VisualizationContainerProps: children, className, centered, withPadding
+          VisualizationContainer:
+            uses: forwardRef for ref forwarding
+            jsx: div wrapper with conditional CSS classes
+      PromotionDialog.css:
+        - .promotion-overlay
+        - .promotion-dialog
+        - .promotion-options
+        - .promotion-button
+        - .promotion-piece-symbol
+        - .promotion-move-notation
+        - .promotion-cancel
+      PromotionDialog.tsx:
+        PromotionDialogProps: isOpen, moves, onSelect, onCancel, color
+        PromotionDialog:
+          pieceSymbols: maps q/r/b/n to unicode by color
+          pieceNames: maps q/r/b/n to full names
+          jsx: overlay with promotion piece buttons and cancel
+      UnifiedChessContainer.css:
+        - .chess-container
+        - .main-content
+        - .positional-section
+        - .historical-section
+        - .view-controls-container
+      UnifiedChessContainer.tsx:
+        PositionalViewType: graph, board, arc, chord, graphdag
+        HistoricalViewType: history, fencount
+        UnifiedChessContainerProps: displayMode, setDisplayMode
+        UnifiedChessContainer:
+          theme: from useTheme hook
+          notification state: message and type for user notifications
+          dispatch: from useAppDispatch
+          view states: selectedPositionalView, selectedHistoricalView, connectionType
+          linksData/processedEdges states: for graph visualization
+          accordion states: showFenControls, showViewControls, showMoveControls, showKeybindings
+          display states: showGrid, flipBoard, moveInput, moveDropdownValue
+          promotionDialog state: isOpen, moves, fromSquare, toSquare
+          useChessGame: fen, setFen, currentPosition, submitFen, submitUndoMove
+          useLichessGame: gameState, sendMove, getCurrentPosition, setNotificationCallback
+          chessGameState: from useSelector
+          board flip effect: auto-orients board based on player color in Lichess games
+          showNotification: callback for displaying notifications
+          handlePromotionSelect: handles pawn promotion choices
+          handleMoveAttempt: validates and executes moves via drag-drop or input
+          handleGlobalKeyDown effect: keyboard shortcuts (vim-style navigation, controls)
+          fetchData effect: fetches graph data based on connectionType
+          getCurrentBoard: creates ChessGame and returns asciiView
+          renderHistoricalView: renders HistoryTable or SequenceMetrics
+          jsx:
+            - SetupMode
+            - VerticalResizer with GraphView and historical view
+            - Accordion for view controls
+            - NavigationControls
+            - MoveControls
+            - KeybindingIndicators (conditional)
+            - Help hint
+            - PromotionDialog
+    constants/:
+      env.ts:
+        - LICHESS_URL
+        - CHESS_COM_URL
+        - initialFen
+    contexts/:
+      LichessGameContext.tsx:
+        GameState:
+          - gameId
+          - gameUrl
+          - isPlaying
+          - color
+          - opponentName
+          - status
+          - timeLeft
+        MoveCache:
+          - processedMoves
+          - gameInstance
+          - lastMoveIndex
+        LichessGameContextType:
+          - gameState of type GameState
+          - createSeek (is this an unnamed undefined arrow function in an interface?)
+          - sendMove (same question)
+          - resign (same question)
+          - getCurrentPosition (same question)
+          - startNewGame (same question)
+          - setNotificationCallback (I see this is a callback in an interface...how does that work?)
+        LichessGameContext: creates context of type LichessGameContextType
+        LichessGameProvider:
+          dispatch: useAppDispatch from custom hooks
+          useLichessAuth:
+            definition: ../hooks/useLichessAuth.ts
+            defines: isAuthenticated, username
+          notificationCallbackRef: Ref hook of unnamed custom type (same custom type as defined in setNotificationCallback... seems ready for refactoring... how does this work?)
+          useState: defines gameState, setGameState of type GameState
+          gameStreamRef: Ref hook of unnamed custom type
+          eventStreamRef: Ref hook of unnamed custom type
+          moveCacheRef: Ref hook of MoveCache type
+          pendingSentMovesRef: Ref hook of type Set of strings
+          parseGameResult: defined using callback hook (how does this work)
+          handleGameConnectionChange: defined using callback hook (how does this work?)
+          handleEventConnectionChange: defined using callback hook (how does this work?)
+          processMoves: defined using callback hook (how does this work?)
+          handleGameUpdate: defined using callback hook (how does this work?)
+          sendMove: defined using callback hook (how does this work?)
+          startGameStream: defined using callback hook (how does this work?)
+          handleEvent: defined using callback hook (how does this work?)
+          useEffect event handler:
+            effect: handleEventConnectionChange
+            listens: handleEvent, handleEventConnectionChange
+          createSeek: defined using callback hook (how does this work?)
+          resign: defined using callback hook (how does this work?)
+          getCurrentPosition: defined using callback hook (how does this work?)
+          setNotificationCallback: defined using callback hook (how does this work?)
+          startNewGame: defined using callback hook (how does this work?)
+          useEffect game start:
+            effect: startNewGame
+            listens: isAuthenticated, gameState.gameId, startNewGame, username
+          value: LichessGameContextType defined for jsx
+          jsx: LichessGameContext.Provider, value, children (how does this work?)
+          useLichessGame: uses context hook from react to return context from LichessGameContext
+    data/:
+      chessComPuzzle.json: title, url, publish_time, fen, pgn, image
+      liChessPuzzle.json:
+        game:
+          id: identifier for game
+          perf:
+          rated:
+          players: list of objects with name, color, rating, etc.
+          pgn:
+          puzzle:
+            id: identifier for puzzle
+            rating: puzzle rating
+            plays: count of users who have played the puzzle
+            solution: UCI of solution  from initialPly
+            themes: list of strings with lichess-tagged themes
+            initialPly: starting point of puzzle
+          initialPly:
+    hooks/:
+      useChessGame.ts:
+        displayMode: param of type PieceDisplayMode
+        useState:
+          - defines localFen, setLocalFen with default initialFen
+          - defines pendingSetupHistory, setPendingSetupHistory with default undefined
+        useSelector:
+          - defines chessComPuzzle using state.chessComPuzzle
+          - defines selectedSetup using state.selectedSetup
+          - defines liChessPuzzle using state.liChessPuzzle
+          - how is state present in this context? It's not imported from store.ts
+        useMoveHistory:
+          - uses displayMode to define currentPosition, errorMessage, undoMessage, makeSelectedMove, undoLastMove, and resetToPosition
+        useEffect:
+          - listens: selectedSetup, liChessPuzzle, chessComPuzzle
+            effect: set up board
+        submitFen: resetToPosition of localFen with pendingSetupHistory
+        returns:
+          - fen
+          - setFen
+          - currentPosition
+          - errorMessage
+          - undoMessage
+          - submitFen
+          - submitMove
+          - submitUndoMove
+        questions:
+          - pendingSetupHistory isn't actually defined anywhere or populated as a full history. What is it exactly?
+      useLichessAuth.ts:
+        UseLichessAuthReturn:
+          - isAuthenticated
+          - username
+          - loading
+          - login
+          - logout
+          - refreshAuth
+        UseLichessAuth:
+          useState:
+            - defines isAuthenticated, setIsAuthenticated with default false
+            - defines username, setUsername with default null
+            - defines loading, setLoading with default true
+          checkAuthStatus: uses lichessAuth from ../services/lichess/auth to determine if lichess authorizes this session
+          useEffect:
+            - listens: empty array (what?)
+              effect: uses checkAuthStatus as helper and adds and removes event listener (what?)
+          login: uses lichessAuth's startAuth method
+          logout: uses lichessAuth's logout method and resets isAuthenticated and username
+          returns:
+            - isAuthenticated
+            - username
+            - loading
+            - login
+            - logout (how is this not redundant to login)
+            - refreshAuth
+      useMoveHistory.ts:
+        dispatch: uses react-redux's useDispatch
+        chessGameState: from useSelector(state.chessGame)
+        useState:
+          - defines state with moves (Move[]), selectedMove, errorMessage, undoMessage, isProcessing
+        isAtLatestPosition: compares positions length to currentPositionIndex
+        useEffect:
+          - listens: chessGameState.fen, displayMode, isAtLatestPosition
+            effect: initializes ChessGame and sets moves to game.getMoves() (returns Move[])
+        setSelectedMove: updates state using setState
+        makeSelectedMove: dispatches makeMove and updates state
+        undoLastMove: dispatches undoMove and updates state
+        resetToPosition: dispatches loadFen with fen and setupHistory
+        navigateForward: dispatches goForward
+        navigateBackward: dispatches goBackward
+        navigateToPosition: dispatches goToPosition
+        returns:
+          - moves (Move[])
+          - selectedMove
+          - errorMessage
+          - undoMessage
+          - isProcessing
+          - moveHistory
+          - currentPosition
+          - positions
+          - currentPositionIndex
+          - isAtLatestPosition
+          - setSelectedMove
+          - makeSelectedMove
+          - undoLastMove
+          - resetToPosition
+          - navigateForward
+          - navigateBackward
+          - navigateToPosition
+      useLichessGame.ts: exports useLichessGame from ../contexts/LichessGameContext (seems inconsistent with pattern and with normal practices)
+      useTheme.ts:
+        useTheme:
+          useState:
+            - defines theme (BootswatchTheme) and setTheme with default from localStorage or cyborg
+          useEffect:
+            - listens: theme
+              effect: removes previous theme class and adds new theme class, persists to localStorage
+          returns: theme, setTheme (both typed as BootswatchTheme)
+    models/:
+      ChessComPuzzleModel.ts:
+        ChessComPuzzleModel: puzzleTitle, puzzleUrl, publishTime, initialPuzzleFEN, solutionPgn, imageUrl, fetchStatus
+      ChessComPuzzleResponse.ts:
+        ChessComPuzzleResponse: title, url, publish_time, fen, pgn, image
+      ChessComPuzzleViewModel.ts:
+        ChessComPuzzleViewModel:
+          constructor: injects ChessComPuzzleResponse
+          get puzzle: maps ChessComPuzzleResponse to ChessComPuzzleModel
+      LiChessPuzzleModel.ts:
+        LiChessPuzzleModel: puzzleId, gameId, puzzleRating, puzzlePlays, solution, themes, initialPuzzleFEN, setupHistory
+      LiChessPuzzleResponse.ts:
+        LiChessPuzzleResponse:
+          game: id, perf, rated, players, pgn, clock
+          puzzle: id, rating, plays, solution, themes, initialPly
+      LiChessPuzzleViewModel.ts:
+        LiChessPuzzleViewModel:
+          constructor: injects LiChessPuzzleResponse
+          get puzzle:
+            game: initializes new ChessGame
+            setupHistory: initializes at ply 0 and standard getFen()
+            pgnMoves: split of response's PGN into array
+            movesApplied: ply
+            iteration: iterates through PGN to construct game using makeMove
+            return:
+              puzzleId: id of Response's puzzle object
+              gameId: id of Response's game object
+              puzzleRating: rating of response's puzzle object
+              puzzlePlays: plays of response's puzzle object
+              solution: solution of response's puzzle object (UCI)
+              themes: themes of response's puzzle object
+              initialPuzzleFEN: getFen() of last game state
+              setupHistory: setupHistory object constructed by iteration
+              fetchStatus:
+                loading: false
+                error: null
+      LinksResponse.ts:
+        TODO: rename file because LinksResponse is one of only 6 exports
+        LinkNode: extension of d3 library's SimulationNodeDatum; new properties are square, piece_type, color, x, y, fx, and fy
+        LinkEdge: extension of d3 library's SimulationLinkDatum; new properties are type, source, and target
+        LinksResponse: list of LinkNode, list of LinkEdge
+        ProcessedEdge: source, target, type
+        EdgeSource: square (why wrap a single string?)
+        EdgeData: source, target, type (why make string and EdgeSource both options?)
+      SetupOptions.ts:
+        ChessSetup: abstract class with constructor accepting id, displayName, category and an abstract load method
+        StaticPositionSetup:
+          constructor: adds fen (also includes id, displayName, category - redundant?)
+          load: accepts dispatch, does nothing with it (redundant to abstract class?)
+          getFen: standard accessor
+        DailyPuzzleSetup:
+          constructor: adds fetchActions (and redundant id, displayName?)
+          load: accepts dispatch, dispatches fetchAction
+        STANDARD_FEN: standard setup (TODO- move to CHESS_SETUPS)
+        CHESS_SETUPS:
+          - new StaticPositionSetup for STANDARD_FEN
+          - new DailyPuzzleSetup for fetchLiChessDailyPuzzle
+          - new DailyPuzzleSetup for fetchChessComDailyPuzzle
+          - new StaticPositionSetup for king vs king categorized as King Box Demos
+          - new StaticPositionSetup for Fool's Mate categorized as King Box Demos
+          - new StaticPositionSetup for Embedded Mate categorized as King Box Demos
+          - new StaticPositionSetup for open-board Mate categorized as King Box Demos
+        getSetupById: acquires element of CHESS_SETUPS using id
+        getSetupByCategory: acquires list of CHESS_SETUPS using category
+        SetupOptions: maps CHESS_SETUPS to themselves with different casing (why?)
+    reducers/:
+      positions/:
+        positions.reducers.ts:
+          ChessGameState:
+            fen: string (redudnant to positions?)
+            moves: list of strings (UCI optional or just SAN?)
+            history: list of strings
+            positions: list of positions
+            currentPositionIndex: index of current position
+          LoadFenPayload:
+            fen: string (redundant to setupHistory?)
+            setupHistory: list of positions
+          initialGameState:
+            fen: STANDARD_FEN from SetupOptions
+            moves: empty list (SAN? UCI-optional?)
+            history: empty list (FEN?)
+            positions: list with zeroth ply as element
+            currentPositionIndex: 0
+          createGameFromState:
+            game: initialized from ChessGame object
+            iteration:
+              - iterates through history using getHistory()
+              - passes each move to game's makeMove method
+            return: game
+          createGameUpToIndex:
+            game: initialized from ChessGame object
+            iteration:
+              - iterates up to index through history
+              - passes each move to game's makeMove method
+            return: game
+          chessGameSlice:
+            createSlice:
+              description: imported from \@reduxjs/toolkit
+              object:
+                name: chessGame (why?)
+                initialState: initialGameState
+                reducers:
+                  loadFen:
+                    game: creates new game using ChessGame
+                    truthy setupHistory: looks similar to createGameUpToIndex - why not combine?
+                    falsy setupHistory: looks similar to initialGameState - why not combine?
+                    state.moves: game.getMoves()
+                    state.currentPositionIndex: index-adjusted length of positions
+                  makeMove:
+                    game: created from createGameFromState
+                    makeMove: accept action.payload
+                    newFen: update state's fen, moves, history, positions, and currentPositionIndex objects
+                  undoMove: modify state's history, positions, fen, moves, and currentPositionIndex objects
+                  goToPosition: with support from createGameUpToIndex, modify state's currentPositionIndex, fen, and moves objects (why moves?)
+                  goForward: with support from createGameUpToIndex, modify state's currentPositionIndex, fen, and moves objects
+                  goBackward: with support from createGameUpToIndex, modify state's currentPositionIndex, fen, and moves objects
+      puzzles/:
+        puzzles.actions.ts:
+          fetchLiChessDailyPuzzle:
+            createAsyncThunk:
+              type: puzzles/fetchLiChessDailyPuzzle (why would createAsyncThunk know what this means?)
+              payloadCreator: getLiChessDailyPuzzle
+          fetchChessComDailyPuzzle:
+            createAsyncThunk:
+              type: puzzles/fetchChessComDailyPuzzle (why would createAsyncThunk know what this means?)
+              payloadCreator: getChessComDailyPuzzle
+        puzzles.actionTypes.ts:
+          FETCH_CHESS_COM_DAILY_PUZZLE_REQUEST: itself as a string (why?)
+          FETCH_CHESS_COM_DAILY_PUZZLE_SUCCESS: itself as a string (why?)
+          FETCH_CHESS_COM_DAILY_PUZZLE_FAILURE: itself as a string (why?)
+        puzzles.reducers.ts:
+          chessComPuzzleInitialState: type ChessComPuzzleModel with initial values
+          liChessPuzzleInitialState: type LiChessPuzzleModel with initial values
+          liChessPuzzleSlice:
+            createSlice:
+              object:
+                name: liChessPuzzle
+                initialState: liChessPuzzleInitialState
+                reducers:
+                extraReducers: pending, fulfilled, rejected cases with state update logic
+          chessComPuzzleSlice:
+            createSlice:
+              object:
+                name: chessComPuzzle
+                initialState: chessComPuzzleInitialState
+                reducers:
+                extraReducers: pending, fulfilled, rejected cases with state update logic
+      setups/:
+        setups.actions.ts:
+          SET_SELECTED_SETUP: itself as a string (why?)
+          setSelectedSetup: type of SET_SELECTED_SETUP and payload of selectedSetup
+        setups.reducers.ts:
+          initialState: empty string (why?)
+          selectedSetupReducer: uses action param's type to determine whether to return initialState or action param's payload
+    services/:
+      chesscom/:
+        chesscom.service.ts:
+          getChessComDailyPuzzle:
+            uses: fetch API to https://api.chess.com/pub/puzzle
+            returns: puzzle JSON or throws error
+      lichess/:
+        auth.ts:
+          LICHESS_OAUTH_URL: https://lichess.org/oauth
+          LICHESS_API_URL: https://lichess.org/api
+          TOKEN_STORAGE_KEY: lichess_access_token
+          TOKEN_EXPIRY_KEY: lichess_token_expiry
+          TokenResponse: access_token, token_type, expires_in
+          UserInfo: id, username, perfs, createdAt, profile
+          LichessAuth:
+            clientId: window.location.origin
+            redirectUri: baseUrl/auth/callback
+            scope: board:play challenge:read challenge:write
+            generateRandomString: creates random hex string using crypto
+            base64UrlEncode: base64 URL-safe encoding
+            sha256: SHA-256 hash using SubtleCrypto
+            generateCodeChallenge: PKCE code challenge generation
+            startAuth: initiates OAuth flow with PKCE
+            handleCallback: processes OAuth callback, validates state, exchanges code
+            exchangeCodeForToken: POSTs to /api/token endpoint
+            storeToken: saves token and expiry to localStorage
+            getToken: retrieves token if not expired
+            isAuthenticated: boolean check for valid token
+            getCurrentUser: fetches /api/account with auth header
+            logout: clears tokens and dispatches storage event
+            makeAuthenticatedRequest: wrapper for authenticated API calls
+          lichessAuth: singleton instance of LichessAuth
+        game.ts:
+          GameStream: type, id, white, black, state, moves, times, status, winner
+          Challenge: id, status, challenger, destUser, variant, rated, speed, timeControl, color, perf
+          StreamConfig: maxReconnectAttempts, reconnectDelayBase, maxReconnectDelay, heartbeatInterval
+          LichessGameService:
+            defaultStreamConfig: reconnection and heartbeat settings
+            createChallenge: POSTs challenge to specific user
+            acceptChallenge: accepts challenge by ID
+            declineChallenge: declines challenge with optional reason
+            createSeek: POSTs to /board/seek for random opponent
+            makeMove: POSTs move to /board/game/{id}/move/{move}
+            resign: POSTs resignation
+            handleDraw: accepts or offers draw
+            streamGame: NDJSON stream of game events with reconnection logic
+            streamEvents: NDJSON stream of account events
+            getOngoingGames: fetches /account/playing
+            challengeAI: creates challenge against Stockfish (level 1-8)
+          lichessGame: singleton instance of LichessGameService
+        lichess.service.ts:
+          getLiChessDailyPuzzle:
+            uses: fetch API to https://lichess.org/api/puzzle/daily
+            fallback: returns defaultLiChessPuzzle on error
+      connector.ts:
+        apiBaseUrl: localhost:8000 or connector.chess.jbm.eco based on hostname
+        fetchLinks: GET /links/?fen_string={fen} - piece attack/defense links
+        fetchAdjacencies: GET /adjacencies/?fen_string={fen} - square adjacencies
+        fetchKingBox: GET /king_box/?fen_string={fen} - king movement squares
+        fetchNone: GET /none/?fen_string={fen} - nodes without edges
+        fetchGraphdag: PUT /graphdag with edges - ASCII DAG visualization
+    shared/:
+      containers.css:
+        - shared container styling
+    types/:
+      chess.ts:
+        Position: ply, san, uci, fen
+        PieceDisplayMode: letters, symbols, masked, full
+        PIECE_SYMBOLS: maps piece letters (K/Q/R/B/N/P) to unicode symbols
+      visualization.ts:
+        ConnectionType: none, adjacencies, links, king_box
+        AdjacenciesResponse: maps square to array of adjacent squares
+        LinkNode: extends d3.SimulationNodeDatum with square, piece_type, color, x, y, fx, fy
+        LinkEdge: extends d3.SimulationLinkDatum with type, source, target
+        LinksResponse: nodes array and edges array
+        ProcessedEdge: source, target, type as strings
+        EdgeSource: square string wrapper
+        EdgeData: source, target (string or EdgeSource), type
+    utils/:
+      chessDisplay.ts:
+        createWhitePieceMapByLetter: maps K/Q/R/B/N/P to filled unicode symbols
+        createWhitePieceMapBySymbol: maps outline symbols to filled symbols
+        getPieceDisplay: returns piece display based on displayMode and color
+        isWhitePiece: checks if piece letter is uppercase (white)
+      graphConstants.ts:
+        GRID_MARGIN: 50
+        NODE_RADIUS: 18
+        FONT_SIZES: object with sizes for symbols, full, masked, letters, default
+        TEXT_POSITIONING: object with dy values for each display mode
+        STROKE_WIDTHS: normal and inCheck widths
+        CHESS_FONT_FAMILY: monospace font stack
+      graphCoordinates.ts:
+        squareToCoords: converts algebraic notation (e.g., "e4") to [file, rank] grid coordinates
+        gridToScreen: converts grid coordinates to pixel coordinates with centering
+        screenToSquare: converts pixel coordinates back to algebraic notation
+      graphStyles.ts:
+        getNodeStyle: returns fill/stroke colors based on piece color (white/black)
+        getEdgeStyle: returns color and marker based on edge type (threat, protection, etc.)
+      nodeHelpers.ts:
+        SimulationNode: LinkNode with d3 simulation properties
+        SimulationLink: source, target, type
+        calculateNodeCheckStatus: checks if king node is under threat
+        getNodeFontSize: returns font size based on displayMode and showGrid
+        getNodeTextPositioning: returns dy positioning based on displayMode and showGrid
+      pieceDisplay.ts:
+        PIECE_TO_FILLED_SYMBOL: maps all piece letters to filled unicode
+        getPieceDisplay: converts piece to display character based on mode
+        isPieceWhite: checks if piece is uppercase
+        getPieceColor: returns "white" or "black" based on piece case
+    utils.ts:
+      findIndexWithinRank: finds string index of square within FEN rank string
+      findIndexOfRank: finds starting index of rank in FEN position string
+      findIndexOfSquare: combines rank and file index finding
+      cleanChessPieceUnicode: removes unicode variation selectors from chess symbols
+      processUnicodeChars: splits string and cleans each character
+    App.css:
+      - global app styling
+    App.test.tsx:
+      - basic App component render test
+    App.tsx:
+      - main application component with routing
+    react-app-env.d.ts:
+      - TypeScript environment declarations for Create React App
+    setupTests.ts:
+      - Jest test setup configuration
+    __tests__/:
+      SetupSelection.test.tsx:
+        - tests for setup selection functionality
+    Dockerfile:
+    gh_pages:
+    jest.config.js:
+    nginx.conf:
+    package-lock.json:
+    package.json:
+    README.md:
+    taskdef-ui.json:
+    tsconfig.json:
+    update-asciichessts-execute.json:
+  Dockerfile:
+  gh_pages:
+  jest.config.js:
+  nginx.conf:
