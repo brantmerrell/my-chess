@@ -57,6 +57,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   }>({ message: "", type: "info" });
   const dispatch = useAppDispatch();
   const verticalResizerRef = React.useRef<VerticalResizerHandle>(null);
+  const mainContentRef = React.useRef<HTMLDivElement>(null);
+  const [activeMobileView, setActiveMobileView] = React.useState<
+    "positional" | "historical"
+  >("positional");
   const [selectedPositionalView, setSelectedPositionalView] =
     React.useState<PositionalViewType>("graph");
   const [selectedHistoricalView, setSelectedHistoricalView] =
@@ -139,6 +143,39 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     });
     return fens;
   }, [chessGameState.positions, chessGameState.history]);
+
+  // Handle scroll events on main content for mobile view indicators
+  const handleMainContentScroll = React.useCallback(() => {
+    if (!mainContentRef.current) return;
+    const { scrollLeft, clientWidth } = mainContentRef.current;
+    const newView = scrollLeft > clientWidth / 2 ? "historical" : "positional";
+    setActiveMobileView(newView);
+  }, []);
+
+  // Scroll to a specific view when clicking indicators
+  const scrollToView = React.useCallback(
+    (view: "positional" | "historical") => {
+      if (!mainContentRef.current) return;
+      const targetScrollLeft =
+        view === "positional" ? 0 : mainContentRef.current.clientWidth;
+      mainContentRef.current.scrollTo({
+        left: targetScrollLeft,
+        behavior: "smooth",
+      });
+    },
+    []
+  );
+
+  // Attach scroll listener to main content
+  React.useEffect(() => {
+    const mainContent = mainContentRef.current;
+    if (!mainContent) return;
+
+    mainContent.addEventListener("scroll", handleMainContentScroll);
+    return () => {
+      mainContent.removeEventListener("scroll", handleMainContentScroll);
+    };
+  }, [handleMainContentScroll]);
 
   const clearNotification = () => {
     setNotification({ message: "", type: "info" });
@@ -597,7 +634,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         minHeight={300}
         maxHeight={window.innerHeight * 0.8}
       >
-        <div className="main-content">
+        <div className="main-content" ref={mainContentRef}>
           <div className="positional-section">
             <GraphView
               linksData={linksData}
@@ -613,6 +650,22 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           </div>
         </div>
       </VerticalResizer>
+      <div className="swipe-indicators">
+        <button
+          className={`swipe-indicator ${activeMobileView === "positional" ? "active" : ""}`}
+          onClick={() => scrollToView("positional")}
+          aria-label="View positional analysis"
+        >
+          <span className="swipe-indicator-label">Position</span>
+        </button>
+        <button
+          className={`swipe-indicator ${activeMobileView === "historical" ? "active" : ""}`}
+          onClick={() => scrollToView("historical")}
+          aria-label="View move history"
+        >
+          <span className="swipe-indicator-label">History</span>
+        </button>
+      </div>
       <Accordion
         title={
           <span>

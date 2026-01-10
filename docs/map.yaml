@@ -739,10 +739,39 @@ ascii-chess-ts/:
           jsx: overlay with promotion piece buttons and cancel
       UnifiedChessContainer.css:
         - .chess-container
+        - .view-controls-container
+        - .view-controls-left
+        - .view-controls-right
+        - .dropdowns-container
+        - .dropdowns-container .selector-container
+        - .dropdowns-container .select-control
+        - .fen-controls-disclosure,
+        - .view-controls-disclosure,
+        - .move-controls-disclosure,
+        - .combined-controls-disclosure
+        - .attached-header
+        - .disclosure-header
+        - .disclosure-header:hover
+        - .disclosure-header:focus
+        - .disclosure-chevron
+        - .disclosure-chevron.expanded
+        - .disclosure-title
+        - .disclosure-content
+        - .disclosure-content.collapsed
+        - .disclosure-content.expanded
+        - .view-controls-grid
+        - .view-controls-grid .selector-wrapper
+        - .view-controls-grid .select-control
+        - .dropdowns-container
         - .main-content
         - .positional-section
         - .historical-section
-        - .view-controls-container
+        - .historical-section .view-container
+        - .swipe-indicators
+        - media (max-width: 62.5rem)
+        - .selector-wrapper
+        - .selector-label
+        - .selector-container
       UnifiedChessContainer.tsx:
         PositionalViewType: graph, board, arc, chord, graphdag
         HistoricalViewType: history, fencount
