@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PieceDisplayMode } from "../../types/chess";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { ChessGame } from "../../chess/chessGame";
+import ChessKeyboard from "./ChessKeyboard";
 import "./MoveControls.css";
 
 interface GameState {
@@ -84,6 +85,46 @@ const MoveControls: React.FC<MoveControlsProps> = ({
   );
   const isAtLatestPosition = currentPositionIndex === positions.length - 1;
   const hasHistory = positions.length > 1;
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isInteractingWithKeyboard = useRef(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 1000); // 62.5rem
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handleChessKeyPress = (key: string) => {
+    setMoveInput(moveInput + key);
+  };
+
+  const handleChessBackspace = () => {
+    setMoveInput(moveInput.slice(0, -1));
+  };
+
+  const handleChessClear = () => {
+    setMoveInput("");
+  };
+
+  const handleChessSubmit = () => {
+    handleMoveSubmit();
+    setIsInputFocused(false);
+    inputRef.current?.blur();
+  };
+
+  const handleKeyboardInteractionStart = () => {
+    isInteractingWithKeyboard.current = true;
+    // Reset after a short delay (enough time for blur to check it)
+    setTimeout(() => {
+      isInteractingWithKeyboard.current = false;
+    }, 100);
+  };
 
   const handleMoveSubmit = () => {
     if (!isAtLatestPosition) return;
@@ -212,11 +253,21 @@ const MoveControls: React.FC<MoveControlsProps> = ({
           </select>
         </div>
         <input
+          ref={inputRef}
           id="move"
           type="text"
           value={moveInput}
           onChange={(e) => setMoveInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => {
+            // Don't hide keyboard if we're interacting with it
+            if (isInteractingWithKeyboard.current) {
+              return;
+            }
+            // Small delay to allow click events to fire before layout shifts
+            setTimeout(() => setIsInputFocused(false), 50);
+          }}
           disabled={!isAtLatestPosition}
           aria-label="Move Input"
           title={
@@ -225,6 +276,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
               : "Enter a move (M)"
           }
           placeholder={isAtLatestPosition ? "(M)ove" : ""}
+          inputMode={isMobile ? "none" : "text"}
         />
         <button
           id="submitMove"
@@ -257,6 +309,16 @@ const MoveControls: React.FC<MoveControlsProps> = ({
           Undo Move <span className="keybinding">u</span>
         </button>
       </div>
+
+      <ChessKeyboard
+        onKeyPress={handleChessKeyPress}
+        onBackspace={handleChessBackspace}
+        onClear={handleChessClear}
+        onSubmit={handleChessSubmit}
+        isVisible={isMobile && isInputFocused}
+        disabled={!isAtLatestPosition}
+        onInteractionStart={handleKeyboardInteractionStart}
+      />
 
       {undoMessage && (
         <div className="undo-message text-danger" style={{ marginTop: "10px" }}>
