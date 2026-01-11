@@ -75,7 +75,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [showViewControls, setShowViewControls] =
     React.useState<boolean>(false);
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
-  const [showKeybindings, setShowKeybindings] = React.useState<boolean>(false);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
   const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
   const [moveInput, setMoveInput] = React.useState<string>("");
@@ -475,9 +474,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             move.focus();
           }
           break;
-        case "?":
-          setShowKeybindings(!showKeybindings);
-          break;
         case "v":
         case "V":
           e.preventDefault();
@@ -545,7 +541,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     dispatch,
     submitUndoMove,
     chessGameState,
-    showKeybindings,
     showViewControls,
     showFenControls,
     showMoveControls,
@@ -666,6 +661,16 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           <span className="swipe-indicator-label">History</span>
         </button>
       </div>
+      <MoveControls
+        displayMode={displayMode}
+        externalMoveInput={moveInput || undefined}
+        externalMoveDropdown={moveDropdownValue || undefined}
+        onExternalMoveInputChange={setMoveInput}
+        onExternalMoveDropdownChange={setMoveDropdownValue}
+        onMoveAttempt={handleMoveAttempt}
+        gameState={gameState}
+      />
+      <NavigationControls />
       <Accordion
         title={
           <span>
@@ -710,41 +715,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           </div>
         </div>
       </Accordion>
-      <NavigationControls />
-      <MoveControls
-        displayMode={displayMode}
-        externalMoveInput={moveInput || undefined}
-        externalMoveDropdown={moveDropdownValue || undefined}
-        onExternalMoveInputChange={setMoveInput}
-        onExternalMoveDropdownChange={setMoveDropdownValue}
-        onMoveAttempt={handleMoveAttempt}
-        gameState={gameState}
-      />
-      {showKeybindings && (
-        <KeybindingIndicators onDismiss={() => setShowKeybindings(false)} />
-      )}
-      {!showKeybindings && (
-        <div
-          className="help-hint"
-          style={{
-            position: "fixed",
-            bottom: "1.25rem",
-            right: "1.25rem",
-            background: "rgba(0, 0, 0, 0.6)",
-            color: "white",
-            padding: "0.5rem 0.75rem",
-            borderRadius: "0.375rem",
-            fontSize: "0.8em",
-            zIndex: 999,
-            opacity: 0.7,
-            cursor: "pointer",
-          }}
-          onClick={() => setShowKeybindings(true)}
-          title="Click or press ? to show keyboard shortcuts"
-        >
-          Press ? for shortcuts
-        </div>
-      )}
+      <KeybindingIndicators />
       <PromotionDialog
         isOpen={promotionDialog.isOpen}
         moves={promotionDialog.moves}

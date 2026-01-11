@@ -1,13 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./KeybindingIndicators.css";
 
-interface KeybindingIndicatorsProps {
-  onDismiss?: () => void;
-}
+const KeybindingIndicators: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-const KeybindingIndicators: React.FC<KeybindingIndicatorsProps> = ({
-  onDismiss,
-}) => {
   const keybindings = [
     { key: "j", description: "Scroll down" },
     { key: "k", description: "Scroll up" },
@@ -19,9 +15,38 @@ const KeybindingIndicators: React.FC<KeybindingIndicatorsProps> = ({
     { key: "Esc", description: "Unfocus current element" },
   ];
 
+  // Listen for ? key to toggle
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "?" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes(
+          (e.target as HTMLElement).tagName
+        )
+      ) {
+        setIsExpanded((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  if (!isExpanded) {
+    return (
+      <div
+        className="keybinding-hint"
+        onClick={() => setIsExpanded(true)}
+        title="Click or press ? to show keyboard shortcuts"
+      >
+        Press ? for shortcuts
+      </div>
+    );
+  }
+
   return (
-    <div className="keybinding-indicators" onClick={onDismiss}>
-      <div className="keybinding-header">Other Shortcuts</div>
+    <div className="keybinding-indicators" onClick={() => setIsExpanded(false)}>
+      <div className="keybinding-header">Keyboard Shortcuts</div>
       <div className="keybinding-list">
         {keybindings.map((binding) => (
           <div key={binding.key} className="keybinding-item">

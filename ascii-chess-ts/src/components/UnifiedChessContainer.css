@@ -271,6 +271,11 @@
     white-space: nowrap;
     border: 0;
   }
+
+  /* Hide keyboard shortcut hint on mobile */
+  .help-hint {
+    display: none;
+  }
 }
 
 .selector-wrapper {
