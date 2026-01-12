@@ -1,10 +1,10 @@
-/* Chess keyboard - hidden on desktop, visible on mobile */
-.chess-keyboard {
+/* FEN keyboard - hidden on desktop, visible on mobile */
+.fen-keyboard {
   display: none;
 }
 
 @media (max-width: 62.5rem) {
-  .chess-keyboard {
+  .fen-keyboard {
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
@@ -16,13 +16,13 @@
     box-sizing: border-box;
   }
 
-  .chess-keyboard-row {
+  .fen-keyboard-row {
     display: flex;
     justify-content: center;
     gap: 0.25rem;
   }
 
-  .chess-key {
+  .fen-key {
     min-width: 2.5rem;
     height: 2.5rem;
     padding: 0.25rem 0.5rem;
@@ -39,42 +39,52 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .chess-key:active {
+  .fen-key:active {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(0.95);
   }
 
-  .chess-key:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .fen-key-space {
+    min-width: 4rem;
   }
 
-  .chess-key-action {
+  .fen-key-action {
     min-width: 3.5rem;
     font-size: 1rem;
   }
 
-  .chess-key-clear {
+  .fen-key-nav {
+    flex: 1;
+    font-size: 1.2rem;
+  }
+
+  .fen-keyboard-nav {
+    margin-top: 0.25rem;
+    padding-top: 0.375rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .fen-key-clear {
     background: rgba(220, 53, 69, 0.6);
     flex: 1;
     max-width: 5rem;
   }
 
-  .chess-key-clear:active {
+  .fen-key-clear:active {
     background: rgba(220, 53, 69, 0.8);
   }
 
-  .chess-key-submit {
+  .fen-key-submit {
     background: rgba(40, 167, 69, 0.6);
     flex: 1;
     max-width: 5rem;
   }
 
-  .chess-key-submit:active {
+  .fen-key-submit:active {
     background: rgba(40, 167, 69, 0.8);
   }
 
-  .chess-keyboard-actions {
+  .fen-keyboard-actions {
     margin-top: 0.25rem;
     padding-top: 0.375rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);

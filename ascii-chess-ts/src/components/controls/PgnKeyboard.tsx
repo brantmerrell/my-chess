@@ -1,7 +1,7 @@
 import React from "react";
-import "./ChessKeyboard.css";
+import "./PgnKeyboard.css";
 
-interface ChessKeyboardProps {
+interface PgnKeyboardProps {
   onKeyPress: (key: string) => void;
   onBackspace: () => void;
   onClear: () => void;
@@ -11,7 +11,7 @@ interface ChessKeyboardProps {
   onInteractionStart?: () => void;
 }
 
-const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
+const PgnKeyboard: React.FC<PgnKeyboardProps> = ({
   onKeyPress,
   onBackspace,
   onClear,
@@ -41,14 +41,14 @@ const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
   };
 
   return (
-    <div className="chess-keyboard">
+    <div className="pgn-keyboard">
       {rows.map((row, rowIndex) => (
-        <div key={rowIndex} className="chess-keyboard-row">
+        <div key={rowIndex} className="pgn-keyboard-row">
           {row.map((key) => (
             <button
               key={key}
               type="button"
-              className="chess-key"
+              className="pgn-key"
               onPointerDown={handlePointerDown}
               onClick={() => handleKeyClick(key)}
               disabled={disabled}
@@ -58,10 +58,10 @@ const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
           ))}
         </div>
       ))}
-      <div className="chess-keyboard-row chess-keyboard-actions">
+      <div className="pgn-keyboard-row pgn-keyboard-actions">
         <button
           type="button"
-          className="chess-key chess-key-action"
+          className="pgn-key pgn-key-action"
           onPointerDown={handlePointerDown}
           onClick={onBackspace}
           disabled={disabled}
@@ -71,7 +71,7 @@ const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
         </button>
         <button
           type="button"
-          className="chess-key chess-key-action chess-key-clear"
+          className="pgn-key pgn-key-action pgn-key-clear"
           onPointerDown={handlePointerDown}
           onClick={onClear}
           disabled={disabled}
@@ -80,7 +80,7 @@ const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
         </button>
         <button
           type="button"
-          className="chess-key chess-key-action chess-key-submit"
+          className="pgn-key pgn-key-action pgn-key-submit"
           onPointerDown={handlePointerDown}
           onClick={onSubmit}
           disabled={disabled}
@@ -92,4 +92,4 @@ const ChessKeyboard: React.FC<ChessKeyboardProps> = ({
   );
 };
 
-export default ChessKeyboard;
+export default PgnKeyboard;

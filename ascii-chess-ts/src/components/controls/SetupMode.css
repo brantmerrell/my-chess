@@ -758,3 +758,14 @@
 .superhero .notification-close:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+/* Mobile: allow containers to expand for custom keyboards */
+@media (max-width: 62.5rem) {
+  .setup-mode-container {
+    height: auto;
+  }
+
+  .analysis-controls {
+    height: auto;
+  }
+}

@@ -276,6 +276,12 @@
   .help-hint {
     display: none;
   }
+
+  /* Allow disclosure content to expand for custom keyboards */
+  .disclosure-content.expanded {
+    overflow: visible;
+    max-height: none;
+  }
 }
 
 .selector-wrapper {

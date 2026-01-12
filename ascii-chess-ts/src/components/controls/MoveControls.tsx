@@ -4,7 +4,7 @@ import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { ChessGame } from "../../chess/chessGame";
-import ChessKeyboard from "./ChessKeyboard";
+import PgnKeyboard from "./PgnKeyboard";
 import "./MoveControls.css";
 
 interface GameState {
@@ -114,8 +114,6 @@ const MoveControls: React.FC<MoveControlsProps> = ({
 
   const handleChessSubmit = () => {
     handleMoveSubmit();
-    setIsInputFocused(false);
-    inputRef.current?.blur();
   };
 
   const handleKeyboardInteractionStart = () => {
@@ -310,7 +308,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
         </button>
       </div>
 
-      <ChessKeyboard
+      <PgnKeyboard
         onKeyPress={handleChessKeyPress}
         onBackspace={handleChessBackspace}
         onClear={handleChessClear}
