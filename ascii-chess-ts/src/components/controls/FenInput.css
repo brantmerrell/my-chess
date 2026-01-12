@@ -23,6 +23,20 @@
   font-family: monospace;
   font-size: 0.875rem;
   margin-bottom: 0;
+  caret-color: #007bff;
+}
+
+/* Ensure cursor is visible on mobile even with inputMode="none" */
+@media (max-width: 62.5rem) {
+  #edit-string:focus {
+    caret-color: #007bff;
+    animation: blink-caret 1s step-end infinite;
+  }
+
+  @keyframes blink-caret {
+    from, to { caret-color: #007bff; }
+    50% { caret-color: transparent; }
+  }
 }
 
 /* Theme-specific styling for Quartz theme */

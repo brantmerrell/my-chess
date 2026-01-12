@@ -88,6 +88,7 @@
   transition:
     opacity 0.2s,
     background-color 0.2s;
+  caret-color: #007bff;
 }
 
 #move:focus {
