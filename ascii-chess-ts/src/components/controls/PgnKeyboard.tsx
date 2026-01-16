@@ -23,9 +23,9 @@ const PgnKeyboard: React.FC<PgnKeyboardProps> = ({
   if (!isVisible) return null;
 
   const rows = [
+    ["R", "N", "B", "Q", "K", "O"],
     ["a", "b", "c", "d", "e", "f", "g", "h"],
     ["1", "2", "3", "4", "5", "6", "7", "8"],
-    ["R", "N", "B", "Q", "K", "O"],
     ["x", "=", "+", "#", "-"],
   ];
 
@@ -41,7 +41,7 @@ const PgnKeyboard: React.FC<PgnKeyboardProps> = ({
   };
 
   return (
-    <div className="pgn-keyboard">
+    <div className="pgn-keyboard" onPointerDown={handlePointerDown}>
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="pgn-keyboard-row">
           {row.map((key) => (

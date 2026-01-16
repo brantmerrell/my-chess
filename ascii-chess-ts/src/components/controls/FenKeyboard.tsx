@@ -29,10 +29,10 @@ const FenKeyboard: React.FC<FenKeyboardProps> = ({
   if (!isVisible) return null;
 
   const rows = [
-    ["R", "N", "B", "Q", "K", "P"],
     ["r", "n", "b", "q", "k", "p"],
+    ["R", "N", "B", "Q", "K", "P"],
     ["1", "2", "3", "4", "5", "6", "7", "8"],
-    ["/", "-", " "],
+    ["/", "-", " ", "w"],
   ];
 
   const handleKeyClick = (key: string) => {
@@ -46,7 +46,7 @@ const FenKeyboard: React.FC<FenKeyboardProps> = ({
   };
 
   return (
-    <div className="fen-keyboard">
+    <div className="fen-keyboard" onPointerDown={handlePointerDown}>
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="fen-keyboard-row">
           {row.map((key, keyIndex) => (
