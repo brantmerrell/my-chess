@@ -13,7 +13,7 @@ import {
   gridToScreen,
   screenToSquare,
 } from "../../utils/graphCoordinates";
-import { getEdgeStyle } from "../../utils/graphStyles";
+import { getEdgeStyle, arrowheadColors } from "../../utils/graphStyles";
 import { renderGrid, renderCoordinates } from "./GraphGrid";
 import { renderNodes, renderPhantomMarkers } from "./GraphNodes";
 
@@ -146,9 +146,9 @@ const GraphView: React.FC<GraphViewProps> = ({
       .append("defs")
       .selectAll("marker")
       .data([
-        "arrowheadRed",
-        "arrowheadGreen",
-        "arrowheadBlue",
+        "arrowheadThreat",
+        "arrowheadProtection",
+        "arrowheadAdjacency",
         "arrowheadGray",
       ])
       .join("marker")
@@ -160,18 +160,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("markerHeight", 6)
       .attr("orient", "auto")
       .append("path")
-      .attr("fill", (d) => {
-        switch (d) {
-          case "arrowheadRed":
-            return "crimson";
-          case "arrowheadGreen":
-            return "forestgreen";
-          case "arrowheadBlue":
-            return "dodgerblue";
-          default:
-            return "gray";
-        }
-      })
+      .attr("fill", (d) => arrowheadColors[d] || arrowheadColors.arrowheadGray)
       .attr("d", "M0,-5L10,0L0,5");
 
     const link = g
