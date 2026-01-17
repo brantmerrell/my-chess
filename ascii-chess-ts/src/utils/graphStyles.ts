@@ -1,13 +1,16 @@
 export const arrowheadColors: Record<string, string> = {
   arrowheadThreat: "crimson",
-  arrowheadProtection: "dimgray",
+  arrowheadProtection: "green",
+  arrowheadCasterThreat: "crimson",
+  arrowheadCasterProtection: "cyan",
+  arrowheadShadowThreat: "crimson",
+  arrowheadShadowProtection: "forestgreen",
   arrowheadAdjacency: "dodgerblue",
-  arrowheadGray: "gray",
 };
 
 export const getNodeStyle = (color: string) => {
   return {
-    background: color === "white" ? "black" : "white",
+    background: color === "white" ? "darkslategray" : "lightslategray",
     fill: color === "white" ? "white" : "black",
     stroke: color === "white" ? "white" : "black",
   };
@@ -18,13 +21,21 @@ export const getEdgeStyle = (edgeType: string) => {
     case "threat":
       return { color: "crimson", marker: "url(#arrowheadThreat)" };
     case "protection":
-      return { color: "dimgray", marker: "url(#arrowheadProtection)" };
+      return { color: "forestgreen", marker: "url(#arrowheadProtection)" };
     case "adjacency":
       return { color: "dodgerblue", marker: "url(#arrowheadAdjacency)" };
+    case "caster_threat":
+      return { color: "crimson", marker: "url(#arrowheadCasterThreat)" };
+    case "caster_protection":
+      return { color: "dimgray", marker: "url(#arrowheadCasterProtection)" };
+    case "shadow_threat":
+      return { color: "crimson", marker: "url(#arrowheadShadowThreat)" };
+    case "shadow_protection":
+      return { color: "forestgreen", marker: "url(#arrowheadShadowProtection)" };
     case "king_can_move":
       return { color: "green", marker: "url(#arrowheadProtection)" };
     case "king_blocked_ally":
-      return { color: "dimgray", marker: "" };
+      return { color: "darkgoldenrod", marker: "" };
     case "king_blocked_threat":
       return { color: "darkgoldenrod", marker: "" };
     default:

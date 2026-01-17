@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-export type ConnectionType = "none" | "adjacencies" | "links" | "king_box";
+export type ConnectionType = "none" | "adjacencies" | "links" | "king_box" | "shadows";
 
 export interface AdjacenciesResponse {
   [square: string]: string[];

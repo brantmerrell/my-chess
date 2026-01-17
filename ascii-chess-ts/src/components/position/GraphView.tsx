@@ -148,6 +148,8 @@ const GraphView: React.FC<GraphViewProps> = ({
       .data([
         "arrowheadThreat",
         "arrowheadProtection",
+        "arrowheadShadowThreat",
+        "arrowheadShadowProtection",
         "arrowheadAdjacency",
         "arrowheadGray",
       ])

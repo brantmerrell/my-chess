@@ -31,6 +31,7 @@ import {
   fetchLinks,
   fetchAdjacencies,
   fetchKingBox,
+  fetchShadows,
   fetchNone,
 } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
@@ -532,6 +533,11 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           setConnectionType("king_box");
           break;
+        case "s":
+        case "S":
+          e.preventDefault();
+          setConnectionType("shadows");
+          break;
       }
     };
 
@@ -559,6 +565,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           fetchedData = await fetchAdjacencies(chessGameState.fen);
         } else if (connectionType === "king_box") {
           fetchedData = await fetchKingBox(chessGameState.fen);
+        } else if (connectionType === "shadows") {
+          fetchedData = await fetchShadows(chessGameState.fen);
         } else if (connectionType === "none") {
           fetchedData = await fetchNone(chessGameState.fen);
         }

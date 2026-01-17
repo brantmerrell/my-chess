@@ -37,6 +37,16 @@ export const fetchKingBox = async (inputString: string) => {
   }
 };
 
+export const fetchShadows = async (inputString: string) => {
+  try {
+    const url = `${apiBaseUrl}/shadows/?fen_string=${encodeURIComponent(inputString)}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching shadows:", error);
+  }
+};
+
 export const fetchNone = async (inputString: string) => {
   try {
     const url = `${apiBaseUrl}/none/?fen_string=${encodeURIComponent(inputString)}`;

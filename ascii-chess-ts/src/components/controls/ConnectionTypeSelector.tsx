@@ -11,7 +11,7 @@ const CONNECTION_TYPE_OPTIONS = [
   { value: "adjacencies", label: "(A)djacencies" },
   { value: "links", label: "L(i)nks" },
   { value: "king_box", label: "Kin(g) Box" },
-  // shadow
+  { value: "shadows", label: "(S)hadows" },
 ] as const;
 
 const ConnectionTypeSelector: React.FC<ConnectionTypeSelectorProps> = ({
