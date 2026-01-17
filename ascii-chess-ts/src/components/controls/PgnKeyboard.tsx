@@ -23,10 +23,10 @@ const PgnKeyboard: React.FC<PgnKeyboardProps> = ({
   if (!isVisible) return null;
 
   const rows = [
-    ["R", "N", "B", "Q", "K", "O"],
+    ["R", "N", "B", "Q", "K", "O", "x"],
     ["a", "b", "c", "d", "e", "f", "g", "h"],
     ["1", "2", "3", "4", "5", "6", "7", "8"],
-    ["x", "=", "+", "#", "-"],
+    ["=", "+", "#", "-"],
   ];
 
   const handleKeyClick = (key: string) => {
