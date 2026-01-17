@@ -419,7 +419,7 @@ ascii-chess-ts/:
           - .piece-view-button.large
         PieceViewSelector.tsx:
           PieceViewSelectorProps: displayMode, onDisplayModeChange derived from chess types
-          PIECE_VIEW_OPTIONS: full, symbols, letters, masked (TODO- refactor to avoid duplicating definitions)
+          PIECE_VIEW_OPTIONS: symbols, letters
           PieceViewSelector:
             jsx:
               label: Piece View

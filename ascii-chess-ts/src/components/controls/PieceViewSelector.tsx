@@ -8,9 +8,9 @@ interface PieceViewSelectorProps {
 }
 
 const PIECE_VIEW_OPTIONS = [
-  { value: "full", label: "1.[♚♛]" },
-  { value: "symbols", label: "2.(♔♕)" },
-  { value: "letters", label: "3.(KQ)" },
+  { value: "symbols", label: "1.(♔♕)" },
+  { value: "letters", label: "2.(KQ)" },
+  { value: "full", label: "3.[♚♛]" },
   { value: "masked", label: "4.(**)" },
 ] as const;
 

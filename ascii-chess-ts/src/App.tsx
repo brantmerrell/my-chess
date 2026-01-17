@@ -11,7 +11,7 @@ import ThemeSelector from "./components/controls/ThemeSelector";
 import { useTheme } from "./hooks/useTheme";
 
 function App() {
-  const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("full");
+  const [displayMode, setDisplayMode] = useState<PieceDisplayMode>("symbols");
   const { theme, setTheme } = useTheme();
 
   return (

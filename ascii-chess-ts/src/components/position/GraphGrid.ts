@@ -15,6 +15,22 @@ export const renderGrid = (
   // Center the board vertically if height > width
   const yOffset = height > width ? (height - boardSize) / 2 : margin;
 
+  const gridSquares = g.append("g").attr("class", "grid-squares");
+
+  // Draw alternating colored squares
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const isLight = (row + col) % 2 === 0;
+      gridSquares
+        .append("rect")
+        .attr("x", xOffset + col * gridSize)
+        .attr("y", yOffset + row * gridSize)
+        .attr("width", gridSize)
+        .attr("height", gridSize)
+        .attr("fill", isLight ? "#374151" : "#1f2937");
+    }
+  }
+
   const gridLines = g.append("g").attr("class", "grid");
 
   for (let i = 0; i <= 8; i++) {
@@ -67,7 +83,7 @@ export const renderCoordinates = (
       .attr("text-anchor", "middle")
       .attr("font-size", "18px")
       .attr("font-family", "monospace")
-      .attr("fill", "#666")
+      .attr("fill", "FloralWhite")
       .text(file);
   }
 
@@ -81,7 +97,7 @@ export const renderCoordinates = (
       .attr("alignment-baseline", "middle")
       .attr("font-size", "18px")
       .attr("font-family", "monospace")
-      .attr("fill", "#666")
+      .attr("fill", "FloralWhite")
       .text(rank);
   }
 };

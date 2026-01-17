@@ -73,8 +73,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     []
   );
   const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
-  const [showViewControls, setShowViewControls] =
-    React.useState<boolean>(false);
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
   const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
@@ -394,7 +392,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "t":
           e.preventDefault();
-          if (!showViewControls) setShowViewControls(true);
           const themeSelector = document.querySelector(
             "#theme-selector"
           ) as HTMLSelectElement;
@@ -476,10 +473,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           }
           break;
         case "v":
-        case "V":
-          e.preventDefault();
-          setShowViewControls(!showViewControls);
-          break;
         case "]":
           e.preventDefault();
           verticalResizerRef.current?.increaseHeight();
@@ -498,15 +491,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         // PieceViewSelector keybindings (1-4)
         case "1":
           e.preventDefault();
-          setDisplayMode("full");
+          setDisplayMode("symbols");
           break;
         case "2":
           e.preventDefault();
-          setDisplayMode("symbols");
+          setDisplayMode("letters");
           break;
         case "3":
           e.preventDefault();
-          setDisplayMode("letters");
+          setDisplayMode("full");
           break;
         case "4":
           e.preventDefault();
@@ -547,7 +540,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     dispatch,
     submitUndoMove,
     chessGameState,
-    showViewControls,
     showFenControls,
     showMoveControls,
     showGrid,
@@ -679,50 +671,35 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         gameState={gameState}
       />
       <NavigationControls />
-      <Accordion
-        title={
-          <span>
-            <u>V</u>iew Controls
-          </span>
-        }
-        isExpanded={showViewControls}
-        onToggle={() => setShowViewControls(!showViewControls)}
-        theme={theme}
-      >
-        <div className="view-controls-container">
-          <div className="view-controls-left">
-            <PieceViewSelector
-              displayMode={displayMode}
-              onDisplayModeChange={setDisplayMode}
-            />
-            {showConnectionTypeSelector && (
-              <ConnectionTypeSelector
-                connectionType={connectionType}
-                onConnectionTypeChange={setConnectionType}
+      <div className="view-controls-left">
+        {showConnectionTypeSelector && (
+          <ConnectionTypeSelector
+            connectionType={connectionType}
+            onConnectionTypeChange={setConnectionType}
+          />
+        )}
+        <PieceViewSelector
+          displayMode={displayMode}
+          onDisplayModeChange={setDisplayMode}
+        />
+        {selectedPositionalView === "graph" && (
+          <div className="form-group">
+            <label className="form-check-label">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={showGrid}
+                onChange={() => setShowGrid(!showGrid)}
               />
-            )}
-            {selectedPositionalView === "graph" && (
-              <div className="form-group">
-                <label className="form-check-label">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={showGrid}
-                    onChange={() => setShowGrid(!showGrid)}
-                  />
-                  Sho<u>w</u> Grid
-                </label>
-              </div>
-            )}
+              Sho<u>w</u> Grid
+            </label>
           </div>
-          <div className="view-controls-right">
-            <HistoricalViewSelector
-              selectedView={selectedHistoricalView}
-              onViewChange={setSelectedHistoricalView}
-            />
-          </div>
-        </div>
-      </Accordion>
+        )}
+      </div>
+      <HistoricalViewSelector
+        selectedView={selectedHistoricalView}
+        onViewChange={setSelectedHistoricalView}
+      />
       <KeybindingIndicators />
       <PromotionDialog
         isOpen={promotionDialog.isOpen}

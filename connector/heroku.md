@@ -7,25 +7,16 @@ The app is deployed using Docker containers on Heroku with the `diagon` binary i
 ### Deploy Updates
 
 ```bash
-# Make your changes, then:
-cd /Users/joshuamerrell/github/brantmerrell/my-chess
-
-# Commit changes
-git add connector/
-git commit -m "Your commit message"
-git push origin main
-
-# Deploy to Heroku
 git subtree push --prefix=connector heroku main
 ```
 
 ### Monitor Deployment
 
 ```bash
-# Watch logs during deployment
 heroku logs --tail -a ascii-chess-connector
+```
 
-# Check deployment status
+```bash
 heroku releases -a ascii-chess-connector
 ```
 
@@ -33,18 +24,46 @@ heroku releases -a ascii-chess-connector
 
 All endpoints are working at: https://ascii-chess-connector-3fac027ebe4d.herokuapp.com/
 
+Health check
 ```bash
-# Health check
 curl https://ascii-chess-connector-3fac027ebe4d.herokuapp.com/health
+```
 
-# Links endpoint
-bash getLinks.sh
+Links endpoint
 
-# Adjacencies endpoint
-bash getAdjacencies.sh
+```bash
+curl "https://connector.chess.jbm.eco/links/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201" 
+```
 
-# GraphDAG endpoint (uses links data to generate ASCII graph)
-bash getGraphdag.sh
+Adjacencies endpoint
+
+```bash
+curl "https://connector.chess.jbm.eco/adjacencies/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201" 
+```
+
+Shadows endpoint
+```bash
+curl "https://connector.chess.jbm.eco/shadows/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201" 
+```
+
+GraphDAG endpoint (use links data to generate ASCII graph)
+```bash
+LINKS_RESPONSE=$(curl -s "https://connector.chess.jbm.eco/links/?fen_string=rnbqkbnr%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FRNBQKBNR%20w%20KQkq%20-%200%201")
+
+EDGES=$(echo "$LINKS_RESPONSE" | python3 -c "
+import json
+import sys
+data = json.load(sys.stdin)
+edges_data = data.get('edges', [])
+# Convert to format expected by graphdag endpoint
+edges_formatted = [{'source': edge['source'], 'target': edge['target']} for edge in edges_data]
+print(json.dumps({'edges': edges_formatted}))
+")
+
+echo "$EDGES" | curl -X PUT "https://connector.chess.jbm.eco/graphdag" \
+  -H "Content-Type: application/json" \
+  -d @-
+
 ```
 
 ## Troubleshooting
