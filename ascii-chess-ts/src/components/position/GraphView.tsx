@@ -26,7 +26,7 @@ interface GraphViewProps {
   onMoveAttempt?: (
     fromSquare: string,
     toSquare: string,
-    uciMove: string,
+    uciMove: string
   ) => boolean;
 }
 
@@ -41,6 +41,9 @@ const GraphView: React.FC<GraphViewProps> = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
+
+  // Track pending moves to avoid re-rendering with stale data
+  const pendingMoveRef = useRef<{ from: string; to: string } | null>(null);
 
   // Handle container resize
   useEffect(() => {
@@ -65,6 +68,25 @@ const GraphView: React.FC<GraphViewProps> = ({
 
   useEffect(() => {
     if (!linksData || !processedEdges || !svgRef.current) return;
+
+    // Check if there's a pending move that hasn't been reflected in the data yet
+    if (pendingMoveRef.current) {
+      const { from, to } = pendingMoveRef.current;
+      const pieceStillAtFrom = linksData.nodes?.some(
+        (n: LinkNode) => n.square === from && n.piece_type !== "phantom"
+      );
+      const pieceAtTo = linksData.nodes?.some(
+        (n: LinkNode) => n.square === to && n.piece_type !== "phantom"
+      );
+
+      if (pieceStillAtFrom && !pieceAtTo) {
+        // Data is stale - skip this render to avoid snap-back
+        return;
+      } else {
+        // Data has been updated - clear the pending move
+        pendingMoveRef.current = null;
+      }
+    }
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
@@ -127,7 +149,7 @@ const GraphView: React.FC<GraphViewProps> = ({
           .forceLink<SimulationNode, SimulationLink>(links)
           .id((d) => d.square)
           .distance(50)
-          .strength(0),
+          .strength(0)
       )
       .force("charge", d3.forceManyBody().strength(0))
       .force(
@@ -135,7 +157,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         d3
           .forceCollide()
           .radius(25)
-          .strength(showGrid ? 0 : 1),
+          .strength(showGrid ? 0 : 1)
       );
 
     if (showGrid) {
@@ -216,7 +238,13 @@ const GraphView: React.FC<GraphViewProps> = ({
 
           if (targetSquare && startSquare && targetSquare !== startSquare) {
             const uciMove = startSquare + targetSquare;
+            // Set pending move before calling onMoveAttempt to catch stale re-renders
+            pendingMoveRef.current = { from: startSquare, to: targetSquare };
             moveWasValid = onMoveAttempt(startSquare, targetSquare, uciMove);
+            if (!moveWasValid) {
+              // Move was rejected, clear the pending move
+              pendingMoveRef.current = null;
+            }
           }
 
           if (!moveWasValid) {
@@ -224,7 +252,7 @@ const GraphView: React.FC<GraphViewProps> = ({
             let [originalX, originalY] = gridToScreen(
               gridCoords,
               width,
-              height,
+              height
             );
 
             if (flipBoard) {
@@ -253,7 +281,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       links,
       displayMode,
       showGrid,
-      dragBehavior,
+      dragBehavior
     );
     const phantomMarkers = renderPhantomMarkers(g, phantomNodes, links);
 
