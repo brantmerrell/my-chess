@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
 import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
@@ -19,7 +19,9 @@ import { RootState } from "../../app/store";
 import { setSelectedSetup } from "../../reducers/setups/setups.actions";
 import { CUSTOM_SETUP_ID } from "../../models/SetupOptions";
 import "./SetupMode.css";
-type SetupMode = "analysis" | "play";
+
+export type SetupMode = "analysis" | "play";
+
 interface SetupModeProps {
   theme: BootstrapTheme;
   fen: string;
@@ -30,6 +32,8 @@ interface SetupModeProps {
     type: "error" | "warning" | "success" | "info";
   };
   clearNotification: () => void;
+  mode: SetupMode;
+  onModeChange: (mode: SetupMode) => void;
 }
 const SetupModeComponent: React.FC<SetupModeProps> = ({
   theme,
@@ -38,8 +42,9 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   submitFen,
   notification,
   clearNotification,
+  mode,
+  onModeChange,
 }) => {
-  const [mode, setMode] = useState<SetupMode>("analysis");
   const dispatch = useAppDispatch();
   const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
   const { isAuthenticated, username, logout } = useLichessAuth();
@@ -72,7 +77,7 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   };
   return (
     <div className="setup-mode-container">
-      <ModeTabs mode={mode} theme={theme} onModeChange={setMode} />
+      <ModeTabs mode={mode} theme={theme} onModeChange={onModeChange} />
       {mode === "analysis" && (
         <div className="analysis-controls">
           <SelectPosition

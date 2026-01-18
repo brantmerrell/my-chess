@@ -9,10 +9,11 @@ import MoveControls from "./controls/MoveControls";
 import NavigationControls from "./controls/NavigationControls";
 import PieceViewSelector from "./controls/PieceViewSelector";
 import PromotionDialog from "./PromotionDialog";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "../app/hooks";
-import SetupModeComponent from "./controls/SetupMode";
+import SetupModeComponent, { SetupMode } from "./controls/SetupMode";
 import { HistoricalViewSelector } from "./controls/HistoricalViewSelector";
+import { useUrlSync, parseUrlParams } from "../hooks/useUrlSync";
 import VerticalResizer, {
   VerticalResizerHandle,
 } from "./common/VerticalResizer";
@@ -52,6 +53,11 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   setDisplayMode,
 }) => {
   const { theme } = useTheme();
+  // Initialize mode from URL or default to "analysis"
+  const [mode, setMode] = useState<SetupMode>(() => {
+    const urlState = parseUrlParams();
+    return urlState.mode;
+  });
   const [notification, setNotification] = React.useState<{
     message: string;
     type: "error" | "warning" | "success" | "info";
@@ -95,6 +101,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const { gameState, sendMove, getCurrentPosition, setNotificationCallback } =
     useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
+
+  // Sync URL with app state
+  useUrlSync({ mode, onModeChange: setMode });
 
   React.useEffect(() => {
     if (gameState.isPlaying && gameState.color) {
@@ -622,6 +631,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         submitFen={submitFen}
         notification={notification}
         clearNotification={clearNotification}
+        mode={mode}
+        onModeChange={setMode}
       />
       <VerticalResizer
         ref={verticalResizerRef}
