@@ -1,5 +1,4 @@
 import "./UnifiedChessContainer.css";
-import Accordion from "./common/Accordion";
 import ConnectionTypeSelector from "./controls/ConnectionTypeSelector";
 import SequenceMetrics from "./history/SequenceMetrics";
 import GraphView from "./position/GraphView";
@@ -68,7 +67,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [activeMobileView, setActiveMobileView] = React.useState<
     "positional" | "historical"
   >("positional");
-  const [selectedPositionalView, setSelectedPositionalView] =
+  const [selectedPositionalView, _setSelectedPositionalView] =
     React.useState<PositionalViewType>("graph");
   const [selectedHistoricalView, setSelectedHistoricalView] =
     React.useState<HistoricalViewType>("history");
@@ -96,7 +95,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     toSquare: "",
   });
 
-  const { fen, setFen, currentPosition, submitFen, submitUndoMove } =
+  const { fen, setFen, submitFen, submitUndoMove } =
     useChessGame(displayMode);
   const { gameState, sendMove, getCurrentPosition, setNotificationCallback } =
     useLichessGame();
@@ -124,6 +123,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         setFlipBoard(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.isPlaying, gameState.color, gameState.gameId]);
 
   const showNotification = React.useCallback(
@@ -555,6 +555,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     selectedPositionalView,
     setDisplayMode,
     setConnectionType,
+    showNotification,
   ]);
   React.useEffect(() => {
     const fetchData = async () => {
