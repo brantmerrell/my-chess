@@ -20,6 +20,20 @@
     <title>Ascii Chess</title>
   </head>
   <body>
+    <script>
+      // Single Page App redirect handler for GitHub Pages
+      // Decode the URL that was encoded by 404.html
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
