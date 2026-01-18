@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import SelectPosition from "./SelectPosition";
 import FenInput from "./FenInput";
 import ModeTabs from "./ModeTabs";
@@ -13,6 +14,10 @@ import { useLichessAuth } from "../../hooks/useLichessAuth";
 import { useLichessGame } from "../../contexts/LichessGameContext";
 import { LichessGameLink } from "../lichess-play/LichessGameLink";
 import LichessLogin from "../auth/LichessLogin";
+import { useAppDispatch } from "../../app/hooks";
+import { RootState } from "../../app/store";
+import { setSelectedSetup } from "../../reducers/setups/setups.actions";
+import { CUSTOM_SETUP_ID } from "../../models/SetupOptions";
 import "./SetupMode.css";
 type SetupMode = "analysis" | "play";
 interface SetupModeProps {
@@ -35,8 +40,18 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   clearNotification,
 }) => {
   const [mode, setMode] = useState<SetupMode>("analysis");
+  const dispatch = useAppDispatch();
+  const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
   const { isAuthenticated, username, logout } = useLichessAuth();
   const { gameState, createSeek, startNewGame, resign } = useLichessGame();
+
+  // When FEN is manually edited, switch to Custom mode (only if not already custom)
+  const handleFenChange = useCallback((newFen: string) => {
+    if (selectedSetup !== CUSTOM_SETUP_ID) {
+      dispatch(setSelectedSetup(CUSTOM_SETUP_ID));
+    }
+    setFen(newFen);
+  }, [dispatch, setFen, selectedSetup]);
   const handleQuickPairing = async (timeControl: TimeControl) => {
     if (!isAuthenticated) {
       alert("Please log in with Lichess to play online");
@@ -60,12 +75,19 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
       <ModeTabs mode={mode} theme={theme} onModeChange={setMode} />
       {mode === "analysis" && (
         <div className="analysis-controls">
-          <SelectPosition theme={theme} setFen={setFen} />
+          <SelectPosition
+            theme={theme}
+            onCustomSelect={() => {
+              const fenInput = document.getElementById("edit-string") as HTMLInputElement;
+              fenInput?.focus();
+            }}
+          />
           <FenInput
             fen={fen}
             theme={theme}
-            onFenChange={setFen}
+            onFenChange={handleFenChange}
             onSubmitFen={submitFen}
+            isCustomMode={selectedSetup === CUSTOM_SETUP_ID}
           />
         </div>
       )}

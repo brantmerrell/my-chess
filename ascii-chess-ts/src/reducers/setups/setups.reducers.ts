@@ -1,7 +1,8 @@
 import { SET_SELECTED_SETUP } from "./setups.actions";
 import { AnyAction } from "redux";
+import { SetupOptions } from "../../models/SetupOptions";
 
-const initialState = "";
+const initialState = SetupOptions.STANDARD;
 
 export const selectedSetupReducer = (
   state = initialState,

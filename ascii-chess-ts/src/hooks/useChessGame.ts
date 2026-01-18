@@ -5,6 +5,7 @@ import { initialFen } from "../constants/env";
 import { ChessComPuzzleModel } from "../models/ChessComPuzzleModel";
 import { LiChessPuzzleModel } from "../models/LiChessPuzzleModel";
 import {
+  CUSTOM_SETUP_ID,
   SetupOptions,
   getSetupById,
   StaticPositionSetup,
@@ -38,23 +39,33 @@ export const useChessGame = (displayMode: PieceDisplayMode) => {
   } = useMoveHistory(displayMode);
 
   useEffect(() => {
+    // When switching to custom mode, clear history but don't reset the board
+    if (selectedSetup === CUSTOM_SETUP_ID) {
+      setPendingSetupHistory(undefined);
+      return;
+    }
+
     let newFen = initialFen;
     let newSetupHistory;
+    let shouldApply = false;
 
     const setup = getSetupById(selectedSetup);
     if (setup instanceof StaticPositionSetup) {
       newFen = setup.getFen();
+      shouldApply = true;
     } else {
       switch (selectedSetup) {
         case SetupOptions.LICHESS_DAILY_PUZZLE:
           if (liChessPuzzle?.initialPuzzleFEN) {
             newFen = liChessPuzzle.initialPuzzleFEN;
             newSetupHistory = liChessPuzzle.setupHistory;
+            shouldApply = true;
           }
           break;
         case SetupOptions.CHESS_COM_DAILY_PUZZLE:
           if (chessComPuzzle?.initialPuzzleFEN) {
             newFen = chessComPuzzle.initialPuzzleFEN;
+            shouldApply = true;
           }
           break;
       }
@@ -62,6 +73,12 @@ export const useChessGame = (displayMode: PieceDisplayMode) => {
 
     setLocalFen(newFen);
     setPendingSetupHistory(newSetupHistory);
+
+    // Auto-apply the position for non-custom setups
+    if (shouldApply) {
+      resetToPosition(newFen, newSetupHistory);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSetup, liChessPuzzle, chessComPuzzle]);
 
   const submitFen = () => {

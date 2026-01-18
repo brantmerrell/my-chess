@@ -16,7 +16,7 @@ const ModeTabs: React.FC<ModeTabsProps> = ({ mode, theme, onModeChange }) => {
         className={`tab ${mode === "analysis" ? "active" : ""} ${theme}`}
         onClick={() => onModeChange("analysis")}
       >
-        Custom
+        Sandbox
       </button>
       <button
         className={`tab ${mode === "play" ? "active" : ""} ${theme}`}

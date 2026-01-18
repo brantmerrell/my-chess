@@ -8,6 +8,7 @@ interface FenInputProps {
   onFenChange: (fen: string) => void;
   onSubmitFen: () => void;
   theme: BootstrapTheme;
+  isCustomMode: boolean;
 }
 
 const FenInput: React.FC<FenInputProps> = ({
@@ -15,6 +16,7 @@ const FenInput: React.FC<FenInputProps> = ({
   onFenChange,
   onSubmitFen,
   theme,
+  isCustomMode,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -144,6 +146,12 @@ const FenInput: React.FC<FenInputProps> = ({
           value={fen}
           onChange={handleInputChange}
           onSelect={handleInputSelect}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && isCustomMode) {
+              e.preventDefault();
+              onSubmitFen();
+            }
+          }}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
             if (isInteractingWithKeyboard.current) {
@@ -158,6 +166,7 @@ const FenInput: React.FC<FenInputProps> = ({
           id="submitFen"
           onClick={onSubmitFen}
           className="btn btn-primary"
+          disabled={!isCustomMode}
         >
           Submit FEN
         </button>

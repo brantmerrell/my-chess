@@ -101,7 +101,10 @@ export const getSetupsByCategory = (category: string): ChessSetup[] => {
   return CHESS_SETUPS.filter((setup) => setup.category === category);
 };
 
+export const CUSTOM_SETUP_ID = "custom";
+
 export const SetupOptions = {
+  CUSTOM: CUSTOM_SETUP_ID,
   STANDARD: "standard",
   LICHESS_DAILY_PUZZLE: "lichess-daily-puzzle",
   CHESS_COM_DAILY_PUZZLE: "chess-com-daily-puzzle",

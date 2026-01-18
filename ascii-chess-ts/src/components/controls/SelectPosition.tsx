@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import {
   CHESS_SETUPS,
+  CUSTOM_SETUP_ID,
   getSetupById,
   getSetupsByCategory,
   StaticPositionSetup,
@@ -14,24 +15,31 @@ import "./SelectPosition.css";
 
 interface SelectPositionProps {
   theme: BootstrapTheme;
-  setFen: (fen: string) => void;
+  onCustomSelect?: () => void;
 }
 
-const SelectPosition: React.FC<SelectPositionProps> = ({ theme, setFen }) => {
+const SelectPosition: React.FC<SelectPositionProps> = ({ theme, onCustomSelect }) => {
   const dispatch = useAppDispatch();
   const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const setupId = event.target.value;
 
+    // When "Custom" is selected, switch to custom mode and focus the FEN input
+    if (setupId === CUSTOM_SETUP_ID) {
+      dispatch(setSelectedSetup(CUSTOM_SETUP_ID));
+      onCustomSelect?.();
+      return;
+    }
+
     const setup = getSetupById(setupId);
 
     if (setup) {
       dispatch(setSelectedSetup(setupId));
 
-      if (setup instanceof StaticPositionSetup) {
-        setFen(setup.getFen());
-      } else {
+      // For non-static setups (puzzles), trigger the data fetch
+      // Static setups are handled by the useEffect in useChessGame
+      if (!(setup instanceof StaticPositionSetup)) {
         setup.load(dispatch);
       }
     }
@@ -66,6 +74,11 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme, setFen }) => {
           }
         }}
       >
+        {/* Custom option - always visible */}
+        <option key={CUSTOM_SETUP_ID} value={CUSTOM_SETUP_ID}>
+          Custom
+        </option>
+
         {/* Regular setups (no category) */}
         {CHESS_SETUPS.filter((setup) => !setup.category).map((setup) => (
           <option key={setup.id} value={setup.id}>
