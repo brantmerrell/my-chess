@@ -23,6 +23,7 @@ interface GraphViewProps {
   displayMode: PieceDisplayMode;
   showGrid?: boolean;
   flipBoard?: boolean;
+  lastMoveUCI?: string;
   onMoveAttempt?: (
     fromSquare: string,
     toSquare: string,
@@ -36,6 +37,7 @@ const GraphView: React.FC<GraphViewProps> = ({
   displayMode,
   showGrid = false,
   flipBoard = false,
+  lastMoveUCI,
   onMoveAttempt,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -190,6 +192,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         "arrowheadShadowProtection",
         "arrowheadAdjacency",
         "arrowheadGray",
+        "arrowheadLastMove",
       ])
       .join("marker")
       .attr("id", (d) => d)
@@ -211,6 +214,38 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("stroke", (d) => getEdgeStyle(d.type).color)
       .attr("stroke-width", 2)
       .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
+
+    // Draw yellow arrow for the last move
+    let lastMoveArrow: d3.Selection<SVGLineElement, unknown, null, undefined> | null = null;
+    if (lastMoveUCI && lastMoveUCI.length >= 4) {
+      const fromSquare = lastMoveUCI.slice(0, 2);
+      const toSquare = lastMoveUCI.slice(2, 4);
+
+      // Calculate coordinates directly from square names (don't rely on nodes existing)
+      const fromGridCoords = squareToCoords(fromSquare);
+      const toGridCoords = squareToCoords(toSquare);
+      let [fromX, fromY] = gridToScreen(fromGridCoords, width, height);
+      let [toX, toY] = gridToScreen(toGridCoords, width, height);
+
+      if (flipBoard) {
+        fromX = width - fromX;
+        fromY = height - fromY;
+        toX = width - toX;
+        toY = height - toY;
+      }
+
+      lastMoveArrow = g
+        .append("line")
+        .attr("class", "last-move-arrow")
+        .attr("stroke", "gold")
+        .attr("stroke-width", 4)
+        .attr("stroke-opacity", 0.8)
+        .attr("marker-end", "url(#arrowheadLastMove)")
+        .attr("x1", fromX)
+        .attr("y1", fromY)
+        .attr("x2", toX)
+        .attr("y2", toY);
+    }
 
     const visibleNodes = nodes.filter((d) => d.piece_type !== "phantom");
     const phantomNodes = nodes.filter((d) => d.piece_type === "phantom");
@@ -348,6 +383,7 @@ const GraphView: React.FC<GraphViewProps> = ({
     displayMode,
     showGrid,
     flipBoard,
+    lastMoveUCI,
     onMoveAttempt,
     dimensions,
   ]);

@@ -6,6 +6,7 @@ export const arrowheadColors: Record<string, string> = {
   arrowheadShadowThreat: "crimson",
   arrowheadShadowProtection: "forestgreen",
   arrowheadAdjacency: "dodgerblue",
+  arrowheadLastMove: "gold",
 };
 
 export const getNodeStyle = (color: string) => {

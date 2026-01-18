@@ -649,6 +649,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
               displayMode={displayMode}
               showGrid={showGrid}
               flipBoard={flipBoard}
+              lastMoveUCI={chessGameState.positions[chessGameState.currentPositionIndex]?.uci}
               onMoveAttempt={handleMoveAttempt}
             />
           </div>
