@@ -1,6 +1,5 @@
 # Planned Integrations
 
-
 ## Lichess Integration
 
 Integrate with the lichess API to access the following features:  
