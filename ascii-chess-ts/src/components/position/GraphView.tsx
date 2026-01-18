@@ -43,7 +43,11 @@ const GraphView: React.FC<GraphViewProps> = ({
   const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
 
   // Track pending moves to avoid re-rendering with stale data
-  const pendingMoveRef = useRef<{ from: string; to: string } | null>(null);
+  const pendingMoveRef = useRef<{
+    from: string;
+    to: string;
+    pieceType: string;
+  } | null>(null);
 
   // Handle container resize
   useEffect(() => {
@@ -71,19 +75,31 @@ const GraphView: React.FC<GraphViewProps> = ({
 
     // Check if there's a pending move that hasn't been reflected in the data yet
     if (pendingMoveRef.current) {
-      const { from, to } = pendingMoveRef.current;
-      const pieceStillAtFrom = linksData.nodes?.some(
+      const { from, to, pieceType } = pendingMoveRef.current;
+      const pieceAtFrom = linksData.nodes?.find(
         (n: LinkNode) => n.square === from && n.piece_type !== "phantom"
       );
-      const pieceAtTo = linksData.nodes?.some(
+      const pieceAtTo = linksData.nodes?.find(
         (n: LinkNode) => n.square === to && n.piece_type !== "phantom"
       );
+      console.log("[EFFECT:pending]", {
+        from,
+        to,
+        pieceType,
+        pieceAtFrom: pieceAtFrom?.piece_type,
+        pieceAtTo: pieceAtTo?.piece_type,
+      });
 
-      if (pieceStillAtFrom && !pieceAtTo) {
+      const pieceStillAtFrom = pieceAtFrom?.piece_type === pieceType;
+      const movedPieceAtTo = pieceAtTo?.piece_type === pieceType;
+
+      if (pieceStillAtFrom || !movedPieceAtTo) {
         // Data is stale - skip this render to avoid snap-back
+        console.log("[EFFECT:pending] SKIPPING - stale data");
         return;
       } else {
         // Data has been updated - clear the pending move
+        console.log("[EFFECT:pending] data updated, clearing");
         pendingMoveRef.current = null;
       }
     }
@@ -239,7 +255,11 @@ const GraphView: React.FC<GraphViewProps> = ({
           if (targetSquare && startSquare && targetSquare !== startSquare) {
             const uciMove = startSquare + targetSquare;
             // Set pending move before calling onMoveAttempt to catch stale re-renders
-            pendingMoveRef.current = { from: startSquare, to: targetSquare };
+            pendingMoveRef.current = {
+              from: startSquare,
+              to: targetSquare,
+              pieceType: d.piece_type,
+            };
             moveWasValid = onMoveAttempt(startSquare, targetSquare, uciMove);
             if (!moveWasValid) {
               // Move was rejected, clear the pending move
