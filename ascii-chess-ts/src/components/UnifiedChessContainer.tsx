@@ -52,7 +52,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   setDisplayMode,
 }) => {
   const { theme } = useTheme();
-  // Initialize mode from URL or default to "analysis"
   const [mode, setMode] = useState<SetupMode>(() => {
     const urlState = parseUrlParams();
     return urlState.mode;
@@ -140,6 +139,30 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     setNotificationCallback(showNotification);
     return () => setNotificationCallback(null);
   }, [setNotificationCallback, showNotification]);
+
+  // Handler that couples connection type with display mode and grid
+  const handleConnectionTypeChange = React.useCallback(
+    (newConnectionType: ConnectionType) => {
+      setConnectionType(newConnectionType);
+      setShowGrid(newConnectionType === "none");
+
+      // Set display mode based on connection type
+      switch (newConnectionType) {
+        case "none":
+          setDisplayMode("full");
+          break;
+        case "adjacencies":
+          setDisplayMode("masked");
+          break;
+        case "links":
+        case "king_box":
+        case "shadows":
+          setDisplayMode("symbols");
+          break;
+      }
+    },
+    [setDisplayMode]
+  );
 
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
@@ -497,7 +520,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             setShowGrid(!showGrid);
           }
           break;
-        // PieceViewSelector keybindings (1-4)
         case "1":
           e.preventDefault();
           setDisplayMode("symbols");
@@ -518,27 +540,27 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "n":
         case "N":
           e.preventDefault();
-          setConnectionType("none");
+          handleConnectionTypeChange("none");
           break;
         case "a":
         case "A":
           e.preventDefault();
-          setConnectionType("adjacencies");
+          handleConnectionTypeChange("adjacencies");
           break;
         case "i":
         case "I":
           e.preventDefault();
-          setConnectionType("links");
+          handleConnectionTypeChange("links");
           break;
         case "g":
         case "G":
           e.preventDefault();
-          setConnectionType("king_box");
+          handleConnectionTypeChange("king_box");
           break;
         case "s":
         case "S":
           e.preventDefault();
-          setConnectionType("shadows");
+          handleConnectionTypeChange("shadows");
           break;
       }
     };
@@ -554,7 +576,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     showGrid,
     selectedPositionalView,
     setDisplayMode,
-    setConnectionType,
+    handleConnectionTypeChange,
     showNotification,
   ]);
   React.useEffect(() => {
@@ -688,13 +710,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         {showConnectionTypeSelector && (
           <ConnectionTypeSelector
             connectionType={connectionType}
-            onConnectionTypeChange={setConnectionType}
+            onConnectionTypeChange={handleConnectionTypeChange}
           />
         )}
-        <PieceViewSelector
-          displayMode={displayMode}
-          onDisplayModeChange={setDisplayMode}
-        />
         {selectedPositionalView === "graph" && (
           <div className="form-group">
             <label className="form-check-label">

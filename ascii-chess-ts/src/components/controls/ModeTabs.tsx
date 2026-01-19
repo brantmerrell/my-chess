@@ -1,7 +1,7 @@
 import React from "react";
 import { BootstrapTheme } from "./ThemeSelector";
 
-type SetupMode = "analysis" | "play";
+type SetupMode = "play" | "analysis";
 
 interface ModeTabsProps {
   mode: SetupMode;

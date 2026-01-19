@@ -20,7 +20,7 @@ import { setSelectedSetup } from "../../reducers/setups/setups.actions";
 import { CUSTOM_SETUP_ID } from "../../models/SetupOptions";
 import "./SetupMode.css";
 
-export type SetupMode = "analysis" | "play";
+export type SetupMode = "play" | "analysis";
 
 interface SetupModeProps {
   theme: BootstrapTheme;
