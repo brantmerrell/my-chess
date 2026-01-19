@@ -188,6 +188,8 @@ const GraphView: React.FC<GraphViewProps> = ({
       .data([
         "arrowheadThreat",
         "arrowheadProtection",
+        "arrowheadCasterThreat",
+        "arrowheadCasterProtection",
         "arrowheadShadowThreat",
         "arrowheadShadowProtection",
         "arrowheadAdjacency",
@@ -212,7 +214,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       .data(links)
       .join("line")
       .attr("stroke", (d) => getEdgeStyle(d.type).color)
-      .attr("stroke-width", 2)
+      .attr("stroke-width", (d) => getEdgeStyle(d.type).width)
       .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
     // Draw yellow arrow for the last move
@@ -240,7 +242,6 @@ const GraphView: React.FC<GraphViewProps> = ({
         .attr("stroke", "gold")
         .attr("stroke-width", 4)
         .attr("stroke-opacity", 0.8)
-        .attr("marker-end", "url(#arrowheadLastMove)")
         .attr("x1", fromX)
         .attr("y1", fromY)
         .attr("x2", toX)
