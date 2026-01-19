@@ -217,8 +217,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("stroke-width", (d) => getEdgeStyle(d.type).width)
       .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
 
-    // Draw yellow arrow for the last move
-    let lastMoveArrow: d3.Selection<SVGLineElement, unknown, null, undefined> | null = null;
+    // Draw yellow line for the last move
     if (lastMoveUCI && lastMoveUCI.length >= 4) {
       const fromSquare = lastMoveUCI.slice(0, 2);
       const toSquare = lastMoveUCI.slice(2, 4);
@@ -236,8 +235,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         toY = height - toY;
       }
 
-      lastMoveArrow = g
-        .append("line")
+      g.append("line")
         .attr("class", "last-move-arrow")
         .attr("stroke", "gold")
         .attr("stroke-width", 4)

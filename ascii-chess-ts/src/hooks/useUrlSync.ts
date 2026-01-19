@@ -3,7 +3,12 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "../app/hooks";
 import { RootState, loadFen, makeMove } from "../app/store";
 import { setSelectedSetup } from "../reducers/setups/setups.actions";
-import { CUSTOM_SETUP_ID, SetupOptions } from "../models/SetupOptions";
+import {
+  CUSTOM_SETUP_ID,
+  SetupOptions,
+  getSetupById,
+  StaticPositionSetup,
+} from "../models/SetupOptions";
 import { SetupMode } from "../components/controls/SetupMode";
 
 export type AppMode = SetupMode;
@@ -121,6 +126,12 @@ export const useUrlSync = ({ mode, onModeChange }: UseUrlSyncOptions) => {
     // Set setup
     if (urlState.setup && urlState.setup !== selectedSetup) {
       dispatch(setSelectedSetup(urlState.setup));
+
+      // For non-static setups (puzzles), trigger the data fetch
+      const setup = getSetupById(urlState.setup);
+      if (setup && !(setup instanceof StaticPositionSetup)) {
+        setup.load(dispatch);
+      }
     }
 
     // For custom mode with FEN/PGN, load the position
