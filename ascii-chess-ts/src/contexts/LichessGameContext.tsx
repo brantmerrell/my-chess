@@ -2,70 +2,24 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
-  useRef,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 import { useDispatch } from "react-redux";
 import { lichessGame } from "../services/lichess/game";
-import { lichessAuth } from "../services/lichess/auth";
 import { useLichessAuth } from "../hooks/useLichessAuth";
-import { makeMove, loadFen } from "../app/store";
-import { ChessGame } from "../chess/chessGame";
+import { loadFen } from "../app/store";
+import {
+  GameState,
+  LichessGameContextType,
+  initialGameState,
+} from "../types/lichessGame";
+import { parseGameResult } from "../utils/gameResultParser";
+import { useMoveProcessor } from "../hooks/useMoveProcessor";
+import { useLichessStreams } from "../hooks/useLichessStreams";
 
-interface GameState {
-  gameId: string | null;
-  gameUrl: string | null;
-  isPlaying: boolean;
-  color: "white" | "black" | null;
-  opponentName: string | null;
-  status: string;
-  timeLeft: { white: number; black: number } | null;
-  connectionStatus: "connected" | "connecting" | "disconnected" | "error";
-  connectionError?: string;
-  isMyTurn: boolean;
-  winner?: "white" | "black" | null;
-  gameResult?: {
-    result: "win" | "loss" | "draw";
-    reason:
-      | "mate"
-      | "resign"
-      | "timeout"
-      | "draw"
-      | "stalemate"
-      | "insufficient"
-      | "abort"
-      | "unknown";
-    winner?: "white" | "black" | null;
-  };
-}
-
-interface MoveCache {
-  processedMoves: string[];
-  gameInstance: ChessGame;
-  lastMoveIndex: number;
-}
-
-interface LichessGameContextType {
-  gameState: GameState;
-  createSeek: (timeControl: {
-    minutes: number;
-    increment: number;
-  }) => Promise<boolean>;
-  sendMove: (from: string, to: string, promotion?: string) => Promise<boolean>;
-  resign: () => Promise<void>;
-  getCurrentPosition: () => ChessGame;
-  startNewGame: () => void;
-  setNotificationCallback: (
-    callback:
-      | ((
-          message: string,
-          type: "error" | "warning" | "success" | "info",
-        ) => void)
-      | null,
-  ) => void;
-}
+const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 const LichessGameContext = createContext<LichessGameContextType | null>(null);
 
@@ -74,104 +28,18 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const dispatch = useDispatch();
   const { username, isAuthenticated } = useLichessAuth();
-  const notificationCallbackRef = useRef<
-    | ((
-        message: string,
-        type: "error" | "warning" | "success" | "info",
-      ) => void)
-    | null
-  >(null);
-  const [gameState, setGameState] = useState<GameState>({
-    gameId: null,
-    gameUrl: null,
-    isPlaying: false,
-    color: null,
-    opponentName: null,
-    status: "idle",
-    timeLeft: null,
-    connectionStatus: "disconnected",
-    isMyTurn: false,
-    winner: null,
-    gameResult: undefined,
-  });
+  const [gameState, setGameState] = useState<GameState>(initialGameState);
 
-  const gameStreamRef = useRef<{ close: () => void } | null>(null);
-  const eventStreamRef = useRef<{ close: () => void } | null>(null);
-  const moveCacheRef = useRef<MoveCache>({
-    processedMoves: [],
-    gameInstance: new ChessGame(),
-    lastMoveIndex: -1,
-  });
-  const pendingSentMovesRef = useRef<Set<string>>(new Set());
+  const {
+    processMoves,
+    resetToStartingPosition,
+    addPendingMove,
+    getGameInstance,
+    setNotificationCallback,
+    moveCacheRef,
+  } = useMoveProcessor();
 
-  const parseGameResult = useCallback(
-    (data: any, myColor: "white" | "black" | null) => {
-      const status = data.status;
-      const winner = data.winner;
-
-      console.log("[LichessGameContext] Parsing game result:", {
-        status,
-        winner,
-        myColor,
-      });
-
-      if (!myColor) return undefined;
-
-      let reason:
-        | "mate"
-        | "resign"
-        | "timeout"
-        | "draw"
-        | "stalemate"
-        | "insufficient"
-        | "abort"
-        | "unknown" = "unknown";
-      let result: "win" | "loss" | "draw" = "draw";
-
-      switch (status) {
-        case "mate":
-          reason = "mate";
-          break;
-        case "resign":
-          reason = "resign";
-          break;
-        case "timeout":
-        case "outoftime":
-          reason = "timeout";
-          break;
-        case "draw":
-          reason = "draw";
-          break;
-        case "stalemate":
-          reason = "stalemate";
-          break;
-        case "variantEnd":
-        case "unknownFinish":
-          reason = "unknown";
-          break;
-        case "aborted":
-          reason = "abort";
-          break;
-        default:
-          console.warn("[LichessGameContext] Unknown game status:", status);
-          reason = "unknown";
-      }
-
-      if (winner) {
-        result = winner === myColor ? "win" : "loss";
-      } else {
-        result = "draw";
-      }
-
-      return {
-        result,
-        reason,
-        winner: winner || null,
-      };
-    },
-    [],
-  );
-
+  // Handle game connection status changes
   const handleGameConnectionChange = useCallback(
     (connected: boolean, error?: string) => {
       setGameState((prev) => ({
@@ -187,190 +55,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
     [],
   );
 
-  const handleEventConnectionChange = useCallback(
-    (connected: boolean, error?: string) => {
-      if (!connected && error) {
-        console.error("Event stream connection error:", error);
-      }
-    },
-    [],
-  );
-
-  const processMoves = useCallback(
-    (movesString: string) => {
-      if (!movesString) {
-        console.log(
-          "[LichessGameContext] No moves string, resetting to initial position",
-        );
-        moveCacheRef.current = {
-          processedMoves: [],
-          gameInstance: new ChessGame(),
-          lastMoveIndex: -1,
-        };
-        dispatch(
-          loadFen({
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-          }),
-        );
-        return;
-      }
-
-      const moves = movesString.split(" ").filter((m) => m);
-      const cache = moveCacheRef.current;
-
-      if (
-        moves.length < cache.processedMoves.length ||
-        (cache.processedMoves.length > 0 &&
-          !movesString.startsWith(cache.processedMoves.join(" ")))
-      ) {
-        console.log(
-          "[LichessGameContext] Full game reset detected, replaying all moves",
-        );
-        cache.processedMoves = [];
-        cache.gameInstance = new ChessGame();
-        cache.lastMoveIndex = -1;
-        dispatch(
-          loadFen({
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-          }),
-        );
-      }
-
-      const newMoves = moves.slice(cache.lastMoveIndex + 1);
-      if (newMoves.length === 0) {
-        return;
-      }
-
-      console.log(
-        `[LichessGameContext] Processing ${newMoves.length} new moves starting from index ${cache.lastMoveIndex + 1}`,
-      );
-
-      for (let i = 0; i < newMoves.length; i++) {
-        const uciMove = newMoves[i];
-        try {
-          const from = uciMove.substring(0, 2);
-          const to = uciMove.substring(2, 4);
-          const promotion = uciMove.substring(4, 5);
-
-          const legalMoves = cache.gameInstance.getVerboseMoves();
-          console.log(
-            `[LichessGameContext] Processing UCI move: ${uciMove}, from: ${from}, to: ${to}, promotion: ${promotion}`,
-          );
-
-          // Special logging for castling moves
-          const isCastling =
-            (from === "e1" && (to === "g1" || to === "c1")) ||
-            (from === "e8" && (to === "g8" || to === "c8"));
-          if (isCastling) {
-            console.log(`[LichessGameContext] CASTLING DETECTED: ${uciMove}`);
-            console.log(
-              `[LichessGameContext] Current FEN before move: ${cache.gameInstance.toFen()}`,
-            );
-            console.log(
-              `[LichessGameContext] Available castling moves:`,
-              legalMoves.filter(
-                (m: any) =>
-                  m.flags && (m.flags.includes("k") || m.flags.includes("q")),
-              ),
-            );
-          }
-
-          const matchingMove = legalMoves.find(
-            (m: any) =>
-              m.from === from &&
-              m.to === to &&
-              (!promotion || m.promotion === promotion),
-          );
-
-          if (matchingMove) {
-            console.log(
-              `[LichessGameContext] Found matching move: ${matchingMove.san} for UCI ${uciMove}`,
-            );
-            if (isCastling) {
-              console.log(`[LichessGameContext] Castling move details:`, {
-                san: matchingMove.san,
-                flags: matchingMove.flags,
-                from: matchingMove.from,
-                to: matchingMove.to,
-              });
-            }
-
-            try {
-              const moveResult = cache.gameInstance.makeMove(matchingMove.san);
-              console.log(
-                `[LichessGameContext] Move result:`,
-                moveResult ? "SUCCESS" : "FAILED",
-              );
-              if (isCastling) {
-                console.log(
-                  `[LichessGameContext] FEN after castling: ${cache.gameInstance.toFen()}`,
-                );
-              }
-              dispatch(makeMove(matchingMove.san));
-              cache.processedMoves.push(uciMove);
-              cache.lastMoveIndex++;
-
-              if (notificationCallbackRef.current) {
-                if (pendingSentMovesRef.current.has(uciMove)) {
-                  pendingSentMovesRef.current.delete(uciMove);
-                  notificationCallbackRef.current(
-                    `${uciMove} confirmed by Lichess`,
-                    "success",
-                  );
-                } else {
-                  notificationCallbackRef.current(
-                    `${uciMove} received from opponent`,
-                    "info",
-                  );
-                }
-              }
-            } catch (error) {
-              console.error(
-                `[LichessGameContext] Failed to make move ${matchingMove.san}:`,
-                error,
-              );
-              cache.lastMoveIndex++;
-              continue;
-            }
-          } else {
-            console.error(
-              `[LichessGameContext] No matching move found for UCI ${uciMove} (${from}-${to})`,
-            );
-            if (isCastling) {
-              console.error(
-                `[LichessGameContext] Castling rights and position:`,
-                {
-                  fen: cache.gameInstance.toFen(),
-                  availableMoves: legalMoves
-                    .map((m: any) => `${m.from}-${m.to}`)
-                    .slice(0, 10),
-                },
-              );
-            }
-
-            // Mark this move as processed even though we couldn't apply it
-            // This prevents infinite loops
-            cache.lastMoveIndex++;
-            console.log(
-              `[LichessGameContext] Skipping invalid move and continuing...`,
-            );
-            continue;
-          }
-        } catch (error) {
-          console.error(
-            `[LichessGameContext] Error processing move ${uciMove}:`,
-            error,
-          );
-          // Mark as processed to avoid infinite loops
-          cache.lastMoveIndex++;
-          continue;
-        }
-      }
-    },
-    [dispatch],
-  );
-
-  // Handle incoming moves from Lichess
+  // Handle incoming game updates from Lichess
   const handleGameUpdate = useCallback(
     (data: any) => {
       console.log("[LichessGameContext] Game update:", data.type);
@@ -415,8 +100,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
             : data.white.name || data.white.id,
           status:
             data.state.status === "started" ? "playing" : data.state.status,
-          // Determine if it's my turn based on whose turn it is in the current position
-          // Note: empty moves string means no moves have been made (white's turn)
           isMyTurn:
             isWhite ===
             (data.state.moves.trim() === ""
@@ -426,20 +109,8 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
           gameResult: gameResult,
         }));
 
-        // Reset both cache and Redux store for new game
-        moveCacheRef.current = {
-          processedMoves: [],
-          gameInstance: new ChessGame(),
-          lastMoveIndex: -1,
-        };
-
-        // Reset Redux store to starting position
-        dispatch(
-          loadFen({
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-          }),
-        );
-
+        // Reset and process moves for new game
+        resetToStartingPosition();
         processMoves(data.state.moves);
       } else if (data.type === "gameState") {
         processMoves(data.moves);
@@ -451,8 +122,6 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
             white: data.wtime,
             black: data.btime,
           },
-          // Update turn based on number of moves
-          // Note: empty moves string means no moves have been made (white's turn)
           isMyTurn:
             prev.color === "white"
               ? data.moves.trim() === ""
@@ -481,15 +150,37 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
               gameResult,
             };
           });
-
-          if (gameStreamRef.current) {
-            gameStreamRef.current.close();
-            gameStreamRef.current = null;
-          }
         }
       }
     },
-    [username, processMoves],
+    [username, processMoves, resetToStartingPosition],
+  );
+
+  // Handle events like game start, challenges
+  const handleEvent = useCallback((data: any) => {
+    if (data.type === "gameStart") {
+      setGameState((prev) => {
+        const newState = {
+          ...prev,
+          status: "starting",
+          gameId: data.game?.id || prev.gameId,
+          gameUrl: data.game?.id
+            ? `https://lichess.org/${data.game.id}`
+            : prev.gameUrl,
+        };
+        console.log("[LichessGameContext] State transition on gameStart:", {
+          from: prev,
+          to: newState,
+        });
+        return newState;
+      });
+    }
+  }, []);
+
+  const { closeGameStream } = useLichessStreams(
+    handleGameUpdate,
+    handleGameConnectionChange,
+    handleEvent,
   );
 
   // Send move to Lichess
@@ -546,7 +237,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
       const uciMove = from + to + (promotion || "");
       console.log("[LichessGameContext] Sending UCI move to Lichess:", uciMove);
 
-      pendingSentMovesRef.current.add(uciMove);
+      addPendingMove(uciMove);
 
       try {
         const result = await lichessGame.makeMove(gameState.gameId, uciMove);
@@ -576,82 +267,10 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
       gameState.isMyTurn,
       gameState.color,
       gameState.status,
+      moveCacheRef,
+      addPendingMove,
     ],
   );
-
-  // Start listening to game events with reconnection support
-  const startGameStream = useCallback(
-    (gameId: string) => {
-      if (gameStreamRef.current) {
-        gameStreamRef.current.close();
-      }
-
-      gameStreamRef.current = lichessGame.streamGame(
-        gameId,
-        handleGameUpdate,
-        handleGameConnectionChange,
-      );
-    },
-    [handleGameUpdate, handleGameConnectionChange],
-  );
-
-  // Handle incoming events (challenges, game starts)
-  const handleEvent = useCallback(
-    (data: any) => {
-      console.log("[LichessGameContext] Event received:", data);
-
-      if (data.type === "gameStart") {
-        console.log("[LichessGameContext] Game starting event:", {
-          gameId: data.game?.id,
-          fullData: data,
-        });
-
-        // Clear seeking status when game starts
-        setGameState((prev) => {
-          const newState = {
-            ...prev,
-            status: "starting",
-            gameId: data.game?.id || prev.gameId,
-            gameUrl: data.game?.id
-              ? `https://lichess.org/${data.game.id}`
-              : prev.gameUrl,
-          };
-          console.log("[LichessGameContext] State transition on gameStart:", {
-            from: prev,
-            to: newState,
-          });
-          return newState;
-        });
-
-        if (data.game?.id) {
-          startGameStream(data.game.id);
-        }
-      } else if (data.type === "challenge") {
-        console.log("[LichessGameContext] Challenge received:", data.challenge);
-        // TODO: show UI for this
-      }
-    },
-    [startGameStream],
-  );
-
-  // Start event stream when component mounts with reconnection support
-  useEffect(() => {
-    if (lichessAuth.isAuthenticated()) {
-      eventStreamRef.current = lichessGame.streamEvents(
-        handleEvent,
-        handleEventConnectionChange,
-      );
-    }
-
-    return () => {
-      if (eventStreamRef.current) {
-        eventStreamRef.current.close();
-      }
-      if (gameStreamRef.current) {
-        gameStreamRef.current.close();
-      }
-    };
-  }, [handleEvent, handleEventConnectionChange]);
 
   // Create a seek and wait for pairing
   const createSeek = useCallback(
@@ -696,70 +315,26 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
 
   // Get current position from cache for move validation
   const getCurrentPosition = useCallback(() => {
-    return moveCacheRef.current.gameInstance;
-  }, []);
-
-  const setNotificationCallback = useCallback(
-    (
-      callback:
-        | ((
-            message: string,
-            type: "error" | "warning" | "success" | "info",
-          ) => void)
-        | null,
-    ) => {
-      notificationCallbackRef.current = callback;
-    },
-    [],
-  );
+    return getGameInstance();
+  }, [getGameInstance]);
 
   // Start a new game - resets game state for a fresh start
   const startNewGame = useCallback(() => {
     console.log("[LichessGameContext] Starting new game - resetting state");
 
-    // Close any existing streams
-    if (gameStreamRef.current) {
-      gameStreamRef.current.close();
-      gameStreamRef.current = null;
-    }
+    closeGameStream();
 
-    // Reset game state
-    setGameState((prev) => ({
-      ...prev,
-      gameId: null,
-      gameUrl: null,
-      isPlaying: false,
-      color: null,
-      opponentName: null,
-      status: "idle",
-      timeLeft: null,
-      isMyTurn: false,
-      winner: null,
-      gameResult: undefined,
-    }));
+    setGameState(initialGameState);
+    resetToStartingPosition();
+    dispatch(loadFen({ fen: STARTING_FEN }));
+  }, [dispatch, closeGameStream, resetToStartingPosition]);
 
-    // Reset move cache
-    moveCacheRef.current = {
-      processedMoves: [],
-      gameInstance: new ChessGame(),
-      lastMoveIndex: -1,
-    };
-
-    pendingSentMovesRef.current.clear();
-
-    // Reset Redux store to starting position
-    dispatch(
-      loadFen({
-        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-      }),
-    );
-  }, [dispatch]);
-
+  // Reset when user logs out
   useEffect(() => {
     if (!isAuthenticated && gameState.gameId) {
       startNewGame();
     }
-  }, [isAuthenticated, gameState.gameId, startNewGame, username]);
+  }, [isAuthenticated, gameState.gameId, startNewGame]);
 
   const value: LichessGameContextType = {
     gameState,

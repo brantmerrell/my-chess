@@ -6,7 +6,6 @@ import HistoryTable from "./history/HistoryTable";
 import KeybindingIndicators from "./common/KeybindingIndicators";
 import MoveControls from "./controls/MoveControls";
 import NavigationControls from "./controls/NavigationControls";
-import PieceViewSelector from "./controls/PieceViewSelector";
 import PromotionDialog from "./PromotionDialog";
 import React, { useEffect, useMemo, useState } from "react";
 import { useAppDispatch } from "../app/hooks";
@@ -66,8 +65,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [activeMobileView, setActiveMobileView] = React.useState<
     "positional" | "historical"
   >("positional");
-  const [selectedPositionalView, _setSelectedPositionalView] =
-    React.useState<PositionalViewType>("graph");
+  const [selectedPositionalView] = React.useState<PositionalViewType>("graph");
   const [selectedHistoricalView, setSelectedHistoricalView] =
     React.useState<HistoricalViewType>("history");
   const [connectionType, setConnectionType] =
@@ -76,7 +74,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [processedEdges, setProcessedEdges] = React.useState<ProcessedEdge[]>(
     []
   );
-  const [showFenControls, setShowFenControls] = React.useState<boolean>(false);
+  const [showFenControls] = React.useState<boolean>(false);
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
   const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
@@ -94,8 +92,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     toSquare: "",
   });
 
-  const { fen, setFen, submitFen, submitUndoMove } =
-    useChessGame(displayMode);
+  const { fen, setFen, submitFen, submitUndoMove } = useChessGame(displayMode);
   const { gameState, sendMove, getCurrentPosition, setNotificationCallback } =
     useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
@@ -452,7 +449,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
         case "F":
           e.preventDefault();
-          if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const fenInput = document.querySelector(
             "#edit-string"
           ) as HTMLInputElement;
@@ -463,7 +459,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         case "f":
           e.preventDefault(); // Prevent alphabetical selection in dropdown
           console.log("f");
-          if (!showFenControls) setShowFenControls(true); // Open Setup accordion
           const positionSelector = document.querySelector(
             "#position-selector"
           ) as HTMLSelectElement;
@@ -671,7 +666,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
               displayMode={displayMode}
               showGrid={showGrid}
               flipBoard={flipBoard}
-              lastMoveUCI={chessGameState.positions[chessGameState.currentPositionIndex]?.uci}
+              lastMoveUCI={
+                chessGameState.positions[chessGameState.currentPositionIndex]
+                  ?.uci
+              }
               onMoveAttempt={handleMoveAttempt}
             />
           </div>
