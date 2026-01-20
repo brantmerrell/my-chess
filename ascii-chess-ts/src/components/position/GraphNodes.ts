@@ -27,6 +27,7 @@ export const renderNodes = (
   links: SimulationLink[],
   displayMode: PieceDisplayMode,
   showGrid: boolean,
+  height: number,
   dragBehavior: d3.DragBehavior<
     SVGGElement,
     SimulationNode,
@@ -75,8 +76,8 @@ export const renderNodes = (
       textElement
         .append("tspan")
         .attr("x", 0)
-        .attr("dy", getNodeTextPositioning(displayMode, showGrid, false))
-        .attr("font-size", getNodeFontSize(displayMode, showGrid, false))
+        .attr("dy", getNodeTextPositioning(displayMode, showGrid, height, false))
+        .attr("font-size", getNodeFontSize(displayMode, showGrid, height, false))
         .attr("font-family", CHESS_FONT_FAMILY)
         .attr("font-weight", "500")
         .attr("font-variant-numeric", "tabular-nums")
@@ -89,8 +90,8 @@ export const renderNodes = (
         textElement
           .append("tspan")
           .attr("x", 0)
-          .attr("dy", getNodeTextPositioning(displayMode, showGrid, true))
-          .attr("font-size", getNodeFontSize(displayMode, showGrid, true))
+          .attr("dy", getNodeTextPositioning(displayMode, showGrid, height, true))
+          .attr("font-size", getNodeFontSize(displayMode, showGrid, height, true))
           .attr("font-weight", "bold")
           .attr("fill", () => {
             if (displayMode === "full") {

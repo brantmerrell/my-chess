@@ -1,6 +1,6 @@
 import { PieceDisplayMode } from "../types/chess";
 import { LinkNode } from "../types/visualization";
-import { FONT_SIZES, TEXT_POSITIONING } from "./graphConstants";
+import { getFontSizes, getTextPositioning } from "./graphConstants";
 
 type SimulationNode = LinkNode & { x?: number; y?: number };
 type SimulationLink = {
@@ -25,61 +25,66 @@ export const calculateNodeCheckStatus = (
 export const getNodeFontSize = (
   displayMode: PieceDisplayMode,
   showGrid: boolean,
+  height: number,
   isLabel: boolean = false,
-): string => {
+): number => {
+  const fontSizes = getFontSizes(height);
+
   if (isLabel) {
-    return FONT_SIZES[displayMode]?.label || FONT_SIZES.default.label;
+    return fontSizes[displayMode]?.label || fontSizes.default.label;
   }
 
   if (displayMode === "symbols") {
-    return FONT_SIZES.symbols.main;
+    return fontSizes.symbols.main;
   }
 
   if (displayMode === "full") {
-    return FONT_SIZES.full.main;
+    return fontSizes.full.main;
   }
 
   if (displayMode === "masked") {
     return showGrid
-      ? FONT_SIZES.masked.mainWithGrid
-      : FONT_SIZES.masked.mainNoGrid;
+      ? fontSizes.masked.mainWithGrid
+      : fontSizes.masked.mainNoGrid;
   }
 
-  return FONT_SIZES[displayMode]?.main || FONT_SIZES.default.main;
+  return fontSizes[displayMode]?.main || fontSizes.default.main;
 };
 
 export const getNodeTextPositioning = (
   displayMode: PieceDisplayMode,
   showGrid: boolean,
+  height: number,
   isLabel: boolean = false,
-): string | number => {
+): number => {
+  const positioning = getTextPositioning(height);
+
   if (isLabel) {
-    const positioning =
-      TEXT_POSITIONING[displayMode] || TEXT_POSITIONING.default;
-    return positioning.labelDy;
+    const modePositioning = positioning[displayMode] || positioning.default;
+    return modePositioning.labelDy;
   }
 
   if (displayMode === "full") {
-    return TEXT_POSITIONING.full.mainDy;
+    return positioning.full.mainDy;
   }
 
   if (displayMode === "symbols") {
     return showGrid
-      ? TEXT_POSITIONING.symbols.mainDyWithGrid
-      : TEXT_POSITIONING.symbols.mainDyNoGrid;
+      ? positioning.symbols.mainDyWithGrid
+      : positioning.symbols.mainDyNoGrid;
   }
 
   if (displayMode === "masked") {
     return showGrid
-      ? TEXT_POSITIONING.masked.mainDyWithGrid
-      : TEXT_POSITIONING.masked.mainDyNoGrid;
+      ? positioning.masked.mainDyWithGrid
+      : positioning.masked.mainDyNoGrid;
   }
 
   if (displayMode === "letters") {
     return showGrid
-      ? TEXT_POSITIONING.letters.mainDyWithGrid
-      : TEXT_POSITIONING.letters.mainDyNoGrid;
+      ? positioning.letters.mainDyWithGrid
+      : positioning.letters.mainDyNoGrid;
   }
 
-  return TEXT_POSITIONING.default.mainDy;
+  return positioning.default.mainDy;
 };

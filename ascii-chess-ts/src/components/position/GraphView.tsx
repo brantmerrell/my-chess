@@ -335,6 +335,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       links,
       displayMode,
       showGrid,
+      height,
       dragBehavior
     );
     const phantomMarkers = renderPhantomMarkers(g, phantomNodes, links);

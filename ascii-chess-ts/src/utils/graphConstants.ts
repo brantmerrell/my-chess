@@ -1,56 +1,67 @@
 export const GRID_MARGIN = 50;
 export const NODE_RADIUS = 18;
 
-export const FONT_SIZES = {
-  symbols: {
-    main: "24px",
-    label: "10px",
-  },
-  full: {
-    main: "90px",
-    label: "10px",
-  },
-  masked: {
-    mainWithGrid: "36px",
-    mainNoGrid: "28px",
-    label: "10px",
-  },
-  letters: {
-    main: "24px",
-    label: "10px",
-  },
-  default: {
-    main: "24px",
-    label: "10px",
-  },
-} as const;
+// Base height used for proportion calculations
+const BASE_HEIGHT = 600;
 
-export const TEXT_POSITIONING = {
-  symbols: {
-    mainDy: 8,
-    mainDyWithGrid: 8,
-    mainDyNoGrid: 0,
-    labelDy: "1.2em",
-  },
-  full: {
-    mainDy: 30,
-    labelDy: "-2px",
-  },
-  masked: {
-    mainDyWithGrid: 18,
-    mainDyNoGrid: 8,
-    labelDy: "0.2em",
-  },
-  letters: {
-    mainDyWithGrid: 8,
-    mainDyNoGrid: 0,
-    labelDy: "1.2em",
-  },
-  default: {
-    mainDy: 0,
-    labelDy: "1.2em",
-  },
-} as const;
+// Font sizes as proportions of container height
+export const getFontSizes = (height: number) => {
+  const scale = height / BASE_HEIGHT;
+  return {
+    symbols: {
+      main: 24 * scale,
+      label: 10 * scale,
+    },
+    full: {
+      main: 45 * scale,
+      label: 10 * scale,
+    },
+    masked: {
+      mainWithGrid: 36 * scale,
+      mainNoGrid: 28 * scale,
+      label: 10 * scale,
+    },
+    letters: {
+      main: 24 * scale,
+      label: 10 * scale,
+    },
+    default: {
+      main: 24 * scale,
+      label: 10 * scale,
+    },
+  };
+};
+
+// Text positioning as proportions of container height
+export const getTextPositioning = (height: number) => {
+  const scale = height / BASE_HEIGHT;
+  return {
+    symbols: {
+      mainDy: 8 * scale,
+      mainDyWithGrid: 8 * scale,
+      mainDyNoGrid: 0,
+      labelDy: 12 * scale,
+    },
+    full: {
+      mainDy: 15 * scale,
+      labelDy: -2 * scale,
+    },
+    masked: {
+      mainDyWithGrid: 18 * scale,
+      mainDyNoGrid: 8 * scale,
+      labelDy: 2 * scale,
+    },
+    letters: {
+      mainDyWithGrid: 8 * scale,
+      mainDyNoGrid: 0,
+      labelDy: 12 * scale,
+    },
+    default: {
+      mainDy: 0,
+      labelDy: 12 * scale,
+    },
+  };
+};
 
 export const STROKE_WIDTHS = {
   normal: 3,
