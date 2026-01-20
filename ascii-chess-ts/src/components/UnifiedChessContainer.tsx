@@ -719,6 +719,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
               <input
                 className="form-check-input"
                 type="checkbox"
+                checked={flipBoard}
+                onChange={() => setFlipBoard(!flipBoard)}
+              />
+              Flip Board
+            </label>
+            <label className="form-check-label">
+              <input
+                className="form-check-input"
+                type="checkbox"
                 checked={showGrid}
                 onChange={() => setShowGrid(!showGrid)}
               />

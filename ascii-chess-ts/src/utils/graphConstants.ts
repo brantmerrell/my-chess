@@ -7,7 +7,7 @@ export const FONT_SIZES = {
     label: "10px",
   },
   full: {
-    main: "60px",
+    main: "90px",
     label: "10px",
   },
   masked: {
@@ -33,7 +33,7 @@ export const TEXT_POSITIONING = {
     labelDy: "1.2em",
   },
   full: {
-    mainDy: 18,
+    mainDy: 30,
     labelDy: "-2px",
   },
   masked: {
