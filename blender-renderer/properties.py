@@ -3,7 +3,7 @@
 import os
 import bpy
 from bpy.types import PropertyGroup
-from bpy.props import StringProperty, EnumProperty
+from bpy.props import StringProperty, EnumProperty, BoolProperty
 
 from .models import SAMPLE_SETUPS 
 
@@ -35,4 +35,10 @@ class BlendChessProperties(PropertyGroup):
             ('king_box', 'King Box', 'Show king safety box relationships'),
         ],
         default='none',
+    )
+
+    show_board: BoolProperty(
+        name="Show Chessboard",
+        description="Import the USD chessboard asset",
+        default=True,
     )

@@ -31,4 +31,8 @@ class BLCHESS_PT_main_panel(Panel):
         layout.prop(props, "fen_string", text="")
 
         layout.separator()
+        layout.label(text="Render Options:")
+        layout.prop(props, "show_board")
+
+        layout.separator()
         layout.operator("blchess.submit_fen", text="Submit FEN", icon='PLAY')
