@@ -2,7 +2,21 @@
 
 import bpy
 import pdb
-from typing import Tuple, Optional
+import yaml
+import os
+from typing import Tuple, Optional, Dict, Any
+
+
+def load_board_config() -> Dict[str, Any]:
+    """
+    Load board configuration from YAML file.
+
+    Returns:
+        Dictionary containing global settings and layer definitions
+    """
+    config_path = os.path.join(os.path.dirname(__file__), 'board_config.yaml')
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
 
 
 def square_to_coords(square: str, spacing: float = 1.0, piece_type: str = 'P') -> Tuple[float, float, float]:
@@ -419,3 +433,48 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0):
 
     text_obj.data.materials.append(material)
     return text_obj
+
+
+def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list):
+    """
+    Render a single board layer based on configuration.
+
+    Args:
+        layer_config: Configuration for this specific layer
+        global_config: Global board settings
+        nodes: List of piece nodes to render
+    """
+    if not layer_config.get('enabled', False):
+        return
+
+    layer_type = layer_config.get('type')
+    z_offset = layer_config.get('z_offset', 0.0)
+
+    # Render board if configured
+    if layer_config.get('board', {}).get('show', False):
+        if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
+            create_chessboard()
+
+    # Render pieces based on layer type
+    if layer_type == 'usd':
+        _render_usd_layer(layer_config, global_config, nodes, z_offset)
+    elif layer_type == 'ascii':
+        _render_ascii_layer(layer_config, global_config, nodes, z_offset)
+
+
+def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
+    """Render USD 3D pieces layer."""
+    piece_config = layer_config.get('pieces', {})
+    scale = piece_config.get('scale', 5.0)
+
+    for node in nodes:
+        create_piece(node)  # Uses existing create_piece function
+
+
+def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
+    """Render ASCII text pieces layer."""
+    piece_config = layer_config.get('pieces', {})
+    scale = piece_config.get('scale', 0.8)
+
+    for node in nodes:
+        create_ascii_piece(node, scale=scale, z_offset=z_offset)
