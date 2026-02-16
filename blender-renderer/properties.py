@@ -42,3 +42,4 @@ class BlendChessProperties(PropertyGroup):
         description="Import the USD chessboard asset",
         default=True,
     )
+
