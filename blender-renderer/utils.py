@@ -363,3 +363,59 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True):
 
     text_obj.data.materials.append(material)
     return text_obj
+
+
+def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0):
+    """
+    Create a 2D text object to represent a chess piece in ASCII style.
+    This is positioned below the main 3D board for a side-by-side comparison.
+
+    Args:
+        node: Dict with 'square', 'piece_type', and 'color'
+        scale: Size of the text object
+        z_offset: Z-coordinate offset (negative to place below 3D board)
+
+    Returns:
+        The created text object
+    """
+    from .constants import PIECE_SYMBOLS, USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
+
+    # Convert chess square to board coordinates
+    file = ord(node["square"][0]) - ord('a')  # 0-7
+    rank = int(node["square"][1]) - 1  # 0-7
+
+    # Calculate board coordinates (same as 3D pieces)
+    ascii_x = -USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
+    ascii_y = -USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
+
+    # Scale by board scale factor
+    ascii_x *= USD_BOARD_SCALE
+    ascii_y *= USD_BOARD_SCALE
+
+    piece_char = node["piece_type"]
+    bpy.ops.object.text_add(location=(ascii_x, ascii_y, z_offset))
+
+    text_obj = bpy.context.active_object
+    text_obj.data.body = PIECE_SYMBOLS[piece_char]
+    text_obj.name = f"ascii_{piece_char}_{node['square']}"
+
+    text_obj.data.align_x = "CENTER"
+    text_obj.data.align_y = "CENTER"
+
+    # Rotate to match the ASCII board's rotation (90° around Z axis)
+    import math
+
+    text_obj.scale = (scale, scale, scale)
+
+    material = bpy.data.materials.new(name=f"ASCII_Material_{node['square']}")
+    material.use_nodes = True
+
+    bsdf = material.node_tree.nodes["Principled BSDF"]
+
+    if node["color"] == "white":
+        bsdf.inputs["Base Color"].default_value = (0.9, 0.9, 0.9, 1.0)
+    else:
+        bsdf.inputs["Base Color"].default_value = (0.2, 0.2, 0.2, 1.0)
+
+    text_obj.data.materials.append(material)
+    return text_obj
