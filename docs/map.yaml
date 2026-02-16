@@ -1262,3 +1262,95 @@ ascii-chess-ts/:
   gh_pages:
   jest.config.js:
   nginx.conf:
+blender-renderer/:
+  .env:
+    CONNECTOR_URL: localhost 8000
+  .env.example:
+    CONNECTOR_URL: localhost 8000
+  services/:
+    __init__.py:
+    connector_service.py:
+      ConnectorService:
+        __init__:
+        fetch_adjacencies:
+        fetch_links:
+        fetch_none:
+        fetch_king_box:
+        TODO fetch_:
+  __init__.py:
+    bl_info:
+    classes:
+    register:
+    unregister:
+    main:
+  install_addon.py:
+  models.py:
+    SetupOption:
+    SAMPLE_SETUPS:
+      - Standard Starting Position (modified for fewer debug steps)
+      - King vs King
+      - Fool's Mate
+      - Embedded Mate
+      - Open Board Mate
+  constants.py:
+    PIECE_SYMBOLS: ascii symbols mapped from FEN letters
+    USD_ASSETS_BASE: path to assets
+    USD_PIECE_PATHS: pieces assets mapped relative to base path
+    USD_CHESSBOARD_PATH: chessboard assets mapped relative to base path
+    USD_VARIANT_BLACK: Black
+    USD_VARIANT_WHITE: White
+    USD_BOARD_SCALE: 12 (is this used anywhere?)
+    USD_BOARD_HALF_WIDTH: .25 - half the playing surface width in meters
+    USD_BOARD_PIECE_HEIGHT: .25 - height pieces sit above board surface
+  dev.sh:
+    - conditionally loads .env files
+  install_addon.py:
+  models.py:
+  operators.py:
+    BLCHESS_OT_submit_fen:
+      execute:
+        - access connector_service and fetch from applicable endpoint
+        - clear scene
+        - conditionally create chessboard
+        - iteratively call create_piece
+  output.txt:
+  panels.py:
+    BLCHESS_PT_main_panel:
+      draw:
+  properties.py:
+    BlendChessProperties:
+      fen_string:
+      connector_url:
+      connection_type:
+      show_board:
+      question: is this used anywhere?
+  README.md:
+    - dependency on backend connector
+  requirements.txt:
+    - requests
+  utils.py:
+    square_to_coords:
+      summary:
+        - supports create_piece
+        - uses import_usd_piece, conditional on use_usd param
+        - relies on definitions in constants.py
+      imports:
+        - USD_BOARD_HALF_WIDTH to define coordinates relative to the center of the board
+        - USD_BOARD_PIECE_HEIGHT to define height above board surface (why not zero?)
+      logic:
+    import_usd_piece:
+      - imports from cloned github repo for chess pieces
+      - passes variant to _apply_piece_color to determine color
+    _apply_piece_color:
+      - expects variant from import_usd_piece to determine color
+    create_chessboard:
+      - relies on _apply_board_material
+      - sets board_scale in 3 dimensions (hardcodes locally rather than importing from constants)
+    _apply_board_material:
+      - relies on _add_procedural_checker as a fallback to texture loaded from image
+    _add_procedural_checker:
+    clear_scene:
+    create_piece:
+      - requires node as a param
+      - defines color variant based on node["color"]
+      - relies on import_usd_piece

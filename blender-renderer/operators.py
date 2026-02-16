@@ -4,7 +4,7 @@ import bpy
 from bpy.types import Operator
 
 from .constants import PIECE_SYMBOLS
-from .utils import square_to_coords, clear_scene, create_piece
+from .utils import square_to_coords, clear_scene, create_piece, create_chessboard
 from .services.connector_service import ConnectorService
 
 
@@ -46,6 +46,10 @@ class BLCHESS_OT_submit_fen(Operator):
 
             self.report({'INFO'}, "Clearing scene...")
             clear_scene()
+
+            if props.show_board:
+                self.report({'INFO'}, "Creating chessboard...")
+                create_chessboard()
 
             self.report({'INFO'}, f"Creating {len(data['nodes'])} pieces...")
             for node in data['nodes']:
