@@ -32,25 +32,25 @@ class BLCHESS_OT_submit_fen(Operator):
 
             self.report({'INFO'}, f"Fetching {props.connection_type}: {props.fen_string}")
 
-            links_data = None
             adjacencies_data = None
+            links_data = None
             king_box_data = None
+            shadows_data = None
 
             if props.connection_type == 'adjacencies':
                 data = connector_service.fetch_adjacencies(props.fen_string)
+                adjacencies_data = data  # reuse for links layer
             elif props.connection_type == 'links':
                 data = connector_service.fetch_links(props.fen_string)
                 links_data = data  # reuse for links layer
-            elif props.connection_type == 'adjacencies':
-                data = connector_service.fetch_adjacencies(props.fen_string)
-                adjacencies_data = data  # reuse for adjacencies layer
             elif props.connection_type == 'king_box':
                 data = connector_service.fetch_king_box(props.fen_string)
                 king_box_data = data  # reuse for king_box layer
+            elif props.connection_type == 'shadows':
+                data = connector_service.fetch_king_box(props.fen_string)
+                shadows_data = data  # reuse for shadows layer
             elif props.connection_type == 'none':
                 data = connector_service.fetch_none(props.fen_string)
-            elif props.connection_type == 'king_box':
-                data = connector_service.fetch_king_box(props.fen_string)
             else:
                 self.report({'ERROR'}, f"Unknown connection type: {props.connection_type}")
                 return {'CANCELLED'}
@@ -63,6 +63,13 @@ class BLCHESS_OT_submit_fen(Operator):
             global_config = config.get('global', {})
             layers = config.get('layers', [])
 
+            has_adjacencies_layer = any(l.get('type') == 'adjacencies' and l.get('enabled') for l in layers)
+            if has_adjacencies_layer and adjacencies_data is None:
+                self.report({'INFO'}, "Fetching adjacencies for adjacencies layer...")
+                adjacencies_data = connector_service.fetch_adjacencies(props.fen_string)
+
+            adjacencies_edges = adjacencies_data.get('edges', []) if adjacencies_data else []
+
             # Fetch links data for the links layer if not already fetched
             has_links_layer = any(l.get('type') == 'links' and l.get('enabled') for l in layers)
             if has_links_layer and links_data is None:
@@ -70,13 +77,6 @@ class BLCHESS_OT_submit_fen(Operator):
                 links_data = connector_service.fetch_links(props.fen_string)
 
             links_edges = links_data.get('edges', []) if links_data else []
-
-            has_adjacencies_layer = any(l.get('type') == 'adjacencies' and l.get('enabled') for l in layers)
-            if has_adjacencies_layer and adjacencies_data is None:
-                self.report({'INFO'}, "Fetching adjacencies for adjacencies layer...")
-                adjacencies_data = connector_service.fetch_adjacencies(props.fen_string)
-
-            adjacencies_edges = adjacencies_data.get('edges', []) if adjacencies_data else []
 
             # Fetch king_box data for the king_box layer if not already fetched
             has_king_box_layer = any(l.get('type') == 'king_box' and l.get('enabled') for l in layers)
@@ -86,16 +86,28 @@ class BLCHESS_OT_submit_fen(Operator):
 
             king_box_edges = king_box_data.get('edges', []) if king_box_data else []
 
+            # Fetch shadows data for the shadows layer if not already fetched
+            has_shadows_layer = any(l.get('type') == 'shadows' and l.get('enabled') for l in layers)
+            if has_shadows_layer and shadows_data is None:
+                self.report({'INFO'}, "Fetching shadows for shadows layer...")
+                shadows_data = connector_service.fetch_shadows(props.fen_string)
+
+            shadows_edges = shadows_data.get('edges', []) if shadows_data else []
+
             # Render each enabled layer
             for layer in layers:
                 if layer.get('enabled', False):
                     layer_name = layer.get('name', 'Unknown')
                     self.report({'INFO'}, f"Rendering layer: {layer_name}")
                     edges = []
-                    if layer.get('type') == 'links':
-                        edges = links_edges
                     if layer.get('type') == 'adjacencies':
                         edges = adjacencies_edges
+                    if layer.get('type') == 'links':
+                        edges = links_edges
+                    if layer.get('type') == 'king_box':
+                        edges = king_box_edges
+                    if layer.get('type') == 'shadows':
+                        edges = shadows_edges
                     render_layer(layer, global_config, data['nodes'], edges=edges)
 
             self.report({'INFO'}, f"Successfully rendered {len(data['nodes'])} pieces across {len([l for l in layers if l.get('enabled')])} layers")

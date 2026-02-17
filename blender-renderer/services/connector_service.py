@@ -78,3 +78,18 @@ class ConnectorService:
         response = requests.get(url, params={"fen_string": fen_string})
         response.raise_for_status()
         return response.json()
+
+    def fetch_shadows(self, fen_string: str) -> Dict[str, Any]:
+        """
+        Fetch position data with king safety box relationships.
+
+        Args:
+            fen_string: FEN notation of the chess position
+
+        Returns:
+            Dict containing 'nodes' and 'edges'
+        """
+        url = f"{self.base_url}/shadows"
+        response = requests.get(url, params={"fen_string": fen_string})
+        response.raise_for_status()
+        return response.json()

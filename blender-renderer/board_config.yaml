@@ -75,10 +75,22 @@ layers:
     edges:
       color: [1.0, 0.5, 0.0, 1.0]
       thickness: 0.02
+  - name: "Shadows"
+    type: "shadows"
+    enabled: true
+    z_offset: -6
+    board:
+      show: false
+    asterisks:
+      scale: 0.5
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      color: [1.0, 0.5, 0.0, 1.0]
+      thickness: 0.02
   - name: "ASCII Board"
     type: "ascii"
     enabled: true
-    z_offset: -6
+    z_offset: -7.5
     board:
       show: false
     pieces:
