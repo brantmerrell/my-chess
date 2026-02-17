@@ -1,108 +1,54 @@
-# Chess Board Layer Configuration
-# Defines multiple rendering layers with different styles and offsets
-
-# Global board settings (shared across all layers)
 global:
-  board_half_width: 0.35270807  # USD board half width in meters
-  board_scale: 13.8  # Scale factor for board
-  square_spacing: 1.0  # Base spacing between squares
-
-  # Piece orientation
-  white_rotation_z: 1.5708  # 90° in radians (π/2) - white faces black
-  black_rotation_z: -1.5708  # -90° in radians - black faces white
-
-# Layer definitions (rendered in order)
+  board_half_width: 0.35270807
+  board_scale: 13.8
+  square_spacing: 1.0
+  white_rotation_z: 1.5708
+  black_rotation_z: -1.5708
 layers:
-  # Layer 1: 3D USD pieces and board
   - name: "3D Board"
     type: "usd"
     enabled: true
-    z_offset: 0.0  # Z position (vertical offset)
-
+    z_offset: 0.0
     board:
       show: true
       import_usd: true
-
     pieces:
-      scale: 5.0  # USD pieces are in meters, need larger scale
+      scale: 5.0
       use_usd_assets: true
-
-      # Piece-specific rotations (applied after base white/black rotation)
       specific_rotations:
         rook:
-          additional_z: -1.5708  # Additional -90° for rooks
+          transform_coords: true  # Rooks need coordinate transformation: (x,y,z) -> (x,-z,y)
+          white:
+            rotation:
+              x: 1.5708   # 90°
+              y: 0.0      # 0°
+              z: -1.5708  # -90°
+          black:
+            rotation:
+              x: 1.5708   # 90°
+              y: 0.0      # 0°
+              z: -1.5708  # -90°
         knight:
-          additional_z: -1.5708  # Additional -90° for knights
-
-  # Layer 2: ASCII text representation
+          white:
+            rotation:
+              x: 0.0
+              y: -1.5708  # -90°
+              z: 0.0
+          black:
+            rotation:
+              x: 0.0
+              y: 1.5708   # 90°
+              z: 0.0
   - name: "ASCII Board"
     type: "ascii"
     enabled: true
-    z_offset: -1.0  # 1 meter below 3D board
-
+    z_offset: -1.0
     board:
-      show: false  # No board plane needed
-      checkerboard_material: false
-
+      show: false
     pieces:
       scale: 0.8
-      style: "unicode_symbols"  # Use ♔♕♖♗♘♙ etc.
-
-      # Text alignment
+      style: "unicode_symbols"
       align_x: "CENTER"
       align_y: "CENTER"
-
-      # Colors
       white_color: [0.9, 0.9, 0.9, 1.0]
       black_color: [0.2, 0.2, 0.2, 1.0]
-
-#  # Layer 3: Asterisk representation (planned)
-#  - name: "Asterisk Board"
-#    type: "simple"
-#    enabled: false
-#    z_offset: -2.0  # 2 meters below 3D board
-#
-#    board:
-#      show: false
-#
-#    pieces:
-#      scale: 1.0
-#      style: "asterisk"  # All pieces shown as *
-#
-#      # Colors
-#      white_color: [1.0, 0.5, 0.0, 1.0]  # Orange
-#      black_color: [0.0, 0.5, 1.0, 1.0]  # Blue
-#
-#  # Layer 4: Letter-only representation (planned)
-#  - name: "Letter Board"
-#    type: "simple"
-#    enabled: false
-#    z_offset: -3.0  # 3 meters below 3D board
-#
-#    board:
-#      show: false
-#
-#    pieces:
-#      scale: 0.8
-#      style: "letters"  # K, Q, R, B, N, P
-#
-#      # Colors
-#      white_color: [0.9, 0.9, 0.9, 1.0]
-#      black_color: [0.2, 0.2, 0.2, 1.0]
-#
-#  # Layer 5: Dots representation (planned)
-#  - name: "Dot Board"
-#    type: "simple"
-#    enabled: false
-#    z_offset: -4.0  # 4 meters below 3D board
-#
-#    board:
-#      show: false
-#
-#    pieces:
-#      scale: 0.5
-#      style: "dot"  # All pieces shown as •
-#
-#      # Colors by piece type
-#      white_color: [1.0, 1.0, 1.0, 1.0]
-#      black_color: [0.0, 0.0, 0.0, 1.0]
