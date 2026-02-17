@@ -594,12 +594,14 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
         _render_usd_layer(layer_config, global_config, nodes, z_offset)
     elif layer_type == 'ascii':
         _render_ascii_layer(layer_config, global_config, nodes, z_offset)
-    elif layer_type == 'links':
-        _render_links_layer(layer_config, global_config, nodes, edges, z_offset)
     elif layer_type == 'adjacencies':
         _render_adjacencies_layer(layer_config, global_config, nodes, edges, z_offset)
+    elif layer_type == 'links':
+        _render_links_layer(layer_config, global_config, nodes, edges, z_offset)
     elif layer_type == 'king_box':
         _render_king_box_layer(layer_config, global_config, nodes, edges, z_offset)
+    elif layer_type == 'shadows':
+        _render_shadows_layer(layer_config, global_config, nodes, edges, z_offset)
 
 
 def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
@@ -626,28 +628,6 @@ def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
         create_ascii_piece(node, scale=scale, z_offset=z_offset)
 
 
-def _render_links_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render links layer with asterisks at node positions and lines for edges."""
-    asterisk_config = layer_config.get('asterisks', {})
-    asterisk_scale = asterisk_config.get('scale', 0.5)
-    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
-
-    edge_config = layer_config.get('edges', {})
-    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
-    edge_thickness = edge_config.get('thickness', 0.02)
-
-    for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
-
-    for edge in edges:
-        # Handle different possible edge key formats from the API
-        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
-        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
-
-        if source and target:
-            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
-
-
 def _render_adjacencies_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
     """Render adjacencies layer with asterisks at node positions and lines for edges."""
     asterisk_config = layer_config.get('asterisks', {})
@@ -670,8 +650,51 @@ def _render_adjacencies_layer(layer_config: Dict[str, Any], global_config: Dict[
             create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
 
 
+def _render_links_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
+    """Render links layer with asterisks at node positions and lines for edges."""
+    asterisk_config = layer_config.get('asterisks', {})
+    asterisk_scale = asterisk_config.get('scale', 0.5)
+    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
+
+    edge_config = layer_config.get('edges', {})
+    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
+    edge_thickness = edge_config.get('thickness', 0.02)
+
+    for node in nodes:
+        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
+
+    for edge in edges:
+        # Handle different possible edge key formats from the API
+        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
+        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
+
+        if source and target:
+            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
+
+
 def _render_king_box_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
     """Render king_box layer with asterisks at node positions and lines for edges."""
+    asterisk_config = layer_config.get('asterisks', {})
+    asterisk_scale = asterisk_config.get('scale', 0.5)
+    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
+
+    edge_config = layer_config.get('edges', {})
+    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
+    edge_thickness = edge_config.get('thickness', 0.02)
+
+    for node in nodes:
+        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
+
+    for edge in edges:
+        # Handle different possible edge key formats from the API
+        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
+        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
+
+        if source and target:
+            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
+
+def _render_shadows_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
+    """Render shadows layer with asterisks at node positions and lines for edges."""
     asterisk_config = layer_config.get('asterisks', {})
     asterisk_scale = asterisk_config.get('scale', 0.5)
     asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
