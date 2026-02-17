@@ -20,13 +20,29 @@ bl_info = {
 import bpy
 
 from .properties import BlendChessProperties
-from .operators import BLCHESS_OT_submit_fen
+from .operators import (
+    BLCHESS_OT_submit_fen,
+    BLCHESS_OT_select_position,
+    BLCHESS_OT_submit_move,
+    BLCHESS_OT_undo_move,
+    BLCHESS_OT_go_to_start,
+    BLCHESS_OT_go_backward,
+    BLCHESS_OT_go_forward,
+    BLCHESS_OT_go_to_end,
+)
 from .panels import BLCHESS_PT_main_panel
 
 
 classes = (
     BlendChessProperties,
     BLCHESS_OT_submit_fen,
+    BLCHESS_OT_select_position,
+    BLCHESS_OT_submit_move,
+    BLCHESS_OT_undo_move,
+    BLCHESS_OT_go_to_start,
+    BLCHESS_OT_go_backward,
+    BLCHESS_OT_go_forward,
+    BLCHESS_OT_go_to_end,
     BLCHESS_PT_main_panel,
 )
 

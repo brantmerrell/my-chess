@@ -3,9 +3,13 @@
 import os
 import bpy
 from bpy.types import PropertyGroup
-from bpy.props import StringProperty, EnumProperty, BoolProperty
+from bpy.props import StringProperty, EnumProperty, BoolProperty, IntProperty
 
-from .models import SAMPLE_SETUPS 
+from .models import SAMPLE_SETUPS
+
+_SETUP_ITEMS = (
+    [(str(i), s.name, s.description) for i, s in enumerate(SAMPLE_SETUPS)]
+)
 
 
 class BlendChessProperties(PropertyGroup):
@@ -26,20 +30,41 @@ class BlendChessProperties(PropertyGroup):
     )
 
     connection_type: EnumProperty(
-        name="Connection Type",
-        description="Type of piece relationships to visualize",
+        name="Focus",
+        description="Type of piece relationships to focus on",
         items=[
             ('none', 'None', 'No connections between pieces'),
             ('adjacencies', 'Adjacencies', 'Show adjacent piece relationships'),
             ('links', 'Links', 'Show legal move connections'),
             ('king_box', 'King Box', 'Show king safety box relationships'),
+            ('shadows', 'Shadows', 'Show shadows cast by blocking pieces'),
         ],
         default='none',
     )
 
-    show_board: BoolProperty(
-        name="Show Chessboard",
-        description="Import the USD chessboard asset",
-        default=True,
+    selected_setup: EnumProperty(
+        name="Position",
+        description="Select a preset chess position",
+        items=_SETUP_ITEMS,
+        default='0',
+    )
+
+    move_input: StringProperty(
+        name="Move",
+        description="Chess move in UCI (e2e4) or SAN (e4) notation",
+        default="",
+        maxlen=10,
+    )
+
+    position_history: StringProperty(
+        name="Position History",
+        description="JSON-serialized list of FEN strings",
+        default="[]",
+    )
+
+    position_index: IntProperty(
+        name="Position Index",
+        description="Current index into position_history",
+        default=-1,
     )
 
