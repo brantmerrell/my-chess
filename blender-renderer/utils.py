@@ -42,8 +42,8 @@ def square_to_coords(square: str, spacing: float = 1.0, piece_type: str = 'P') -
 
     # Map to board coordinates (in meters, before scaling)
     # Board spans from -USD_BOARD_HALF_WIDTH to +USD_BOARD_HALF_WIDTH
-    # a-file (0) is at -HALF_WIDTH, h-file (7) is at +HALF_WIDTH
-    x = -USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
+    # a-file (0) is at +HALF_WIDTH, h-file (7) is at -HALF_WIDTH (reversed to match board orientation)
+    x = -USD_BOARD_HALF_WIDTH + ((7 - file) / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
 
     # rank 1 (0) is at -HALF_WIDTH, rank 8 (7) is at +HALF_WIDTH
     z = -USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
@@ -419,6 +419,29 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_
     return text_obj
 
 
+def _square_to_board_2d(square: str) -> Tuple[float, float]:
+    """
+    Convert a chess square to 2D board (x, y) coordinates for flat layers.
+
+    File direction is reversed relative to square_to_coords so that a-file
+    appears on the correct side when the 2D layers are viewed from above.
+
+    Returns:
+        (x, y) — scaled Blender units; z_offset is applied by the caller.
+    """
+    from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
+
+    file = ord(square[0]) - ord('a')  # 0 (a) to 7 (h)
+    rank = int(square[1]) - 1         # 0 (1) to 7 (8)
+
+    # Reverse file to match 3D board x-axis orientation
+    x = (-USD_BOARD_HALF_WIDTH + ((7 - file) / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
+    # Reverse rank: in the XY plane positive-y points toward the camera, which is
+    # the opposite of positive-z (rank 8 = back of scene) in the 3D board's XZ plane
+    y = (-USD_BOARD_HALF_WIDTH + ((7 - rank) / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
+    return x, y
+
+
 def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, material: bpy.types.Material = None):
     """
     Create a 2D text object to represent a chess piece in ASCII style.
@@ -433,15 +456,9 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, m
     Returns:
         The created text object
     """
-    from .constants import PIECE_SYMBOLS, USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
+    from .constants import PIECE_SYMBOLS
 
-    # Convert chess square to board coordinates
-    file = ord(node["square"][0]) - ord('a')  # 0-7
-    rank = int(node["square"][1]) - 1  # 0-7
-
-    ascii_x = (-USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
-    ascii_y = (-USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
-
+    ascii_x, ascii_y = _square_to_board_2d(node["square"])
     piece_char = node["piece_type"]
 
     # Use bpy.data API directly — avoids bpy.ops context overhead
@@ -483,13 +500,7 @@ def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, mat
     Returns:
         The created text object
     """
-    from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
-
-    file = ord(square[0]) - ord('a')  # 0-7
-    rank = int(square[1]) - 1  # 0-7
-
-    x = (-USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
-    y = (-USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
+    x, y = _square_to_board_2d(square)
 
     # Use bpy.data API directly — avoids bpy.ops context overhead
     curve_data = bpy.data.curves.new(name=f"asterisk_{square}", type='FONT')
@@ -522,17 +533,10 @@ def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, t
     Returns:
         The created curve object
     """
-    from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
-
-    def square_to_2d(square):
-        file = ord(square[0]) - ord('a')
-        rank = int(square[1]) - 1
-        x = (-USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
-        y = (-USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
-        return (x, y, z_offset)
-
-    start = square_to_2d(square_from)
-    end = square_to_2d(square_to)
+    sx, sy = _square_to_board_2d(square_from)
+    start = (sx, sy, z_offset)
+    ex, ey = _square_to_board_2d(square_to)
+    end = (ex, ey, z_offset)
 
     curve_data = bpy.data.curves.new(name=f"link_{square_from}_{square_to}", type='CURVE')
     curve_data.dimensions = '3D'
