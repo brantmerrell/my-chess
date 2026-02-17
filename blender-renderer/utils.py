@@ -55,7 +55,7 @@ def square_to_coords(square: str, spacing: float = 1.0, piece_type: str = 'P') -
     return (x * USD_BOARD_SCALE, y * USD_BOARD_SCALE, z * USD_BOARD_SCALE)
 
 
-def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, float], name: str, piece_type: str) -> Optional[bpy.types.Object]:
+def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, float], name: str, piece_type: str, color: str = "white", rotation_config: Optional[Dict[str, Any]] = None) -> Optional[bpy.types.Object]:
     """
     Import a USD asset into Blender with proper axis conversion.
 
@@ -65,17 +65,21 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         location: (x, y, z) coordinates for the piece in Blender Z-up space
         name: Name for the imported object
         piece_type: Single character piece type (K, Q, R, B, N, P)
+        color: Piece color ("white" or "black")
+        rotation_config: Optional rotation configuration from YAML
 
     Returns:
         The imported object, or None if import failed
 
     Note:
-        USD uses Y-up, we need to rotate to Z-up manually.
-        Rotation: +90° around X converts Y-up to Z-up.
-        Rooks/Knights need additional -90° Z-rotation.
+        Rotation settings are read from rotation_config.
     """
     import math
-    print("import_usd_piece")
+    print(f"=== import_usd_piece called: piece_type={piece_type}, color={color}")
+
+    if rotation_config is None:
+        rotation_config = {}
+        print("rotation_config was None, using empty dict")
 
     # Import USD file with materials enabled
     bpy.ops.wm.usd_import(
@@ -104,16 +108,50 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         # Active object is a child, get its parent (the root)
         root_obj = imported_obj.parent
 
-    # For rooks: Transform coordinates to account for their baked 90° X rotation
-    # The rook's parent EMPTY has rotation (90°, 0, 0) which swaps Y and Z axes
-    # To place at world (x, y, z), we need local coordinates (x, -z, y)
-    if piece_type == 'R':
-        x, y, z = location
-        root_obj.location = (x, -z, y)
-        # Reset the baked X rotation and apply proper orientation
-        root_obj.rotation_euler = (math.pi / 2, 0, -math.pi / 2)
+    # Get piece-specific configuration
+    specific_rotations = rotation_config.get('specific_rotations', {})
+    print(f"rotation_config keys: {rotation_config.keys()}")
+
+    # Map piece types to full names
+    piece_name_map = {
+        'R': 'rook',
+        'N': 'knight',
+        'B': 'bishop',
+        'Q': 'queen',
+        'K': 'king',
+        'P': 'pawn'
+    }
+    piece_name = piece_name_map.get(piece_type, piece_type.lower())
+    print(f"specific_rotations keys: {specific_rotations.keys()}")
+    piece_config = specific_rotations.get(piece_name, {})
+    print(f"piece_config keys: {piece_config.keys()}")
+    print(f"piece_type: {piece_type}, piece_name: {piece_name}, color: {color}")
+
+    # Check if this piece has color-specific configuration
+    if color in piece_config:
+        # Get color-specific rotation config
+        color_config = piece_config[color]
+        rotation = color_config.get('rotation', {})
+
+        # Check if this piece needs coordinate transformation
+        if piece_config.get('transform_coords', False):
+            print(f"Applying transform_coords for {piece_type} ({color})")
+            # Transform coordinates (e.g., for rooks: (x, y, z) -> (x, -z, y))
+            x, y, z = location
+            root_obj.location = (x, -z, y)
+        else:
+            # Set location normally
+            root_obj.location = location
+
+        # Apply configured rotation
+        rotation_x = rotation.get('x', 0.0)
+        rotation_y = rotation.get('y', math.pi / 2)  # Default Y rotation
+        rotation_z = rotation.get('z', 0.0)
+        print(f"rotation_x: {rotation_x}, rotation_y: {rotation_y}, rotation_z: {rotation_z}")
+        root_obj.rotation_euler = (rotation_x, rotation_y, rotation_z)
     else:
-        # Set location normally for other pieces
+        # No specific config, use default behavior
+        print(f"No specific config for {piece_name} {color}, using default")
         root_obj.location = location
         # Apply Y-axis rotation for proper orientation
         root_obj.rotation_euler[1] = math.pi / 2
@@ -290,11 +328,6 @@ def clear_scene():
         bpy.ops.object.select_by_type(type=obj_type)
         bpy.ops.object.delete()
 
-    # Remove old checkerboard material so it gets recreated with new settings
-    old_mat = bpy.data.materials.get("Checkerboard_Material")
-    if old_mat:
-        bpy.data.materials.remove(old_mat)
-
     # Configure viewport for better visualization
     for area in bpy.context.screen.areas:
         if area.type == 'VIEW_3D':
@@ -306,7 +339,7 @@ def clear_scene():
                     space.shading.type = 'MATERIAL'
 
 
-def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True):
+def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_config: Optional[Dict[str, Any]] = None):
     """
     Create a chess piece, either as USD asset or text fallback.
 
@@ -314,6 +347,7 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True):
         node: Dict with 'square', 'piece_type', and 'color'
         scale: Size scaling factor (for text mode, ignored for USD)
         use_usd: If True, import USD asset; if False, use text (fallback)
+        rotation_config: Optional rotation configuration from YAML
 
     Returns:
         The created Blender object
@@ -323,8 +357,12 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True):
         (a bishop is ~0.14m tall, and we want them to fit nicely in 1.0 Blender unit squares)
     """
     from .constants import USD_PIECE_PATHS, USD_VARIANT_BLACK, USD_VARIANT_WHITE, PIECE_SYMBOLS
-    print("create_piece")
+    print(f"create_piece: node={node.get('square')}, rotation_config={rotation_config}")
     #pdb.set_trace()
+
+    if rotation_config is None:
+        rotation_config = {}
+        print("create_piece: rotation_config was None")
 
     piece_char = node["piece_type"]
     piece_upper = piece_char.upper()
@@ -343,7 +381,9 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True):
             variant=variant,
             location=(x, y, z),
             name=name,
-            piece_type=piece_upper
+            piece_type=piece_upper,
+            color=node["color"],
+            rotation_config=rotation_config
         )
 
         if piece_obj:
@@ -467,8 +507,14 @@ def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any
     piece_config = layer_config.get('pieces', {})
     scale = piece_config.get('scale', 5.0)
 
+    # Extract rotation config to pass to pieces
+    rotation_config = {
+        'specific_rotations': piece_config.get('specific_rotations', {})
+    }
+    print(f"_render_usd_layer: rotation_config = {rotation_config}")
+
     for node in nodes:
-        create_piece(node)  # Uses existing create_piece function
+        create_piece(node, rotation_config=rotation_config)
 
 
 def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
