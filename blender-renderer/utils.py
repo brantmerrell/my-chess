@@ -419,7 +419,7 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_
     return text_obj
 
 
-def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0):
+def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, material: bpy.types.Material = None):
     """
     Create a 2D text object to represent a chess piece in ASCII style.
     This is positioned below the main 3D board for a side-by-side comparison.
@@ -428,6 +428,7 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0):
         node: Dict with 'square', 'piece_type', and 'color'
         scale: Size of the text object
         z_offset: Z-coordinate offset (negative to place below 3D board)
+        material: Shared Blender material to apply (created once per color by the caller)
 
     Returns:
         The created text object
@@ -438,44 +439,38 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0):
     file = ord(node["square"][0]) - ord('a')  # 0-7
     rank = int(node["square"][1]) - 1  # 0-7
 
-    # Calculate board coordinates (same as 3D pieces)
-    ascii_x = -USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
-    ascii_y = -USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)
-
-    # Scale by board scale factor
-    ascii_x *= USD_BOARD_SCALE
-    ascii_y *= USD_BOARD_SCALE
+    ascii_x = (-USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
+    ascii_y = (-USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
 
     piece_char = node["piece_type"]
-    bpy.ops.object.text_add(location=(ascii_x, ascii_y, z_offset))
 
-    text_obj = bpy.context.active_object
-    text_obj.data.body = PIECE_SYMBOLS[piece_char]
-    text_obj.name = f"ascii_{piece_char}_{node['square']}"
+    # Use bpy.data API directly — avoids bpy.ops context overhead
+    curve_data = bpy.data.curves.new(name=f"ascii_{piece_char}_{node['square']}", type='FONT')
+    curve_data.body = PIECE_SYMBOLS[piece_char]
+    curve_data.align_x = 'CENTER'
+    curve_data.align_y = 'CENTER'
 
-    text_obj.data.align_x = "CENTER"
-    text_obj.data.align_y = "CENTER"
-
-    # Rotate to match the ASCII board's rotation (90° around Z axis)
-    import math
-
+    text_obj = bpy.data.objects.new(f"ascii_{piece_char}_{node['square']}", curve_data)
+    text_obj.location = (ascii_x, ascii_y, z_offset)
     text_obj.scale = (scale, scale, scale)
+    bpy.context.collection.objects.link(text_obj)
 
-    material = bpy.data.materials.new(name=f"ASCII_Material_{node['square']}")
-    material.use_nodes = True
+    if material:
+        curve_data.materials.append(material)
 
-    bsdf = material.node_tree.nodes["Principled BSDF"]
-
-    if node["color"] == "white":
-        bsdf.inputs["Base Color"].default_value = (0.9, 0.9, 0.9, 1.0)
-    else:
-        bsdf.inputs["Base Color"].default_value = (0.2, 0.2, 0.2, 1.0)
-
-    text_obj.data.materials.append(material)
     return text_obj
 
 
-def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, color: list = None) -> bpy.types.Object:
+def _make_material(name: str, color: list) -> bpy.types.Material:
+    """Create a Principled BSDF material with the given RGBA base color."""
+    mat = bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = tuple(color)
+    return mat
+
+
+def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, material: bpy.types.Material = None) -> bpy.types.Object:
     """
     Create an asterisk text object at a board square position.
 
@@ -483,15 +478,12 @@ def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, col
         square: Chess square in algebraic notation (e.g., 'a1')
         z_offset: Z-coordinate for this layer
         scale: Size of the text object
-        color: RGBA color list [r, g, b, a]
+        material: Shared Blender material to apply (created once per layer by the caller)
 
     Returns:
         The created text object
     """
     from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
-
-    if color is None:
-        color = [1.0, 1.0, 0.0, 1.0]
 
     file = ord(square[0]) - ord('a')  # 0-7
     rank = int(square[1]) - 1  # 0-7
@@ -499,24 +491,24 @@ def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, col
     x = (-USD_BOARD_HALF_WIDTH + (file / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
     y = (-USD_BOARD_HALF_WIDTH + (rank / 7.0) * (2 * USD_BOARD_HALF_WIDTH)) * USD_BOARD_SCALE
 
-    bpy.ops.object.text_add(location=(x, y, z_offset))
-    text_obj = bpy.context.active_object
-    text_obj.data.body = "*"
-    text_obj.name = f"asterisk_{square}"
-    text_obj.data.align_x = "CENTER"
-    text_obj.data.align_y = "CENTER"
-    text_obj.scale = (scale, scale, scale)
+    # Use bpy.data API directly — avoids bpy.ops context overhead
+    curve_data = bpy.data.curves.new(name=f"asterisk_{square}", type='FONT')
+    curve_data.body = "*"
+    curve_data.align_x = 'CENTER'
+    curve_data.align_y = 'CENTER'
 
-    material = bpy.data.materials.new(name=f"Asterisk_Material_{square}")
-    material.use_nodes = True
-    bsdf = material.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = tuple(color)
-    text_obj.data.materials.append(material)
+    text_obj = bpy.data.objects.new(f"asterisk_{square}", curve_data)
+    text_obj.location = (x, y, z_offset)
+    text_obj.scale = (scale, scale, scale)
+    bpy.context.collection.objects.link(text_obj)
+
+    if material:
+        curve_data.materials.append(material)
 
     return text_obj
 
 
-def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, color: list = None, thickness: float = 0.02) -> bpy.types.Object:
+def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, thickness: float = 0.02, material: bpy.types.Material = None) -> bpy.types.Object:
     """
     Create a curve object connecting two board squares.
 
@@ -524,16 +516,13 @@ def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, c
         square_from: Source square in algebraic notation
         square_to: Target square in algebraic notation
         z_offset: Z-coordinate for this layer
-        color: RGBA color list [r, g, b, a]
         thickness: Bevel depth for line thickness
+        material: Shared Blender material to apply (created once per layer by the caller)
 
     Returns:
         The created curve object
     """
     from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
-
-    if color is None:
-        color = [1.0, 0.5, 0.0, 1.0]
 
     def square_to_2d(square):
         file = ord(square[0]) - ord('a')
@@ -557,11 +546,8 @@ def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, c
     curve_obj = bpy.data.objects.new(f"link_{square_from}_{square_to}", curve_data)
     bpy.context.collection.objects.link(curve_obj)
 
-    material = bpy.data.materials.new(name=f"Link_Material_{square_from}_{square_to}")
-    material.use_nodes = True
-    bsdf = material.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = tuple(color)
-    curve_obj.data.materials.append(material)
+    if material:
+        curve_obj.data.materials.append(material)
 
     return curve_obj
 
@@ -589,19 +575,15 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
         if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
             create_chessboard()
 
+    _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows'}
+
     # Render pieces based on layer type
     if layer_type == 'usd':
         _render_usd_layer(layer_config, global_config, nodes, z_offset)
     elif layer_type == 'ascii':
         _render_ascii_layer(layer_config, global_config, nodes, z_offset)
-    elif layer_type == 'adjacencies':
-        _render_adjacencies_layer(layer_config, global_config, nodes, edges, z_offset)
-    elif layer_type == 'links':
-        _render_links_layer(layer_config, global_config, nodes, edges, z_offset)
-    elif layer_type == 'king_box':
-        _render_king_box_layer(layer_config, global_config, nodes, edges, z_offset)
-    elif layer_type == 'shadows':
-        _render_shadows_layer(layer_config, global_config, nodes, edges, z_offset)
+    elif layer_type in _GRAPH_LAYER_TYPES:
+        _render_graph_layer(layer_config, global_config, nodes, edges, z_offset)
 
 
 def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
@@ -621,25 +603,36 @@ def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any
 
 def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
     """Render ASCII text pieces layer."""
+    layer_name = layer_config.get('name', 'ascii')
     piece_config = layer_config.get('pieces', {})
     scale = piece_config.get('scale', 0.8)
+    white_color = piece_config.get('white_color', [0.9, 0.9, 0.9, 1.0])
+    black_color = piece_config.get('black_color', [0.2, 0.2, 0.2, 1.0])
+
+    white_mat = _make_material(f"{layer_name}_white", white_color)
+    black_mat = _make_material(f"{layer_name}_black", black_color)
 
     for node in nodes:
-        create_ascii_piece(node, scale=scale, z_offset=z_offset)
+        mat = white_mat if node["color"] == "white" else black_mat
+        create_ascii_piece(node, scale=scale, z_offset=z_offset, material=mat)
 
 
-def _render_adjacencies_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render adjacencies layer with asterisks at node positions and lines for edges."""
+def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
+    """Render a graph layer (adjacencies, links, king_box, shadows) with asterisks at node positions and lines for edges."""
+    layer_name = layer_config.get('name', 'graph')
+
     asterisk_config = layer_config.get('asterisks', {})
     asterisk_scale = asterisk_config.get('scale', 0.5)
     asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
+    asterisk_mat = _make_material(f"{layer_name}_asterisk", asterisk_color)
 
     edge_config = layer_config.get('edges', {})
     edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
     edge_thickness = edge_config.get('thickness', 0.02)
+    edge_mat = _make_material(f"{layer_name}_edge", edge_color)
 
     for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
+        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, material=asterisk_mat)
 
     for edge in edges:
         # Handle different possible edge key formats from the API
@@ -647,70 +640,5 @@ def _render_adjacencies_layer(layer_config: Dict[str, Any], global_config: Dict[
         target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
 
         if source and target:
-            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
-
-
-def _render_links_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render links layer with asterisks at node positions and lines for edges."""
-    asterisk_config = layer_config.get('asterisks', {})
-    asterisk_scale = asterisk_config.get('scale', 0.5)
-    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
-
-    edge_config = layer_config.get('edges', {})
-    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
-    edge_thickness = edge_config.get('thickness', 0.02)
-
-    for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
-
-    for edge in edges:
-        # Handle different possible edge key formats from the API
-        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
-        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
-
-        if source and target:
-            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
-
-
-def _render_king_box_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render king_box layer with asterisks at node positions and lines for edges."""
-    asterisk_config = layer_config.get('asterisks', {})
-    asterisk_scale = asterisk_config.get('scale', 0.5)
-    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
-
-    edge_config = layer_config.get('edges', {})
-    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
-    edge_thickness = edge_config.get('thickness', 0.02)
-
-    for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
-
-    for edge in edges:
-        # Handle different possible edge key formats from the API
-        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
-        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
-
-        if source and target:
-            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
-
-def _render_shadows_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render shadows layer with asterisks at node positions and lines for edges."""
-    asterisk_config = layer_config.get('asterisks', {})
-    asterisk_scale = asterisk_config.get('scale', 0.5)
-    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
-
-    edge_config = layer_config.get('edges', {})
-    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
-    edge_thickness = edge_config.get('thickness', 0.02)
-
-    for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, color=asterisk_color)
-
-    for edge in edges:
-        # Handle different possible edge key formats from the API
-        source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
-        target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
-
-        if source and target:
-            create_link_line(source, target, z_offset=z_offset, color=edge_color, thickness=edge_thickness)
+            create_link_line(source, target, z_offset=z_offset, thickness=edge_thickness, material=edge_mat)
 

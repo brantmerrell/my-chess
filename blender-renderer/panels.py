@@ -23,10 +23,6 @@ class BLCHESS_PT_main_panel(Panel):
         layout.prop(props, "connector_url")
 
         layout.separator()
-        layout.label(text="Connection Type:")
-        layout.prop(props, "connection_type", text="")
-
-        layout.separator()
         layout.label(text="Board State:")
         layout.prop(props, "fen_string", text="")
 
