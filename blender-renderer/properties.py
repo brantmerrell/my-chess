@@ -7,9 +7,141 @@ from bpy.props import StringProperty, EnumProperty, BoolProperty, IntProperty
 
 from .models import SAMPLE_SETUPS
 
-_SETUP_ITEMS = (
-    [(str(i), s.name, s.description) for i, s in enumerate(SAMPLE_SETUPS)]
-)
+_SETUP_ITEMS = [(str(i), s.name, s.description) for i, s in enumerate(SAMPLE_SETUPS)]
+
+
+def _on_connection_type_change(self, context):
+    """Update callback when connection_type changes - only re-render the Focus layer."""
+    props = context.scene.blchess_renderer
+
+    # Only re-render if we have a valid FEN string and it's not the initial load
+    if not props.fen_string or not props.fen_string.strip():
+        return
+
+    # Check if there are any objects in the scene (indicating something was already rendered)
+    if not any(obj for obj in bpy.data.objects):
+        return
+
+    # Import here to avoid circular dependency
+    from .services.connector_service import ConnectorService
+    from .utils import load_board_config, render_layer
+
+    try:
+        # Load config to get Focus layer settings
+        config = load_board_config()
+        focus_layer = next(
+            (l for l in config.get("layers", []) if l.get("type") == "focus"), None
+        )
+        if not focus_layer or not focus_layer.get("enabled"):
+            return
+
+        # Delete only Focus layer objects (at z=2.5)
+        focus_z = focus_layer.get("z_offset", 2.5)
+        tolerance = 0.2  # Z-position tolerance
+
+        objects_to_delete = []
+        print(f"\n=== Clearing Focus layer at z={focus_z} ===")
+        for obj in bpy.data.objects:
+            should_delete = False
+            z_diff = abs(obj.location.z - focus_z)
+
+            # Check if object location is at the Focus layer z-position
+            if z_diff < tolerance:
+                should_delete = True
+            # For curve objects (link lines), check if their vertices are at focus_z
+            elif obj.type == 'CURVE' and obj.data.splines:
+                for spline in obj.data.splines:
+                    if hasattr(spline, 'points') and len(spline.points) > 0:
+                        # Check first point's z-coordinate
+                        point_z = spline.points[0].co[2]
+                        if abs(point_z - focus_z) < tolerance:
+                            should_delete = True
+                            break
+
+            if should_delete:
+                print(f"Found object to delete: {obj.name} (type={obj.type}) at z={obj.location.z}")
+                objects_to_delete.append(obj)
+
+        print(f"Total objects to delete: {len(objects_to_delete)}")
+
+        # Delete the identified objects and their data
+        for obj in objects_to_delete:
+            obj_name = obj.name
+            # Store the data before removing the object
+            obj_data = obj.data
+            bpy.data.objects.remove(obj, do_unlink=True)
+            print(f"Deleted object: {obj_name}")
+
+            # Clean up orphaned mesh/curve/font data
+            if obj_data and obj_data.users == 0:
+                if isinstance(obj_data, bpy.types.Mesh):
+                    bpy.data.meshes.remove(obj_data)
+                elif isinstance(obj_data, bpy.types.Curve):
+                    bpy.data.curves.remove(obj_data)
+
+        # Also clean up orphaned materials at this z-level
+        for mat in list(bpy.data.materials):
+            if mat.users == 0 and (
+                "glass_pane" in mat.name
+                or "_asterisk" in mat.name
+                or "_edge_" in mat.name
+            ):
+                bpy.data.materials.remove(mat)
+
+        # If connection_type is 'none', just clear and don't render anything
+        if props.connection_type == "none":
+            print("Connection type is 'none', cleared Focus layer without re-rendering")
+            return
+
+        # Fetch data for the new connection type
+        connector_service = ConnectorService(base_url=props.connector_url)
+
+        data = None
+        edges = []
+        if props.connection_type == "adjacencies":
+            data = connector_service.fetch_adjacencies(props.fen_string)
+            edges = data.get("edges", [])
+        elif props.connection_type == "links":
+            data = connector_service.fetch_links(props.fen_string)
+            edges = data.get("edges", [])
+        elif props.connection_type == "king_box":
+            data = connector_service.fetch_king_box(props.fen_string)
+            edges = data.get("edges", [])
+        elif props.connection_type == "shadows":
+            data = connector_service.fetch_shadows(props.fen_string)
+            edges = data.get("edges", [])
+
+        if data is None:
+            return
+
+        # Find the matching graph layer config to mirror its visual settings
+        matching_layer = next(
+            (
+                l
+                for l in config.get("layers", [])
+                if l.get("type") == props.connection_type
+            ),
+            None,
+        )
+
+        if matching_layer and props.connection_type != "none":
+            # Merge matching layer's config with Focus layer's z_offset and name
+            focus_layer = {
+                **matching_layer,
+                "z_offset": focus_layer["z_offset"],
+                "name": focus_layer["name"],
+                "type": "focus",
+            }
+
+        # Re-render only the Focus layer
+        global_config = config.get("global", {})
+        render_layer(focus_layer, global_config, data["nodes"], edges=edges)
+
+    except Exception as e:
+        print(f"Error updating connection type: {e}")
+        import traceback
+
+        traceback.print_exc()
 
 
 class BlendChessProperties(PropertyGroup):
@@ -33,20 +165,21 @@ class BlendChessProperties(PropertyGroup):
         name="Focus",
         description="Type of piece relationships to focus on",
         items=[
-            ('none', 'None', 'No connections between pieces'),
-            ('adjacencies', 'Adjacencies', 'Show adjacent piece relationships'),
-            ('links', 'Links', 'Show legal move connections'),
-            ('king_box', 'King Box', 'Show king safety box relationships'),
-            ('shadows', 'Shadows', 'Show shadows cast by blocking pieces'),
+            ("none", "None", "No connections between pieces"),
+            ("adjacencies", "Adjacencies", "Show adjacent piece relationships"),
+            ("links", "Links", "Show legal move connections"),
+            ("king_box", "King Box", "Show king safety box relationships"),
+            ("shadows", "Shadows", "Show shadows cast by blocking pieces"),
         ],
-        default='none',
+        default="none",
+        update=_on_connection_type_change,
     )
 
     selected_setup: EnumProperty(
         name="Position",
         description="Select a preset chess position",
         items=_SETUP_ITEMS,
-        default='0',
+        default="0",
     )
 
     move_input: StringProperty(
@@ -67,4 +200,3 @@ class BlendChessProperties(PropertyGroup):
         description="Current index into position_history",
         default=-1,
     )
-
