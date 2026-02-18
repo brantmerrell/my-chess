@@ -631,9 +631,27 @@ def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
     asterisk_mat = _make_material(f"{layer_name}_asterisk", asterisk_color)
 
     edge_config = layer_config.get('edges', {})
-    edge_color = edge_config.get('color', [1.0, 0.5, 0.0, 1.0])
     edge_thickness = edge_config.get('thickness', 0.02)
-    edge_mat = _make_material(f"{layer_name}_edge", edge_color)
+
+    # Per-type color support: use 'colors' dict keyed by edge type.
+    # Falls back to legacy single 'color' key, then to darkgoldenrod.
+    _DEFAULT_EDGE_COLOR = [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+    edge_colors = edge_config.get('colors', {})
+    if not edge_colors:
+        single = edge_config.get('color', _DEFAULT_EDGE_COLOR)
+        edge_colors = {'default': single}
+    elif 'default' not in edge_colors:
+        edge_colors['default'] = _DEFAULT_EDGE_COLOR
+
+    # Cache materials: one per unique color to avoid redundant material creation
+    _color_mat_cache = {}
+
+    def _get_edge_mat(edge_type):
+        color = edge_colors.get(edge_type, edge_colors['default'])
+        key = tuple(color)
+        if key not in _color_mat_cache:
+            _color_mat_cache[key] = _make_material(f"{layer_name}_edge_{edge_type}", color)
+        return _color_mat_cache[key]
 
     for node in nodes:
         create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, material=asterisk_mat)
@@ -644,5 +662,6 @@ def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
         target = edge.get('target') or edge.get('to') or edge.get('to_square') or edge.get('end')
 
         if source and target:
-            create_link_line(source, target, z_offset=z_offset, thickness=edge_thickness, material=edge_mat)
+            edge_type = edge.get('type', 'default')
+            create_link_line(source, target, z_offset=z_offset, thickness=edge_thickness, material=_get_edge_mat(edge_type))
 

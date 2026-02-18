@@ -17,27 +17,27 @@ layers:
       use_usd_assets: true
       specific_rotations:
         rook:
-          transform_coords: true  # Rooks need coordinate transformation: (x,y,z) -> (x,-z,y)
+          transform_coords: true
           white:
             rotation:
-              x: 1.5708   # 90°
-              y: 0.0      # 0°
-              z: -1.5708  # -90°
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
           black:
             rotation:
-              x: 1.5708   # 90°
-              y: 0.0      # 0°
-              z: -1.5708  # -90°
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
         knight:
           white:
             rotation:
               x: 0.0
-              y: -1.5708  # -90°
+              y: -1.5708
               z: 0.0
           black:
             rotation:
               x: 0.0
-              y: 1.5708   # 90°
+              y: 1.5708
               z: 0.0
   - name: "Adjacencies"
     type: "adjacencies"
@@ -49,7 +49,9 @@ layers:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
-      color: [1.0, 0.5, 0.0, 1.0] # TODO: DodgerBlue
+      colors:
+        adjacency: [0.118, 0.565, 1.0, 1.0]    # dodgerblue
+        default:   [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
       thickness: 0.02
   - name: "Links"
     type: "links"
@@ -61,7 +63,10 @@ layers:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
-      color: [1.0, 0.5, 0.0, 1.0] # TODO: ForestGreen for Protection, Crimson for threats
+      colors:
+        threat:     [0.863, 0.078, 0.235, 1.0]  # crimson
+        protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        default:    [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
       thickness: 0.02
   - name: "King Box"
     type: "king_box"
@@ -73,7 +78,11 @@ layers:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
-      color: [1.0, 0.5, 0.0, 1.0] # TODO: DarkGoldenRod for king_blocked_ally and king_blocked_threat, ForestGreen for king_can_move
+      colors:
+        king_can_move:      [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_blocked_ally:  [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        king_blocked_threat: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        default:            [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
       thickness: 0.02
   - name: "Shadows"
     type: "shadows"
@@ -85,7 +94,12 @@ layers:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
-      color: [1.0, 0.5, 0.0, 1.0] # TODO: caster_threat and caster_protection Cornsilk, shadow_threat DarkRed, shadow_protection ForestGreen
+      colors:
+        caster_threat:      [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        caster_protection:  [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        shadow_threat:      [0.545, 0.0, 0.0, 1.0]    # darkred
+        shadow_protection:  [0.133, 0.545, 0.133, 1.0] # forestgreen
+        default:            [0.722, 0.525, 0.043, 1.0] # darkgoldenrod
       thickness: 0.02
   - name: "ASCII Board"
     type: "ascii"
