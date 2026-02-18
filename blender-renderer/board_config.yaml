@@ -45,6 +45,10 @@ layers:
     z_offset: -1.5
     board:
       show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
     asterisks:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
@@ -59,6 +63,10 @@ layers:
     z_offset: -3
     board:
       show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
     asterisks:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
@@ -74,15 +82,19 @@ layers:
     z_offset: -4.5
     board:
       show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
     asterisks:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
-        king_can_move:      [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        king_blocked_ally:  [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        king_can_move: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_blocked_ally: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
         king_blocked_threat: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-        default:            [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        default: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
       thickness: 0.02
   - name: "Shadows"
     type: "shadows"
@@ -90,16 +102,20 @@ layers:
     z_offset: -6
     board:
       show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
     asterisks:
       scale: 0.5
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
-        caster_threat:      [1.0, 0.973, 0.863, 1.0]  # cornsilk
-        caster_protection:  [1.0, 0.973, 0.863, 1.0]  # cornsilk
-        shadow_threat:      [0.545, 0.0, 0.0, 1.0]    # darkred
-        shadow_protection:  [0.133, 0.545, 0.133, 1.0] # forestgreen
-        default:            [0.722, 0.525, 0.043, 1.0] # darkgoldenrod
+        caster_threat: [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        caster_protection: [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        shadow_threat: [0.545, 0.0, 0.0, 1.0]    # darkred
+        shadow_protection: [0.133, 0.545, 0.133, 1.0] # forestgreen
+        default: [0.722, 0.525, 0.043, 1.0] # darkgoldenrod
       thickness: 0.02
   - name: "ASCII Board"
     type: "ascii"
@@ -107,6 +123,10 @@ layers:
     z_offset: -7.5
     board:
       show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
     pieces:
       scale: 0.8
       style: "unicode_symbols"

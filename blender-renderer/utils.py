@@ -487,6 +487,52 @@ def _make_material(name: str, color: list) -> bpy.types.Material:
     return mat
 
 
+def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) -> bpy.types.Object:
+    """
+    Create a flat rectangular mesh matching the chessboard playing surface,
+    positioned at z_offset in the XY plane with a semi-transparent dark material.
+
+    Args:
+        z_offset: Z position (negative to stack below 3D board)
+        color: RGB list for the pane tint (default: very dark blue-grey)
+        alpha: Opacity 0.0 (invisible) to 1.0 (opaque); default 0.25
+    Returns:
+        The created mesh object
+    """
+    from .constants import USD_BOARD_HALF_WIDTH, USD_BOARD_SCALE
+
+    if color is None:
+        color = [0.02, 0.02, 0.05]
+
+    hw = USD_BOARD_HALF_WIDTH * USD_BOARD_SCALE  # half-width in Blender units
+
+    mesh = bpy.data.meshes.new("glass_pane")
+    verts = [(-hw, -hw, 0.0), (hw, -hw, 0.0), (hw, hw, 0.0), (-hw, hw, 0.0)]
+    mesh.from_pydata(verts, [], [(0, 1, 2, 3)])
+    mesh.update()
+
+    obj = bpy.data.objects.new("glass_pane", mesh)
+    # Place pane 0.1 units behind the layer so coplanar text objects render in front
+    obj.location = (0.0, 0.0, z_offset - 0.1)
+    bpy.context.collection.objects.link(obj)
+
+    mat = bpy.data.materials.new(name="glass_pane_mat")
+    mat.use_nodes = True
+    # Blender 4.2+ (EEVEE Next) renamed blend_method → surface_render_method
+    try:
+        mat.surface_render_method = 'BLENDED'
+    except AttributeError:
+        mat.blend_method = 'BLEND'
+        mat.shadow_method = 'NONE'
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+    bsdf.inputs["Alpha"].default_value = alpha
+    bsdf.inputs["Roughness"].default_value = 0.1
+
+    obj.data.materials.append(mat)
+    return obj
+
+
 def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, material: bpy.types.Material = None) -> bpy.types.Object:
     """
     Create an asterisk text object at a board square position.
@@ -578,6 +624,15 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
     if layer_config.get('board', {}).get('show', False):
         if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
             create_chessboard()
+
+    # Render glass pane backdrop if configured
+    pane_cfg = layer_config.get('glass_pane', {})
+    if pane_cfg.get('show', False):
+        create_glass_pane(
+            z_offset,
+            color=pane_cfg.get('color', [0.02, 0.02, 0.05]),
+            alpha=pane_cfg.get('alpha', 0.25),
+        )
 
     _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows'}
 
