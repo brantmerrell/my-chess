@@ -487,7 +487,7 @@ def _make_material(name: str, color: list) -> bpy.types.Material:
     return mat
 
 
-def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) -> bpy.types.Object:
+def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, roughness: float = 0.1, scale: float = 1.0) -> bpy.types.Object:
     """
     Create a flat rectangular mesh matching the chessboard playing surface,
     positioned at z_offset in the XY plane with a semi-transparent dark material.
@@ -496,6 +496,8 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) 
         z_offset: Z position (negative to stack below 3D board)
         color: RGB list for the pane tint (default: very dark blue-grey)
         alpha: Opacity 0.0 (invisible) to 1.0 (opaque); default 0.25
+        roughness: Surface roughness 0.0 (glossy) to 1.0 (matte); default 0.1
+        scale: Size multiplier for dimensions; default 1.0
     Returns:
         The created mesh object
     """
@@ -504,7 +506,7 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) 
     if color is None:
         color = [0.02, 0.02, 0.05]
 
-    hw = USD_BOARD_HALF_WIDTH * USD_BOARD_SCALE  # half-width in Blender units
+    hw = 3.5
 
     mesh = bpy.data.meshes.new("glass_pane")
     verts = [(-hw, -hw, 0.0), (hw, -hw, 0.0), (hw, hw, 0.0), (-hw, hw, 0.0)]
@@ -512,8 +514,7 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) 
     mesh.update()
 
     obj = bpy.data.objects.new("glass_pane", mesh)
-    # Place pane 0.1 units behind the layer so coplanar text objects render in front
-    obj.location = (0.0, 0.0, z_offset - 0.1)
+    obj.location = (0.0, 0.0, z_offset)
     bpy.context.collection.objects.link(obj)
 
     mat = bpy.data.materials.new(name="glass_pane_mat")
@@ -527,7 +528,7 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25) 
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Alpha"].default_value = alpha
-    bsdf.inputs["Roughness"].default_value = 0.1
+    bsdf.inputs["Roughness"].default_value = roughness
 
     obj.data.materials.append(mat)
     return obj
@@ -632,6 +633,8 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
             z_offset,
             color=pane_cfg.get('color', [0.02, 0.02, 0.05]),
             alpha=pane_cfg.get('alpha', 0.25),
+            roughness=pane_cfg.get('roughness', 0.1),
+            scale=pane_cfg.get('scale', 1.0),
         )
 
     _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows'}
