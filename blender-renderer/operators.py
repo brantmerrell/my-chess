@@ -91,6 +91,28 @@ def _render_current_fen(operator, context):
                 edges = king_box_edges
             if layer.get('type') == 'shadows':
                 edges = shadows_edges
+            if layer.get('type') == 'focus':
+                if props.connection_type == 'none':
+                    continue
+                _focus_map = {
+                    'adjacencies': adjacencies_edges,
+                    'links':       links_edges,
+                    'king_box':    king_box_edges,
+                    'shadows':     shadows_edges,
+                }
+                edges = _focus_map.get(props.connection_type, [])
+                # Mirror the matching graph layer's visual config exactly
+                # (glass pane, asterisk color, edge colors, thickness — everything)
+                # but keep the focus layer's own z_offset and name.
+                matching = next(
+                    (l for l in layers if l.get('type') == props.connection_type),
+                    None,
+                )
+                if matching:
+                    layer = {**matching,
+                             'z_offset': layer['z_offset'],
+                             'name': layer['name'],
+                             'type': 'focus'}
             render_layer(layer, global_config, data['nodes'], edges=edges)
 
     operator.report({'INFO'}, f"Rendered {len(data['nodes'])} pieces across {len([l for l in layers if l.get('enabled')])} layers")

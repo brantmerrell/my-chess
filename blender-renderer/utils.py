@@ -637,7 +637,7 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
             scale=pane_cfg.get('scale', 1.0),
         )
 
-    _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows'}
+    _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows', 'focus'}
 
     # Render pieces based on layer type
     if layer_type == 'usd':

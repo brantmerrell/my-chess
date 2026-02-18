@@ -5,6 +5,33 @@ global:
   white_rotation_z: 1.5708
   black_rotation_z: -1.5708
 layers:
+  - name: "Focus"
+    type: "focus"
+    enabled: true
+    z_offset: 2.5
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+    asterisks:
+      scale: 0.5
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      colors:
+        adjacency:           [0.118, 0.565, 1.0, 1.0]    # dodgerblue
+        threat:              [0.863, 0.078, 0.235, 1.0]  # crimson
+        protection:          [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_can_move:       [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_blocked_ally:   [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        king_blocked_threat: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        caster_threat:       [1.0, 0.973, 0.863, 1.0]   # cornsilk
+        caster_protection:   [1.0, 0.973, 0.863, 1.0]   # cornsilk
+        shadow_threat:       [0.545, 0.0, 0.0, 1.0]     # darkred
+        shadow_protection:   [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        default:             [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+      thickness: 0.02
   - name: "3D Board"
     type: "usd"
     enabled: true
