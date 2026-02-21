@@ -108,8 +108,8 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         # Active object is a child, get its parent (the root)
         root_obj = imported_obj.parent
 
-    # Get piece-specific configuration
-    specific_rotations = rotation_config.get('specific_rotations', {})
+    # Get piece-specific configuration (support both old and new names)
+    rotations = rotation_config.get('rotations') or rotation_config.get('specific_rotations', {})
     print(f"rotation_config keys: {rotation_config.keys()}")
 
     # Map piece types to full names
@@ -122,8 +122,8 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         'P': 'pawn'
     }
     piece_name = piece_name_map.get(piece_type, piece_type.lower())
-    print(f"specific_rotations keys: {specific_rotations.keys()}")
-    piece_config = specific_rotations.get(piece_name, {})
+    print(f"rotations keys: {rotations.keys()}")
+    piece_config = rotations.get(piece_name, {})
     print(f"piece_config keys: {piece_config.keys()}")
     print(f"piece_type: {piece_type}, piece_name: {piece_name}, color: {color}")
 
@@ -619,33 +619,50 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
         edges = []
 
     layer_type = layer_config.get('type')
-    z_offset = layer_config.get('z_offset', 0.0)
 
-    # Render board if configured
-    if layer_config.get('board', {}).get('show', False):
-        if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
-            create_chessboard()
+    # Get offset values (supports both old z_offset and new offset dict)
+    offset_config = layer_config.get('offset', {})
+    if isinstance(offset_config, dict):
+        offset_x = offset_config.get('x', 0.0)
+        offset_y = offset_config.get('y', 0.0)
+        offset_z = offset_config.get('z', 0.0)
+    else:
+        # Fallback for old z_offset format
+        offset_x = 0.0
+        offset_y = 0.0
+        offset_z = layer_config.get('z_offset', 0.0)
 
-    # Render glass pane backdrop if configured
-    pane_cfg = layer_config.get('glass_pane', {})
-    if pane_cfg.get('show', False):
+    # Get rotation values
+    rotation_config = layer_config.get('rotation', {})
+    rotation_x = rotation_config.get('x', 0.0)
+    rotation_y = rotation_config.get('y', 0.0)
+    rotation_z = rotation_config.get('z', 0.0)
+
+    # Render glass pane or board (glass_pane takes precedence if truthy)
+    pane_cfg = layer_config.get('glass_pane')
+    if pane_cfg:
+        # Glass pane is configured, render it
         create_glass_pane(
-            z_offset,
+            offset_z,
             color=pane_cfg.get('color', [0.02, 0.02, 0.05]),
             alpha=pane_cfg.get('alpha', 0.25),
             roughness=pane_cfg.get('roughness', 0.1),
             scale=pane_cfg.get('scale', 1.0),
         )
+    elif layer_config.get('board', {}).get('show', False):
+        # No glass pane, render board if configured
+        if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
+            create_chessboard()
 
     _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows', 'focus'}
 
     # Render pieces based on layer type
     if layer_type == 'usd':
-        _render_usd_layer(layer_config, global_config, nodes, z_offset)
+        _render_usd_layer(layer_config, global_config, nodes, offset_z)
     elif layer_type == 'ascii':
-        _render_ascii_layer(layer_config, global_config, nodes, z_offset)
+        _render_ascii_layer(layer_config, global_config, nodes, offset_z)
     elif layer_type in _GRAPH_LAYER_TYPES:
-        _render_graph_layer(layer_config, global_config, nodes, edges, z_offset)
+        _render_graph_layer(layer_config, global_config, nodes, edges, offset_z)
 
 
 def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
@@ -653,9 +670,10 @@ def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any
     piece_config = layer_config.get('pieces', {})
     scale = piece_config.get('scale', 5.0)
 
-    # Extract rotation config to pass to pieces
+    # Extract rotation config to pass to pieces (support both old and new names)
+    rotations = piece_config.get('rotations') or piece_config.get('specific_rotations', {})
     rotation_config = {
-        'specific_rotations': piece_config.get('specific_rotations', {})
+        'rotations': rotations
     }
     print(f"_render_usd_layer: rotation_config = {rotation_config}")
 

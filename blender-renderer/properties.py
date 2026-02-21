@@ -36,7 +36,8 @@ def _on_connection_type_change(self, context):
             return
 
         # Delete only Focus layer objects (at z=2.5)
-        focus_z = focus_layer.get("z_offset", 2.5)
+        focus_offset = focus_layer.get("offset", {})
+        focus_z = focus_offset.get("z", 2.5) if isinstance(focus_offset, dict) else focus_layer.get("z_offset", 2.5)
         tolerance = 0.2  # Z-position tolerance
 
         objects_to_delete = []
@@ -125,10 +126,10 @@ def _on_connection_type_change(self, context):
         )
 
         if matching_layer and props.connection_type != "none":
-            # Merge matching layer's config with Focus layer's z_offset and name
+            # Merge matching layer's config with Focus layer's offset and name
             focus_layer = {
                 **matching_layer,
-                "z_offset": focus_layer["z_offset"],
+                "offset": focus_layer["offset"],
                 "name": focus_layer["name"],
                 "type": "focus",
             }

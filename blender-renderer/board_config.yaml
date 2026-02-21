@@ -2,13 +2,14 @@ global:
   board_half_width: 0.35270807
   board_scale: 13.8
   square_spacing: 1.0
-  white_rotation_z: 1.5708
-  black_rotation_z: -1.5708
+  white_rotation_z: 1.5708 # this applies to the ascii layer too
+  black_rotation_z: -1.5708 # this applies to the ascii layer too
 layers:
   - name: "Focus"
     type: "focus"
     enabled: true
-    z_offset: 2.5
+    offset:
+      z: 2.5
     board:
       show: false
     glass_pane:
@@ -20,29 +21,30 @@ layers:
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
-        adjacency:           [0.118, 0.565, 1.0, 1.0]    # dodgerblue
-        threat:              [0.863, 0.078, 0.235, 1.0]  # crimson
-        protection:          [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        king_can_move:       [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        king_blocked_ally:   [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        adjacency: [0.118, 0.565, 1.0, 1.0]    # dodgerblue
+        threat: [0.863, 0.078, 0.235, 1.0]  # crimson
+        protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_can_move: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_blocked_ally: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
         king_blocked_threat: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-        caster_threat:       [1.0, 0.973, 0.863, 1.0]   # cornsilk
-        caster_protection:   [1.0, 0.973, 0.863, 1.0]   # cornsilk
-        shadow_threat:       [0.545, 0.0, 0.0, 1.0]     # darkred
-        shadow_protection:   [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        default:             [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        caster_threat: [1.0, 0.973, 0.863, 1.0]   # cornsilk
+        caster_protection: [1.0, 0.973, 0.863, 1.0]   # cornsilk
+        shadow_threat: [0.545, 0.0, 0.0, 1.0]     # darkred
+        shadow_protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "3D Board"
     type: "usd"
     enabled: true
-    z_offset: 0.0
+    offset:
+      z: 0.0
     board:
       show: true
       import_usd: true
     pieces:
       scale: 5.0
       use_usd_assets: true
-      specific_rotations:
+      rotations:
         rook:
           transform_coords: true
           white:
@@ -69,7 +71,8 @@ layers:
   - name: "Adjacencies"
     type: "adjacencies"
     enabled: true
-    z_offset: -2.5
+    offset:
+      z: -1.5
     board:
       show: false
     glass_pane:
@@ -78,17 +81,18 @@ layers:
       alpha: 0.7
       roughness: 0.5
     asterisks:
-      scale: 0.5
+      scale: 0.3
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
         adjacency: [0.118, 0.565, 1.0, 1.0]    # dodgerblue
-        default:   [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "Links"
     type: "links"
     enabled: true
-    z_offset: -5
+    offset:
+      z: -3
     board:
       show: false
     glass_pane:
@@ -97,18 +101,19 @@ layers:
       alpha: 0.7
       roughness: 0.5
     asterisks:
-      scale: 0.5
+      scale: 0.3
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
         threat:     [0.863, 0.078, 0.235, 1.0]  # crimson
         protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        default:    [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "King Box"
     type: "king_box"
     enabled: true
-    z_offset: -7.5
+    offset:
+      z: -4.5
     board:
       show: false
     glass_pane:
@@ -117,19 +122,20 @@ layers:
       alpha: 0.7
       roughness: 0.5
     asterisks:
-      scale: 0.5
+      scale: 0.3
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
         king_can_move: [0.133, 0.545, 0.133, 1.0]  # forestgreen
         king_blocked_ally: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-        king_blocked_threat: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-        default: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        king_blocked_threat:  [0.863, 0.078, 0.235, 1.0]  # crimson
+        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "Shadows"
     type: "shadows"
     enabled: true
-    z_offset: -10
+    offset:
+      z: -6
     board:
       show: false
     glass_pane:
@@ -138,7 +144,7 @@ layers:
       alpha: 0.7
       roughness: 0.5
     asterisks:
-      scale: 0.5
+      scale: 0.3
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
@@ -146,12 +152,13 @@ layers:
         caster_protection: [1.0, 0.973, 0.863, 1.0]  # cornsilk
         shadow_threat: [0.545, 0.0, 0.0, 1.0]    # darkred
         shadow_protection: [0.133, 0.545, 0.133, 1.0] # forestgreen
-        default: [0.722, 0.525, 0.043, 1.0] # darkgoldenrod
+        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "ASCII Board"
     type: "ascii"
     enabled: true
-    z_offset: -12.5
+    offset:
+      z: -7.5
     board:
       show: false
     glass_pane:
@@ -160,7 +167,7 @@ layers:
       alpha: 0.7
       roughness: 0.5
     pieces:
-      scale: 0.8
+      scale: 0.6
       style: "unicode_symbols"
       align_x: "CENTER"
       align_y: "CENTER"
