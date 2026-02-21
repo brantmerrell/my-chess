@@ -1268,7 +1268,7 @@ blender-renderer/:
   .env.example:
     CONNECTOR_URL: localhost 8000
   services/:
-    __init__.py:
+    __init__.py: empty
     connector_service.py:
       ConnectorService:
         __init__:
@@ -1276,22 +1276,24 @@ blender-renderer/:
         fetch_links:
         fetch_none:
         fetch_king_box:
-        TODO fetch_:
+        fetch_shadows:
   __init__.py:
-    bl_info:
-    classes:
-    register:
-    unregister:
-    main:
-  install_addon.py:
-  models.py:
-    SetupOption:
-    SAMPLE_SETUPS:
-      - Standard Starting Position (modified for fewer debug steps)
-      - King vs King
-      - Fool's Mate
-      - Embedded Mate
-      - Open Board Mate
+    - defines bl_info
+    - imports and declares BlendChessProperties from properties.py
+    - imports and declares BLCHESS_OT_-prefixed operators from operators.py
+    - defines register and unregister functions
+    - main calls register
+  board_config.yaml:
+    global:
+      board_half_width: unused?
+      board_scale: should be used by utils.py > create_chessboard
+      square_spacing: unused?
+      white_rotation_z: unused?
+      black_rotation_z: unused?
+    layers:
+      TODO:
+        - focus colors are redundant to their definitions in other layers
+        - specific rotations may also require specific positioning
   constants.py:
     PIECE_SYMBOLS: ascii symbols mapped from FEN letters
     USD_ASSETS_BASE: path to assets
@@ -1302,33 +1304,66 @@ blender-renderer/:
     USD_BOARD_SCALE: 12 (is this used anywhere?)
     USD_BOARD_HALF_WIDTH: .25 - half the playing surface width in meters
     USD_BOARD_PIECE_HEIGHT: .25 - height pieces sit above board surface
+  install_addon.py: adds extension to Blender
+  models.py:
+    SetupOption:
+    SAMPLE_SETUPS:
+      - Standard Starting Position (modified for fewer debug steps)
+      - King vs King
+      - Fool's Mate
+      - Embedded Mate
+      - Open Board Mate
   dev.sh:
     - conditionally loads .env files
   install_addon.py:
   models.py:
   operators.py:
+    _render_current_fen: helps 8 classes
+    _load_history: helps 6 classes
+    _save_history: helps 4 classes
     BLCHESS_OT_submit_fen:
       execute:
         - access connector_service and fetch from applicable endpoint
         - clear scene
         - conditionally create chessboard
         - iteratively call create_piece
-  output.txt:
+    BLCHESS_OT_select_position:
+      execute:
+    BLCHESS_OT_submit_move:
+      execute:
+    BLCHESS_OT_undo_move:
+      execute:
+    BLCHESS_OT_go_to_start:
+      execute:
+    BLCHESS_OT_go_backward:
+      execute:
+    BLCHESS_OT_go_forward:
+      execute:
+    BLCHESS_OT_go_to_end:
+      execute:
   panels.py:
     BLCHESS_PT_main_panel:
       draw:
+        - Select Position
+        - FEN input
+        - Move Controls
+        - Navigation Controls
   properties.py:
+    _on_connection_type_change:
     BlendChessProperties:
-      fen_string:
-      connector_url:
-      connection_type:
-      show_board:
-      question: is this used anywhere?
+      - fen_string
+      - connector_url
+      - connection_type has update=_on_connection_type_change
+      - selected_setup
+      - move_input
+      - position_history
+      - position_index
   README.md:
     - dependency on backend connector
   requirements.txt:
     - requests
   utils.py:
+    load_board_config:
     square_to_coords:
       summary:
         - supports create_piece
@@ -1354,3 +1389,14 @@ blender-renderer/:
       - requires node as a param
       - defines color variant based on node["color"]
       - relies on import_usd_piece
+    _square_to_board_2d:
+    create_ascii_piece:
+    _make_material:
+    create_glass_pane:
+    create_asterisk:
+    create_link_line:
+    render_layer:
+    _render_usd_layer:
+    _render_ascii_layer:
+    _render_graph_layer:
+connector/:

@@ -103,14 +103,14 @@ def _render_current_fen(operator, context):
                 edges = _focus_map.get(props.connection_type, [])
                 # Mirror the matching graph layer's visual config exactly
                 # (glass pane, asterisk color, edge colors, thickness — everything)
-                # but keep the focus layer's own z_offset and name.
+                # but keep the focus layer's own offset and name.
                 matching = next(
                     (l for l in layers if l.get('type') == props.connection_type),
                     None,
                 )
                 if matching:
                     layer = {**matching,
-                             'z_offset': layer['z_offset'],
+                             'offset': layer['offset'],
                              'name': layer['name'],
                              'type': 'focus'}
             render_layer(layer, global_config, data['nodes'], edges=edges)
