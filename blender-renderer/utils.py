@@ -100,13 +100,12 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         return None
 
     # USD imports create different hierarchies for different pieces:
-    # - Most pieces: active_object is a child MESH, parent is the root EMPTY
+    # - Most pieces: active_object is a child MESH nested under EMPTY containers
+    # - Pawns: active_object is nested TWO levels deep (Render → Geom_Body → Pawn)
     # - Rooks: active_object is the root EMPTY with mesh children
-    # We need to position the ROOT object, not the active object
     root_obj = imported_obj
-    if imported_obj.parent is not None:
-        # Active object is a child, get its parent (the root)
-        root_obj = imported_obj.parent
+    while root_obj.parent is not None:
+        root_obj = root_obj.parent
 
     # Get piece-specific configuration (support both old and new names)
     rotations = rotation_config.get('rotations') or rotation_config.get('specific_rotations', {})
@@ -123,12 +122,12 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
     }
     piece_name = piece_name_map.get(piece_type, piece_type.lower())
     print(f"rotations keys: {rotations.keys()}")
-    piece_config = rotations.get(piece_name, {})
-    print(f"piece_config keys: {piece_config.keys()}")
+    piece_config = rotations.get(piece_name, {}) or {}  # Handle None from YAML comments
+    print(f"piece_config keys: {piece_config.keys() if piece_config else 'None'}")
     print(f"piece_type: {piece_type}, piece_name: {piece_name}, color: {color}")
 
     # Check if this piece has color-specific configuration
-    if color in piece_config:
+    if piece_config and color in piece_config:
         # Get color-specific rotation config
         color_config = piece_config[color]
         rotation = color_config.get('rotation', {})
@@ -156,13 +155,14 @@ def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, 
         # Apply Y-axis rotation for proper orientation
         root_obj.rotation_euler[1] = math.pi / 2
 
-    # Rename object
-    imported_obj.name = name
+    # Rename root object
+    root_obj.name = name
 
     # Apply color to materials (fallback if USD materials don't work)
-    _apply_piece_color(imported_obj, variant)
+    # This recursively applies to all children (important for pawns with separate head/body meshes)
+    _apply_piece_color(root_obj, variant)
 
-    return imported_obj
+    return root_obj
 
 
 def _apply_piece_color(obj: bpy.types.Object, variant: str):
@@ -238,7 +238,6 @@ def create_chessboard() -> Optional[bpy.types.Object]:
 
     # Center the board at origin and scale appropriately
     # The board extents are ~0.705m total width (0.35270807 * 2)
-    # We want 8 Blender units (8 squares at 1.0 spacing each)
     board_scale = 13.8 # why not use the scale defined in constants.py?
     board_obj.scale = (board_scale, board_scale, board_scale)
     board_obj.location = (0, 0, 0)
