@@ -58,16 +58,65 @@ layers:
               y: 0.0
               z: -1.5708
         knight:
+          transform_coords: true
           white:
             rotation:
-              x: 0.0
-              y: -1.5708
-              z: 0.0
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
           black:
             rotation:
-              x: 0.0
-              y: 1.5708
-              z: 0.0
+              x: 1.5708
+              y: 0.0
+              z: 1.5708
+        pawn:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        bishop:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        queen:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        king:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
   - name: "Adjacencies"
     type: "adjacencies"
     enabled: true
