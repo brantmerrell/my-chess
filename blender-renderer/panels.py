@@ -33,6 +33,7 @@ class BLCHESS_PT_main_panel(Panel):
         layout.label(text="FEN String:")
         layout.prop(props, "fen_string", text="")
         layout.prop(props, "connection_type", text="Focus")
+        layout.prop(props, "board_material_color", text="Board Color")
         layout.operator("blchess.submit_fen", text="Submit FEN", icon='PLAY')
 
         layout.separator()

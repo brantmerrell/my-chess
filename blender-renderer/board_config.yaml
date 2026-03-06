@@ -2,8 +2,8 @@ global:
   board_half_width: 0.35270807
   board_scale: 13.8
   square_spacing: 1.0
-  white_rotation_z: 1.5708 # this applies to the ascii layer too
-  black_rotation_z: -1.5708 # this applies to the ascii layer too
+  white_rotation_z: 1.5708
+  black_rotation_z: -1.5708
 layers:
   - name: "Focus"
     type: "focus"
@@ -41,6 +41,9 @@ layers:
     board:
       show: true
       import_usd: true
+      material:
+        metallic: 0.5
+        specular_tint: "limegreen"
     pieces:
       scale: 5.0
       use_usd_assets: true
