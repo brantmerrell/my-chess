@@ -205,9 +205,12 @@ def _apply_piece_color(obj: bpy.types.Object, variant: str):
     apply_to_object(obj)
 
 
-def create_chessboard() -> Optional[bpy.types.Object]:
+def create_chessboard(material_config: Optional[Dict[str, Any]] = None) -> Optional[bpy.types.Object]:
     """
     Import the USD chessboard asset.
+
+    Args:
+        material_config: Optional dict with material properties (metallic, specular_tint)
 
     Returns:
         The imported chessboard object, or None if import failed
@@ -246,22 +249,52 @@ def create_chessboard() -> Optional[bpy.types.Object]:
 
     # Apply checkerboard pattern to enhance visibility
     # (Original USD materials may not load properly)
-    _apply_board_material(board_obj)
+    _apply_board_material(board_obj, material_config=material_config)
 
     return board_obj
 
 
-def _apply_board_material(obj: bpy.types.Object):
+def _apply_board_material(obj: bpy.types.Object, material_config: Optional[Dict[str, Any]] = None):
     """
     Enhance the chessboard materials to show colors using original textures.
 
     Args:
         obj: Chessboard root object
+        material_config: Optional dict with material properties (metallic, specular_tint)
     """
-    from .constants import USD_ASSETS_BASE
+    from .constants import USD_ASSETS_BASE, COLOR_NAMES
     import os
 
+    if material_config is None:
+        material_config = {}
+
     texture_path = os.path.join(USD_ASSETS_BASE, "Chessboard", "tex", "chessboard_base_color.jpg")
+
+    # Get material properties from config
+    metallic = material_config.get('metallic', 0.0)
+
+    # Override with Blender property if available
+    try:
+        props = bpy.context.scene.blchess_renderer
+        specular_tint_color = props.board_material_color
+    except (AttributeError, KeyError):
+        # Fall back to config value if property not available
+        specular_tint_color = material_config.get('specular_tint', None)
+
+    # Convert color name to RGBA if provided
+    specular_tint_rgba = None
+    if specular_tint_color:
+        if isinstance(specular_tint_color, str):
+            # Look up color name
+            specular_tint_rgba = COLOR_NAMES.get(specular_tint_color.lower())
+            if specular_tint_rgba is None:
+                print(f"Warning: Unknown color name '{specular_tint_color}', ignoring specular_tint")
+        elif isinstance(specular_tint_color, (list, tuple)) and len(specular_tint_color) in [3, 4]:
+            # Direct RGB or RGBA values
+            if len(specular_tint_color) == 3:
+                specular_tint_rgba = tuple(specular_tint_color) + (1.0,)
+            else:
+                specular_tint_rgba = tuple(specular_tint_color)
 
     def apply_to_object(o):
         if o.type == 'MESH' and hasattr(o.data, 'materials'):
@@ -282,6 +315,17 @@ def _apply_board_material(obj: bpy.types.Object):
                         output = nodes.get('Material Output')
                         if output:
                             links.new(bsdf.outputs['BSDF'], output.inputs['Surface'])
+
+                    # Set metallic value
+                    bsdf.inputs['Metallic'].default_value = metallic
+
+                    # Set specular tint if provided
+                    if specular_tint_rgba:
+                        # In Blender 4.x, Specular Tint is under IOR Level -> Tint
+                        if 'Specular Tint' in bsdf.inputs:
+                            bsdf.inputs['Specular Tint'].default_value = specular_tint_rgba
+                        elif 'Tint' in bsdf.inputs:
+                            bsdf.inputs['Tint'].default_value = specular_tint_rgba
 
                     # Check if there's already a texture/color input
                     base_color_input = bsdf.inputs['Base Color']
@@ -651,7 +695,10 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
     elif layer_config.get('board', {}).get('show', False):
         # No glass pane, render board if configured
         if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
-            create_chessboard()
+            # Pass through board material configuration
+            board_config = layer_config.get('board', {})
+            material_config = board_config.get('material', {})
+            create_chessboard(material_config=material_config)
 
     _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows', 'focus'}
 

@@ -6,8 +6,44 @@ from bpy.types import PropertyGroup
 from bpy.props import StringProperty, EnumProperty, BoolProperty, IntProperty
 
 from .models import SAMPLE_SETUPS
+from .constants import get_colors_for_usage
 
 _SETUP_ITEMS = [(str(i), s.name, s.description) for i, s in enumerate(SAMPLE_SETUPS)]
+
+# Create enum items for board colors (filtered by usage type)
+_BOARD_COLOR_ITEMS = [(name, name.title(), f"Use {name} color") for name in sorted(get_colors_for_usage("board").keys())]
+
+
+def _on_board_color_change(self, context):
+    """Update callback when board_material_color changes - re-apply board material."""
+    from .utils import load_board_config
+
+    # Find the chessboard object
+    board_obj = bpy.data.objects.get("Chessboard")
+    if not board_obj:
+        return
+
+    # Load config to get material settings
+    try:
+        config = load_board_config()
+        usd_layer = next(
+            (l for l in config.get("layers", []) if l.get("type") == "usd"),
+            None
+        )
+        if not usd_layer:
+            return
+
+        board_config = usd_layer.get('board', {})
+        material_config = board_config.get('material', {})
+
+        # Re-apply the board material with new color
+        from .utils import _apply_board_material
+        _apply_board_material(board_obj, material_config=material_config)
+
+    except Exception as e:
+        print(f"Error updating board color: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 def _on_connection_type_change(self, context):
@@ -200,4 +236,12 @@ class BlendChessProperties(PropertyGroup):
         name="Position Index",
         description="Current index into position_history",
         default=-1,
+    )
+
+    board_material_color: EnumProperty(
+        name="Board Color",
+        description="Color for the board material specular tint",
+        items=_BOARD_COLOR_ITEMS,
+        default="forestgreen",
+        update=_on_board_color_change,
     )
