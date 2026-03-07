@@ -530,7 +530,7 @@ def _make_material(name: str, color: list) -> bpy.types.Material:
     return mat
 
 
-def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, roughness: float = 0.1, scale: float = 1.0) -> bpy.types.Object:
+def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, roughness: float = 0.1, scale: float = 1.0, x_offset: float = 0.0, y_offset: float = 0.0, rotation: tuple = None) -> bpy.types.Object:
     """
     Create a flat rectangular mesh matching the chessboard playing surface,
     positioned at z_offset in the XY plane with a semi-transparent dark material.
@@ -541,6 +541,9 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, 
         alpha: Opacity 0.0 (invisible) to 1.0 (opaque); default 0.25
         roughness: Surface roughness 0.0 (glossy) to 1.0 (matte); default 0.1
         scale: Size multiplier for dimensions; default 1.0
+        x_offset: X position offset; default 0.0
+        y_offset: Y position offset; default 0.0
+        rotation: (x, y, z) rotation tuple in radians; default None
     Returns:
         The created mesh object
     """
@@ -548,6 +551,9 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, 
 
     if color is None:
         color = [0.02, 0.02, 0.05]
+
+    if rotation is None:
+        rotation = (0.0, 0.0, 0.0)
 
     hw = 3.5
 
@@ -557,7 +563,8 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, 
     mesh.update()
 
     obj = bpy.data.objects.new("glass_pane", mesh)
-    obj.location = (0.0, 0.0, z_offset)
+    obj.location = (x_offset, y_offset, z_offset)
+    obj.rotation_euler = rotation
     bpy.context.collection.objects.link(obj)
 
     mat = bpy.data.materials.new(name="glass_pane_mat")
@@ -681,17 +688,37 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
     rotation_y = rotation_config.get('y', 0.0)
     rotation_z = rotation_config.get('z', 0.0)
 
+    # Prepare offset and rotation tuple for passing to layer renderers
+    offset = (offset_x, offset_y, offset_z)
+    rotation = (rotation_x, rotation_y, rotation_z)
+
+    _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows', 'focus'}
+
+    # Create layer parent object if this layer has transformations
+    layer_parent = None
+    if offset_x != 0 or offset_y != 0 or offset_z != 0 or rotation_x != 0 or rotation_y != 0 or rotation_z != 0:
+        layer_name = layer_config.get('name', layer_type)
+        layer_parent = bpy.data.objects.new(f"{layer_name}_parent", None)
+        layer_parent.location = (offset_x, offset_y, offset_z)
+        layer_parent.rotation_euler = (rotation_x, rotation_y, rotation_z)
+        bpy.context.collection.objects.link(layer_parent)
+
     # Render glass pane or board (glass_pane takes precedence if truthy)
     pane_cfg = layer_config.get('glass_pane')
     if pane_cfg:
         # Glass pane is configured, render it
-        create_glass_pane(
-            offset_z,
+        pane_obj = create_glass_pane(
+            0.0 if layer_parent else offset_z,
             color=pane_cfg.get('color', [0.02, 0.02, 0.05]),
             alpha=pane_cfg.get('alpha', 0.25),
             roughness=pane_cfg.get('roughness', 0.1),
             scale=pane_cfg.get('scale', 1.0),
+            x_offset=0.0 if layer_parent else offset_x,
+            y_offset=0.0 if layer_parent else offset_y,
+            rotation=(0.0, 0.0, 0.0) if layer_parent else (rotation_x, rotation_y, rotation_z),
         )
+        if layer_parent:
+            pane_obj.parent = layer_parent
     elif layer_config.get('board', {}).get('show', False):
         # No glass pane, render board if configured
         if layer_type == 'usd' and layer_config['board'].get('import_usd', False):
@@ -700,19 +727,22 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
             material_config = board_config.get('material', {})
             create_chessboard(material_config=material_config)
 
-    _GRAPH_LAYER_TYPES = {'adjacencies', 'links', 'king_box', 'shadows', 'focus'}
-
     # Render pieces based on layer type
     if layer_type == 'usd':
-        _render_usd_layer(layer_config, global_config, nodes, offset_z)
+        _render_usd_layer(layer_config, global_config, nodes, offset, rotation)
     elif layer_type == 'ascii':
-        _render_ascii_layer(layer_config, global_config, nodes, offset_z)
+        _render_ascii_layer(layer_config, global_config, nodes, offset, rotation, layer_parent)
     elif layer_type in _GRAPH_LAYER_TYPES:
-        _render_graph_layer(layer_config, global_config, nodes, edges, offset_z)
+        _render_graph_layer(layer_config, global_config, nodes, edges, offset, rotation, layer_parent)
 
 
-def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
-    """Render USD 3D pieces layer."""
+def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, offset: tuple, rotation: tuple):
+    """Render USD 3D pieces layer.
+
+    Args:
+        offset: (x, y, z) offset tuple
+        rotation: (x, y, z) rotation tuple in radians
+    """
     piece_config = layer_config.get('pieces', {})
     scale = piece_config.get('scale', 5.0)
 
@@ -726,9 +756,18 @@ def _render_usd_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any
     for node in nodes:
         create_piece(node, rotation_config=rotation_config)
 
+    # Note: USD layer currently doesn't apply layer-level offset/rotation
+    # This is typically handled at the board level
 
-def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, z_offset: float):
-    """Render ASCII text pieces layer."""
+
+def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, offset: tuple, rotation: tuple, layer_parent: bpy.types.Object = None):
+    """Render ASCII text pieces layer.
+
+    Args:
+        offset: (x, y, z) offset tuple
+        rotation: (x, y, z) rotation tuple in radians
+        layer_parent: Optional parent object for the layer (if transformations should be applied)
+    """
     layer_name = layer_config.get('name', 'ascii')
     piece_config = layer_config.get('pieces', {})
     scale = piece_config.get('scale', 0.8)
@@ -738,14 +777,26 @@ def _render_ascii_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
     white_mat = _make_material(f"{layer_name}_white", white_color)
     black_mat = _make_material(f"{layer_name}_black", black_color)
 
+    # Use provided parent or use direct z-offset positioning
+    z_offset = 0.0 if layer_parent else offset[2]
+
     for node in nodes:
         mat = white_mat if node["color"] == "white" else black_mat
-        create_ascii_piece(node, scale=scale, z_offset=z_offset, material=mat)
+        obj = create_ascii_piece(node, scale=scale, z_offset=z_offset, material=mat)
+        if obj and layer_parent:
+            obj.parent = layer_parent
 
 
-def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, z_offset: float):
-    """Render a graph layer (adjacencies, links, king_box, shadows) with asterisks at node positions and lines for edges."""
+def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], nodes: list, edges: list, offset: tuple, rotation: tuple, layer_parent: bpy.types.Object = None):
+    """Render a graph layer (adjacencies, links, king_box, shadows) with asterisks at node positions and lines for edges.
+
+    Args:
+        offset: (x, y, z) offset tuple
+        rotation: (x, y, z) rotation tuple in radians
+        layer_parent: Optional parent object for the layer (if transformations should be applied)
+    """
     layer_name = layer_config.get('name', 'graph')
+    offset_x, offset_y, offset_z = offset
 
     asterisk_config = layer_config.get('asterisks', {})
     asterisk_scale = asterisk_config.get('scale', 0.5)
@@ -775,9 +826,16 @@ def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
             _color_mat_cache[key] = _make_material(f"{layer_name}_edge_{edge_type}", color)
         return _color_mat_cache[key]
 
-    for node in nodes:
-        create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, material=asterisk_mat)
+    # Use provided parent or create local z-offset positioning
+    z_offset = 0.0 if layer_parent else offset_z
 
+    # Create asterisks and parent them to the layer if applicable
+    for node in nodes:
+        obj = create_asterisk(node['square'], z_offset=z_offset, scale=asterisk_scale, material=asterisk_mat)
+        if obj and layer_parent:
+            obj.parent = layer_parent
+
+    # Create edges and parent them to the layer if applicable
     for edge in edges:
         # Handle different possible edge key formats from the API
         source = edge.get('source') or edge.get('from') or edge.get('from_square') or edge.get('start')
@@ -785,5 +843,7 @@ def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
 
         if source and target:
             edge_type = edge.get('type', 'default')
-            create_link_line(source, target, z_offset=z_offset, thickness=edge_thickness, material=_get_edge_mat(edge_type))
+            obj = create_link_line(source, target, z_offset=z_offset, thickness=edge_thickness, material=_get_edge_mat(edge_type))
+            if obj and layer_parent:
+                obj.parent = layer_parent
 
