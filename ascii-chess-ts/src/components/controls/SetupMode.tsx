@@ -57,12 +57,12 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
     }
     setFen(newFen);
   }, [dispatch, setFen, selectedSetup]);
-  const handleQuickPairing = async (timeControl: TimeControl) => {
+  const handleQuickPairing = (timeControl: TimeControl) => {
     if (!isAuthenticated) {
       alert("Please log in with Lichess to play online");
       return;
     }
-    const success = await createSeek({
+    const success = createSeek({
       minutes: timeControl.minutes,
       increment: timeControl.increment,
     });

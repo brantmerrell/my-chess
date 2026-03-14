@@ -5,6 +5,7 @@ import React, {
   useCallback,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
 import { useDispatch } from "react-redux";
 import { lichessGame } from "../services/lichess/game";
@@ -29,6 +30,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
   const dispatch = useDispatch();
   const { username, isAuthenticated } = useLichessAuth();
   const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const seekStreamRef = useRef<{ close: () => void } | null>(null);
 
   const {
     processMoves,
@@ -156,9 +158,20 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
     [username, processMoves, resetToStartingPosition],
   );
 
+  // Close any active seek stream
+  const closeSeekStream = useCallback(() => {
+    if (seekStreamRef.current) {
+      seekStreamRef.current.close();
+      seekStreamRef.current = null;
+    }
+  }, []);
+
   // Handle events like game start, challenges
   const handleEvent = useCallback((data: any) => {
     if (data.type === "gameStart") {
+      // Close seek stream since we got a game
+      closeSeekStream();
+
       setGameState((prev) => {
         const newState = {
           ...prev,
@@ -175,7 +188,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
         return newState;
       });
     }
-  }, []);
+  }, [closeSeekStream]);
 
   const { closeGameStream } = useLichessStreams(
     handleGameUpdate,
@@ -272,29 +285,49 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
     ],
   );
 
-  // Create a seek and wait for pairing
+  // Create a seek using streaming connection (stays active while connection is open)
   const createSeek = useCallback(
-    async (timeControl: { minutes: number; increment: number }) => {
-      try {
-        setGameState((prev) => ({ ...prev, status: "seeking" }));
+    (timeControl: { minutes: number; increment: number }) => {
+      // Close any existing seek first
+      closeSeekStream();
 
-        const result = await lichessGame.createSeek({
+      const seekHandle = lichessGame.streamSeek(
+        {
           rated: false,
           time: timeControl.minutes,
           increment: timeControl.increment,
           variant: "standard",
           color: "random",
-        });
+        },
+        // onSeekActive callback
+        () => {
+          console.log("[LichessGameContext] Seek is now active");
+          setGameState((prev) => ({ ...prev, status: "seeking" }));
+        },
+        // onSeekClosed callback
+        (reason?: string) => {
+          console.log("[LichessGameContext] Seek closed:", reason);
+          seekStreamRef.current = null;
+          // Only reset to idle if we're still in seeking state (not if game started)
+          setGameState((prev) => {
+            if (prev.status === "seeking") {
+              return { ...prev, status: "idle" };
+            }
+            return prev;
+          });
+        },
+      );
 
-        console.log("[LichessGameContext] Seek created:", result);
+      if (seekHandle) {
+        seekStreamRef.current = seekHandle;
         return true;
-      } catch (error) {
-        console.error("[LichessGameContext] Failed to create seek:", error);
+      } else {
+        console.error("[LichessGameContext] Failed to create seek - not authenticated");
         setGameState((prev) => ({ ...prev, status: "error" }));
         return false;
       }
     },
-    [],
+    [closeSeekStream],
   );
 
   // Resign from current game
@@ -322,12 +355,13 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
   const startNewGame = useCallback(() => {
     console.log("[LichessGameContext] Starting new game - resetting state");
 
+    closeSeekStream();
     closeGameStream();
 
     setGameState(initialGameState);
     resetToStartingPosition();
     dispatch(loadFen({ fen: STARTING_FEN }));
-  }, [dispatch, closeGameStream, resetToStartingPosition]);
+  }, [dispatch, closeSeekStream, closeGameStream, resetToStartingPosition]);
 
   // Reset when user logs out
   useEffect(() => {

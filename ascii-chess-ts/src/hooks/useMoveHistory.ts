@@ -15,6 +15,7 @@ import { PieceDisplayMode } from "../types/chess";
 import { Position } from "../types/chess";
 
 export const useMoveHistory = (displayMode: PieceDisplayMode) => {
+  // TODO: rename to appDispatch
   const dispatch = useAppDispatch();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
 
@@ -125,7 +126,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         loadFen({
           fen,
           setupHistory,
-        }),
+        })
       );
       setState((prev) => ({
         ...prev,

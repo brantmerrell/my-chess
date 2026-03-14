@@ -47,7 +47,7 @@ export interface LichessGameContextType {
   createSeek: (timeControl: {
     minutes: number;
     increment: number;
-  }) => Promise<boolean>;
+  }) => boolean;
   sendMove: (from: string, to: string, promotion?: string) => Promise<boolean>;
   resign: () => Promise<void>;
   getCurrentPosition: () => ChessGame;

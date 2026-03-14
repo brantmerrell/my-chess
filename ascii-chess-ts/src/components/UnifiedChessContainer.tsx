@@ -37,15 +37,12 @@ import { useChessGame } from "../hooks/useChessGame";
 import { useLichessGame } from "../contexts/LichessGameContext";
 import { useSelector } from "react-redux";
 import { useTheme } from "../hooks/useTheme";
-
 type PositionalViewType = "graph" | "board" | "arc" | "chord" | "graphdag";
 type HistoricalViewType = "history" | "fencount"; // "historicalArc" |
-
 interface UnifiedChessContainerProps {
   displayMode: PieceDisplayMode;
   setDisplayMode: (mode: PieceDisplayMode) => void;
 }
-
 const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   displayMode,
   setDisplayMode,
@@ -91,15 +88,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     fromSquare: "",
     toSquare: "",
   });
-
   const { fen, setFen, submitFen, submitUndoMove } = useChessGame(displayMode);
   const { gameState, sendMove, getCurrentPosition, setNotificationCallback } =
     useLichessGame();
   const chessGameState = useSelector((state: RootState) => state.chessGame);
-
   // Sync URL with app state
   useUrlSync({ mode, onModeChange: setMode });
-
   React.useEffect(() => {
     if (gameState.isPlaying && gameState.color) {
       const shouldFlip = gameState.color === "black";
@@ -121,7 +115,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.isPlaying, gameState.color, gameState.gameId]);
-
   const showNotification = React.useCallback(
     (
       message: string,
@@ -131,18 +124,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     },
     []
   );
-
   React.useEffect(() => {
     setNotificationCallback(showNotification);
     return () => setNotificationCallback(null);
   }, [setNotificationCallback, showNotification]);
-
   // Handler that couples connection type with display mode and grid
   const handleConnectionTypeChange = React.useCallback(
     (newConnectionType: ConnectionType) => {
       setConnectionType(newConnectionType);
       setShowGrid(newConnectionType === "none");
-
       // Set display mode based on connection type
       switch (newConnectionType) {
         case "none":
@@ -160,7 +150,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     },
     [setDisplayMode]
   );
-
   const fenHistory = useMemo(() => {
     const game = new ChessGame(chessGameState.positions[0].fen);
     const fens = [game.toFen()];
@@ -170,7 +159,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     });
     return fens;
   }, [chessGameState.positions, chessGameState.history]);
-
   // Handle scroll events on main content for mobile view indicators
   const handleMainContentScroll = React.useCallback(() => {
     if (!mainContentRef.current) return;
@@ -178,7 +166,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     const newView = scrollLeft > clientWidth / 2 ? "historical" : "positional";
     setActiveMobileView(newView);
   }, []);
-
   // Scroll to a specific view when clicking indicators
   const scrollToView = React.useCallback(
     (view: "positional" | "historical") => {
@@ -192,25 +179,20 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     },
     []
   );
-
   // Attach scroll listener to main content
   React.useEffect(() => {
     const mainContent = mainContentRef.current;
     if (!mainContent) return;
-
     mainContent.addEventListener("scroll", handleMainContentScroll);
     return () => {
       mainContent.removeEventListener("scroll", handleMainContentScroll);
     };
   }, [handleMainContentScroll]);
-
   const clearNotification = () => {
     setNotification({ message: "", type: "info" });
   };
-
   const handlePromotionSelect = (selectedMove: any) => {
     console.log("Promotion selected:", selectedMove);
-
     if (gameState.isPlaying && gameState.gameId) {
       const promotion = selectedMove.promotion || "";
       const uciMove =
@@ -232,10 +214,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       // For analysis mode, update the local board immediately
       dispatch(makeMove(selectedMove.san));
     }
-
     setMoveInput("");
     setMoveDropdownValue("");
-
     setPromotionDialog({
       isOpen: false,
       moves: [],
@@ -243,7 +223,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       toSquare: "",
     });
   };
-
   const handlePromotionCancel = () => {
     setPromotionDialog({
       isOpen: false,
@@ -252,7 +231,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       toSquare: "",
     });
   };
-
   const handleMoveAttempt = (
     fromSquare: string,
     toSquare: string,
@@ -263,18 +241,15 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       toSquare,
       uciMove,
     });
-
     try {
       // Use Lichess cache position if in a Lichess game, otherwise use Redux state
       let game: ChessGame;
       let verboseMoves: any[];
-
       console.log("[UnifiedChessContainer] Current gameState:", {
         isPlaying: gameState.isPlaying,
         gameId: gameState.gameId,
         status: gameState.status,
       });
-
       if (gameState.isPlaying && gameState.gameId) {
         // In Lichess game - use the cache position
         game = getCurrentPosition();
@@ -286,18 +261,13 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         verboseMoves = game.getVerboseMoves();
         console.log("Using Redux state position for move validation");
       }
-
       console.log("Available verbose moves:", verboseMoves.slice(0, 5)); // Show first 5 moves
-
       const matchingMoves = verboseMoves.filter(
         (move: any) => move.from === fromSquare && move.to === toSquare
       );
-
       console.log("Matching moves found:", matchingMoves);
-
       if (matchingMoves.length === 0) {
         console.log("No legal moves found for this piece to that square");
-
         if (gameState.isPlaying && !gameState.isMyTurn) {
           showNotification("It's not your turn", "warning");
         } else {
@@ -305,7 +275,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           const fenParts = game.toFen().split(" ");
           const currentTurn = fenParts[1]; // 'w' or 'b'
           const turnColor = currentTurn === "w" ? "white" : "black";
-
           // Check if there are any moves for this piece
           const allMoves = verboseMoves.filter(
             (m: any) => m.from === fromSquare
@@ -320,7 +289,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         }
         return false;
       }
-
       if (matchingMoves.length > 1 && matchingMoves.some((m) => m.promotion)) {
         console.log("Promotion detected, showing dialog");
         setPromotionDialog({
@@ -331,9 +299,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         });
         return true; // Move pending promotion selection
       }
-
       const matchingMove = matchingMoves[0];
-
       if (matchingMove) {
         // If we're in a Lichess game, send the move there asynchronously
         if (gameState.isPlaying && gameState.gameId) {
@@ -344,9 +310,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             matchingMove,
             gameState,
           });
-
           const promotion = matchingMove.promotion || "";
-
           // Send move to Lichess asynchronously
           const uciMove = fromSquare + toSquare + promotion;
           sendMove(fromSquare, toSquare, promotion)
@@ -365,7 +329,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
               console.error("Error sending move:", error);
               showNotification(`Error sending ${uciMove} to Lichess`, "error");
             });
-
           // Don't update local board immediately for Lichess games -
           // wait for confirmation from the game stream
         } else {
@@ -376,7 +339,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           // For analysis mode, update the local board immediately
           dispatch(makeMove(matchingMove.san));
         }
-
         setMoveInput("");
         setMoveDropdownValue("");
         // Clear any previous error notifications on successful move
@@ -393,7 +355,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       return false;
     }
   };
-
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (
@@ -404,7 +365,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       ) {
         return;
       }
-
       switch (e.key) {
         case "Escape":
           const activeElement = document.activeElement as HTMLElement;
@@ -428,7 +388,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             themeSelector.focus();
           }
           break;
-
         case "k":
           e.preventDefault();
           window.scrollBy({
@@ -559,7 +518,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           break;
       }
     };
-
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, [
@@ -591,7 +549,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         }
         if (fetchedData && fetchedData.nodes && fetchedData.edges) {
           setLinksData(fetchedData);
-
           const edges = fetchedData.edges.map((edge: any) => ({
             source:
               typeof edge.source === "string"
@@ -613,10 +570,8 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         setProcessedEdges([]);
       }
     };
-
     fetchData();
   }, [chessGameState.fen, connectionType]);
-
   const renderHistoricalView = () => {
     switch (selectedHistoricalView) {
       case "history":
@@ -635,11 +590,9 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
         return <HistoryTable displayMode={displayMode} />;
     }
   };
-
   const showConnectionTypeSelector = ["graph", "arc", "chord"].includes(
     selectedPositionalView
   );
-
   return (
     <div className="chess-container">
       <SetupModeComponent
@@ -749,5 +702,4 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     </div>
   );
 };
-
 export default UnifiedChessContainer;

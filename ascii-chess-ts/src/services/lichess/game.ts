@@ -101,7 +101,14 @@ class LichessGameService {
     return response.data;
   }
 
-  async createSeek(
+  /**
+   * Creates a seek by opening a streaming connection.
+   * The seek remains active as long as the connection is open.
+   * When the connection closes, the seek is cancelled.
+   *
+   * @returns A handle with a close() method to cancel the seek, or null if not authenticated
+   */
+  streamSeek(
     options: {
       rated?: boolean;
       time?: number;
@@ -109,23 +116,85 @@ class LichessGameService {
       variant?: string;
       color?: "random" | "white" | "black";
     } = {},
-  ): Promise<any> {
-    const params: any = {
-      rated: options.rated || false,
-      time: options.time || 10,
-      increment: options.increment || 0,
+    onSeekActive?: () => void,
+    onSeekClosed?: (reason?: string) => void,
+  ): { close: () => void } | null {
+    const token = lichessAuth.getToken();
+    if (!token) {
+      console.error("Not authenticated");
+      return null;
+    }
+
+    const params = new URLSearchParams({
+      rated: String(options.rated || false),
+      time: String(options.time || 10),
+      increment: String(options.increment || 0),
       variant: options.variant || "standard",
       color: options.color || "random",
+    });
+
+    let abortController = new AbortController();
+    let isClosed = false;
+
+    const startSeek = async () => {
+      try {
+        console.log("[LichessGame] Opening seek stream...");
+
+        const response = await fetch(
+          `https://lichess.org/api/board/seek`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params,
+            signal: abortController.signal,
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        console.log("[LichessGame] Seek stream connected - seek is now active");
+        onSeekActive?.();
+
+        // Keep reading to maintain the connection
+        // The seek endpoint doesn't send data, but we need to keep the connection open
+        const reader = response.body?.getReader();
+        if (reader) {
+          while (!isClosed) {
+            const { done } = await reader.read();
+            if (done) {
+              console.log("[LichessGame] Seek stream ended (game matched or server closed)");
+              break;
+            }
+          }
+        }
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          console.log("[LichessGame] Seek cancelled by user");
+          onSeekClosed?.("cancelled");
+        } else if (!isClosed) {
+          console.error("[LichessGame] Seek stream error:", error);
+          onSeekClosed?.(error.message);
+        }
+      }
     };
 
-    const response = await lichessAuth.makeAuthenticatedRequest("/board/seek", {
-      method: "POST",
-      data: new URLSearchParams(params),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+    startSeek();
+
+    return {
+      close: () => {
+        if (!isClosed) {
+          console.log("[LichessGame] Closing seek stream");
+          isClosed = true;
+          abortController.abort();
+          onSeekClosed?.("closed");
+        }
       },
-    });
-    return response.data;
+    };
   }
 
   async makeMove(gameId: string, move: string): Promise<any> {
