@@ -1,6 +1,7 @@
 import { useCallback, useRef, useEffect } from "react";
 import { lichessGame } from "../services/lichess/game";
 import { lichessAuth } from "../services/lichess/auth";
+import { supportsStreamingFetch } from "../utils/browserDetect";
 
 interface StreamHandle {
   close: () => void;
@@ -83,13 +84,24 @@ export function useLichessStreams(
     [onEvent, startGameStream],
   );
 
-  // Start event stream when component mounts
+  // Start event stream (or polling fallback) when component mounts
   useEffect(() => {
     if (lichessAuth.isAuthenticated()) {
-      eventStreamRef.current = lichessGame.streamEvents(
-        handleEvent,
-        handleEventConnectionChange,
-      );
+      if (supportsStreamingFetch()) {
+        // Use streaming on browsers that support it (Chrome, Firefox, Edge on desktop)
+        console.log("[useLichessStreams] Using streaming for events");
+        eventStreamRef.current = lichessGame.streamEvents(
+          handleEvent,
+          handleEventConnectionChange,
+        );
+      } else {
+        // Use polling fallback on iOS/Safari where streaming has issues
+        console.log("[useLichessStreams] Using polling fallback for events (iOS/Safari detected)");
+        eventStreamRef.current = lichessGame.pollEvents(
+          handleEvent,
+          handleEventConnectionChange,
+        );
+      }
     }
 
     return () => {

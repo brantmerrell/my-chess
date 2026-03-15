@@ -535,6 +535,105 @@ class LichessGameService {
     return response.data.nowPlaying || [];
   }
 
+  /**
+   * Polls for game events as a fallback for browsers that don't support streaming fetch.
+   * This is used on iOS/Safari where ReadableStream has issues.
+   *
+   * Polls /account/playing to detect new games starting.
+   */
+  pollEvents(
+    onMessage: (data: any) => void,
+    onConnectionChange?: (connected: boolean, error?: string) => void,
+    pollInterval: number = 2000,
+  ): { close: () => void } | null {
+    const token = lichessAuth.getToken();
+    if (!token) {
+      console.error("Not authenticated");
+      return null;
+    }
+
+    let isClosed = false;
+    let pollTimer: NodeJS.Timeout | null = null;
+    let knownGameIds = new Set<string>();
+    let isFirstPoll = true;
+
+    const poll = async () => {
+      if (isClosed) return;
+
+      try {
+        const games = await this.getOngoingGames();
+
+        if (isFirstPoll) {
+          // On first poll, just record existing games without triggering events
+          games.forEach((game: any) => knownGameIds.add(game.gameId));
+          isFirstPoll = false;
+          onConnectionChange?.(true);
+          console.log("[LichessGame] Polling started, known games:", knownGameIds.size);
+        } else {
+          // Check for new games
+          for (const game of games) {
+            if (!knownGameIds.has(game.gameId)) {
+              console.log("[LichessGame] New game detected via polling:", game.gameId);
+              knownGameIds.add(game.gameId);
+
+              // Emit synthetic gameStart event
+              onMessage({
+                type: "gameStart",
+                game: {
+                  id: game.gameId,
+                  fullId: game.fullId,
+                  color: game.color,
+                  fen: game.fen,
+                  hasMoved: game.hasMoved,
+                  isMyTurn: game.isMyTurn,
+                  lastMove: game.lastMove,
+                  opponent: game.opponent,
+                  perf: game.perf,
+                  rated: game.rated,
+                  secondsLeft: game.secondsLeft,
+                  source: "polling", // Mark this as from polling
+                },
+              });
+            }
+          }
+
+          // Clean up ended games from known set
+          const currentGameIds = new Set(games.map((g: any) => g.gameId));
+          knownGameIds.forEach((id) => {
+            if (!currentGameIds.has(id)) {
+              knownGameIds.delete(id);
+            }
+          });
+        }
+      } catch (error: any) {
+        console.error("[LichessGame] Polling error:", error);
+        if (!isClosed) {
+          onConnectionChange?.(false, error.message);
+        }
+      }
+
+      // Schedule next poll
+      if (!isClosed) {
+        pollTimer = setTimeout(poll, pollInterval);
+      }
+    };
+
+    // Start polling
+    poll();
+
+    return {
+      close: () => {
+        console.log("[LichessGame] Stopping event polling");
+        isClosed = true;
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+          pollTimer = null;
+        }
+        onConnectionChange?.(false, "Polling stopped");
+      },
+    };
+  }
+
   async challengeAI(
     level: number = 1,
     options: {
