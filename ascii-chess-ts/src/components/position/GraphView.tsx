@@ -208,14 +208,56 @@ const GraphView: React.FC<GraphViewProps> = ({
       .attr("fill", (d) => arrowheadColors[d] || arrowheadColors.arrowheadGray)
       .attr("d", "M0,-5L10,0L0,5");
 
-    const link = g
-      .append("g")
+    // For opacity mode, define per-edge linear gradients
+    // Define per-edge linear gradients that fade from transparent at source to opaque at target
+    const defs = svg.select("defs");
+    links.forEach((d, i) => {
+      const style = getEdgeStyle(d.type);
+      const grad = defs
+        .append("linearGradient")
+        .attr("id", `edgeGrad-${i}`)
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", d.source.x!)
+        .attr("y1", d.source.y!)
+        .attr("x2", d.target.x!)
+        .attr("y2", d.target.y!);
+      grad
+        .append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", style.color)
+        .attr("stop-opacity", 0.1);
+      grad
+        .append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", style.color)
+        .attr("stop-opacity", 1);
+    });
+
+    const linkGroup = g.append("g");
+
+    const link = linkGroup
       .selectAll<SVGLineElement, SimulationLink>("line")
       .data(links)
       .join("line")
-      .attr("stroke", (d) => getEdgeStyle(d.type).color)
+      .attr("stroke", (_d, i) => `url(#edgeGrad-${i})`)
       .attr("stroke-width", (d) => getEdgeStyle(d.type).width)
       .attr("marker-end", (d) => getEdgeStyle(d.type).marker);
+
+    const updateLinkPositions = () => {
+      link
+        .attr("x1", (d) => d.source.x!)
+        .attr("y1", (d) => d.source.y!)
+        .attr("x2", (d) => d.target.x!)
+        .attr("y2", (d) => d.target.y!);
+      links.forEach((d, i) => {
+        defs
+          .select(`#edgeGrad-${i}`)
+          .attr("x1", d.source.x!)
+          .attr("y1", d.source.y!)
+          .attr("x2", d.target.x!)
+          .attr("y2", d.target.y!);
+      });
+    };
 
     // Draw yellow line for the last move
     if (lastMoveUCI && lastMoveUCI.length >= 4) {
@@ -359,19 +401,11 @@ const GraphView: React.FC<GraphViewProps> = ({
       node.attr("transform", (d) => `translate(${d.x},${d.y})`);
       phantomMarkers.attr("x", (d) => d.x!).attr("y", (d) => d.y!);
 
-      link
-        .attr("x1", (d) => d.source.x!)
-        .attr("y1", (d) => d.source.y!)
-        .attr("x2", (d) => d.target.x!)
-        .attr("y2", (d) => d.target.y!);
+      updateLinkPositions();
     }
 
     simulation.on("tick", () => {
-      link
-        .attr("x1", (d) => d.source.x!)
-        .attr("y1", (d) => d.source.y!)
-        .attr("x2", (d) => d.target.x!)
-        .attr("y2", (d) => d.target.y!);
+      updateLinkPositions();
 
       node.attr("transform", (d) => `translate(${d.x},${d.y})`);
 
