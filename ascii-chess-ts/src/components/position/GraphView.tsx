@@ -259,7 +259,7 @@ const GraphView: React.FC<GraphViewProps> = ({
       });
     };
 
-    // Draw yellow line for the last move
+    // Draw yellow line for the last move with directional width variation
     if (lastMoveUCI && lastMoveUCI.length >= 4) {
       const fromSquare = lastMoveUCI.slice(0, 2);
       const toSquare = lastMoveUCI.slice(2, 4);
@@ -277,15 +277,33 @@ const GraphView: React.FC<GraphViewProps> = ({
         toY = height - toY;
       }
 
-      g.append("line")
+      // Create a tapered path that goes from thin to thick
+      const dx = toX - fromX;
+      const dy = toY - fromY;
+      const length = Math.sqrt(dx * dx + dy * dy);
+
+      // Perpendicular vector for width
+      const perpX = -dy / length;
+      const perpY = dx / length;
+
+      // Width at start and end (matching other edges)
+      const startWidth = 0.2;
+      const endWidth = 2;
+
+      // Create a polygon path that tapers
+      const pathData = [
+        `M ${fromX + perpX * startWidth} ${fromY + perpY * startWidth}`,
+        `L ${toX + perpX * endWidth} ${toY + perpY * endWidth}`,
+        `L ${toX - perpX * endWidth} ${toY - perpY * endWidth}`,
+        `L ${fromX - perpX * startWidth} ${fromY - perpY * startWidth}`,
+        'Z'
+      ].join(' ');
+
+      g.append("path")
         .attr("class", "last-move-arrow")
-        .attr("stroke", "gold")
-        .attr("stroke-width", 4)
-        .attr("stroke-opacity", 0.8)
-        .attr("x1", fromX)
-        .attr("y1", fromY)
-        .attr("x2", toX)
-        .attr("y2", toY);
+        .attr("d", pathData)
+        .attr("fill", "gold")
+        .attr("fill-opacity", 0.8);
     }
 
     const visibleNodes = nodes.filter((d) => d.piece_type !== "phantom");
