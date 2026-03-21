@@ -54,6 +54,9 @@ export const useLichessAuth = (): UseLichessAuthReturn => {
   }, []);
 
   const login = () => {
+    // Save current URL to restore after auth
+    const currentUrl = window.location.pathname + window.location.search;
+    sessionStorage.setItem("lichess_return_url", currentUrl);
     lichessAuth.startAuth();
   };
 

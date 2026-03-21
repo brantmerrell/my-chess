@@ -37,7 +37,10 @@ const AuthCallback: React.FC = () => {
 
         if (success) {
           setStatus("success");
-          setTimeout(() => navigate("/"), 1500);
+          // Restore the URL the user was on before auth, or go to home
+          const returnUrl = sessionStorage.getItem("lichess_return_url") || "/";
+          sessionStorage.removeItem("lichess_return_url");
+          setTimeout(() => navigate(returnUrl), 1500);
         } else {
           setStatus("error");
           setErrorMessage("Failed to complete authentication");

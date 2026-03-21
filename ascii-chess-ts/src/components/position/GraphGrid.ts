@@ -80,7 +80,7 @@ export const renderHeatmap = (
 
   // Build a lookup from square name to heatmap values
   const heatBySquare = new Map<string, { hw: number; hb: number }>();
-  const maxSum = 3;
+  const maxSum = 5;
   nodes.forEach((node) => {
     if (node.hw != null && node.hb != null) {
       heatBySquare.set(node.square, { hw: node.hw, hb: node.hb });

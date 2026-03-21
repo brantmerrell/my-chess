@@ -68,7 +68,8 @@
 @media (max-width: 62.5rem) {
 
   .vertical-resizer-container {
-    height: auto !important;
+    height: 50vh !important;
+    max-height: 50vh !important;
   }
 
   .vertical-resizer-handle {
