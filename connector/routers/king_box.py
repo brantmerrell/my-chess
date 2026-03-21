@@ -1,11 +1,12 @@
 import chess
 from fastapi import APIRouter, Query
 from typing import List, Dict
+from utils import get_nodes
 
 router = APIRouter()
 
 
-def convert_king_box_to_graph(board: chess.Board) -> Dict:
+def convert_king_box_to_graph(board: chess.Board, heatmap: bool = False) -> Dict:
     """
     Convert king box data into nodes and edges format similar to links endpoint.
     Creates edges from each king to its possible/blocked squares.
@@ -178,6 +179,21 @@ def convert_king_box_to_graph(board: chess.Board) -> Dict:
                             }
                         )
 
+    if heatmap:
+        existing_squares = {node["square"] for node in nodes}
+        # Add missing squares from a full heatmap
+        heatmap_nodes = get_nodes(board, heatmap=True)
+        for hm_node in heatmap_nodes:
+            if hm_node["square"] in existing_squares:
+                # Augment existing node with hw/hb
+                for node in nodes:
+                    if node["square"] == hm_node["square"]:
+                        node["hw"] = hm_node["hw"]
+                        node["hb"] = hm_node["hb"]
+                        break
+            else:
+                nodes.append(hm_node)
+
     return {"nodes": nodes, "edges": edges}
 
 
@@ -283,7 +299,10 @@ def get_king_box_data(board: chess.Board, color: chess.Color) -> Dict:
 async def get_king_box_endpoint(
     fen_string: str = Query(
         ..., description="The FEN string representing the board state"
-    )
+    ),
+    heatmap: bool = Query(
+        False, description="Include heatmap data (attack counts per square)"
+    ),
 ):
     """
     Get the movement constraints for king(s), showing which of the 9 squares
@@ -295,4 +314,4 @@ async def get_king_box_endpoint(
         return {"error": "Invalid FEN string"}
 
     # Return nodes and edges format like links endpoint
-    return convert_king_box_to_graph(board)
+    return convert_king_box_to_graph(board, heatmap=heatmap)

@@ -14,7 +14,7 @@ import {
   screenToSquare,
 } from "../../utils/graphCoordinates";
 import { getEdgeStyle, arrowheadColors } from "../../utils/graphStyles";
-import { renderGrid, renderCoordinates } from "./GraphGrid";
+import { renderGrid, renderCoordinates, renderHeatmap } from "./GraphGrid";
 import { renderNodes, renderPhantomMarkers } from "./GraphNodes";
 
 interface GraphViewProps {
@@ -23,6 +23,7 @@ interface GraphViewProps {
   displayMode: PieceDisplayMode;
   showGrid?: boolean;
   flipBoard?: boolean;
+  heatmap?: boolean;
   lastMoveUCI?: string;
   onMoveAttempt?: (
     fromSquare: string,
@@ -37,6 +38,7 @@ const GraphView: React.FC<GraphViewProps> = ({
   displayMode,
   showGrid = false,
   flipBoard = false,
+  heatmap = false,
   lastMoveUCI,
   onMoveAttempt,
 }) => {
@@ -118,7 +120,11 @@ const GraphView: React.FC<GraphViewProps> = ({
     const g = svg.append("g");
 
     if (showGrid) {
-      renderGrid(g, width, height);
+      if (heatmap) {
+        renderHeatmap(g, linksData.nodes, width, height, flipBoard);
+      } else {
+        renderGrid(g, width, height);
+      }
       renderCoordinates(g, width, height, flipBoard);
     }
 
@@ -306,7 +312,7 @@ const GraphView: React.FC<GraphViewProps> = ({
         .attr("fill-opacity", 0.8);
     }
 
-    const visibleNodes = nodes.filter((d) => d.piece_type !== "phantom");
+    const visibleNodes = nodes.filter((d) => d.piece_type && d.piece_type !== "phantom");
     const phantomNodes = nodes.filter((d) => d.piece_type === "phantom");
 
     const dragBehavior = d3
@@ -435,6 +441,7 @@ const GraphView: React.FC<GraphViewProps> = ({
     displayMode,
     showGrid,
     flipBoard,
+    heatmap,
     lastMoveUCI,
     onMoveAttempt,
     dimensions,

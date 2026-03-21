@@ -14,6 +14,8 @@ export interface LinkNode extends d3.SimulationNodeDatum {
   y?: number;
   fx?: number | null;
   fy?: number | null;
+  hw?: number;
+  hb?: number;
 }
 
 export interface LinkEdge extends d3.SimulationLinkDatum<LinkNode> {

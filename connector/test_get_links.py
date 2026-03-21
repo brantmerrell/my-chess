@@ -19,5 +19,19 @@ def test_links():
     print("Success!")
 
 
+def test_links_heatmap():
+    print("Testing links endpoint with heatmap...")
+    with open("links_0_heatmap.json", "r") as f:
+        expected_data = json.load(f)
+
+    response = client.get(
+        "/links/?fen_string=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&heatmap=true"
+    )
+    assert response.status_code == 200
+    assert response.json() == expected_data
+    print("Success!")
+
+
 if __name__ == "__main__":
     test_links()
+    test_links_heatmap()

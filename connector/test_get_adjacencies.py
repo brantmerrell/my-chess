@@ -17,5 +17,18 @@ def test_adjacencies():
     print("Test passed!")
 
 
+def test_adjacencies_heatmap():
+    print("Testing adjacencies endpoint with heatmap...")
+    with open("adjacencies_0_heatmap.json", "r") as f:
+        expected_data = json.load(f)
+    response = client.get(
+        "/adjacencies/?fen_string=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR%20w%20KQkq%20-%200%201&heatmap=true"
+    )
+    assert response.status_code == 200
+    assert response.json() == expected_data
+    print("Test passed!")
+
+
 if __name__ == "__main__":
     test_adjacencies()
+    test_adjacencies_heatmap()

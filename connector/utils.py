@@ -5,18 +5,28 @@ from typing import List, Dict, Union
 from matplotlib.figure import Figure
 
 
-def get_nodes(board):
+def get_nodes(board, heatmap=False):
     nodes = []
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
-            nodes.append(
-                {
-                    "square": chess.square_name(square),
-                    "piece_type": piece.symbol(),
-                    "color": "white" if piece.color else "black",
-                }
-            )
+            node = {
+                "square": chess.square_name(square),
+                "piece_type": piece.symbol(),
+                "color": "white" if piece.color else "black",
+            }
+        elif heatmap:
+            node = {
+                "square": chess.square_name(square),
+                "piece_type": None,
+                "color": None,
+            }
+        else:
+            continue
+        if heatmap:
+            node["hw"] = len(board.attackers(chess.WHITE, square))
+            node["hb"] = len(board.attackers(chess.BLACK, square))
+        nodes.append(node)
     return nodes
 
 

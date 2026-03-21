@@ -9,7 +9,10 @@ router = APIRouter()
 async def get_shadows(
     fen_string: str = Query(
         ..., description="The FEN string representing the board state"
-    )
+    ),
+    heatmap: bool = Query(
+        False, description="Include heatmap data (attack counts per square)"
+    ),
 ):
     """
     A shadow connection is defined as what connection would occur if a piece were to become absent. For example, given FEN string '2q1k3/3n1pp1/2N4p/3p4/Q2Pn3/5N1P/5PPK/8 b - - 9 31', the Q on a4 currently protects the pawn on d4. If the pawn on d4 vanished, the queen would threaten the n on e4. So there is a shadow connection from a4 to e4. This is the visualization for:
@@ -91,5 +94,5 @@ async def get_shadows(
                     "type": shadow_type,
                 })
 
-    nodes = get_nodes(board)
+    nodes = get_nodes(board, heatmap=heatmap)
     return {"nodes": nodes, "edges": shadows}

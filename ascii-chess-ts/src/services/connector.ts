@@ -7,9 +7,9 @@ if (window.location.hostname === "localhost") {
   apiBaseUrl = "https://connector.chess.jbm.eco";
 }
 
-export const fetchLinks = async (inputString: string) => {
+export const fetchLinks = async (inputString: string, heatmap: boolean = false) => {
   try {
-    const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}`;
+    const url = `${apiBaseUrl}/links/?fen_string=${encodeURIComponent(inputString)}&heatmap=${heatmap}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -17,9 +17,9 @@ export const fetchLinks = async (inputString: string) => {
   }
 };
 
-export const fetchAdjacencies = async (inputString: string) => {
+export const fetchAdjacencies = async (inputString: string, heatmap: boolean = false) => {
   try {
-    const url = `${apiBaseUrl}/adjacencies/?fen_string=${encodeURIComponent(inputString)}`;
+    const url = `${apiBaseUrl}/adjacencies/?fen_string=${encodeURIComponent(inputString)}&heatmap=${heatmap}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -27,9 +27,9 @@ export const fetchAdjacencies = async (inputString: string) => {
   }
 };
 
-export const fetchKingBox = async (inputString: string) => {
+export const fetchKingBox = async (inputString: string, heatmap: boolean = false) => {
   try {
-    const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}`;
+    const url = `${apiBaseUrl}/king_box/?fen_string=${encodeURIComponent(inputString)}&heatmap=${heatmap}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -37,9 +37,9 @@ export const fetchKingBox = async (inputString: string) => {
   }
 };
 
-export const fetchShadows = async (inputString: string) => {
+export const fetchShadows = async (inputString: string, heatmap: boolean = false) => {
   try {
-    const url = `${apiBaseUrl}/shadows/?fen_string=${encodeURIComponent(inputString)}`;
+    const url = `${apiBaseUrl}/shadows/?fen_string=${encodeURIComponent(inputString)}&heatmap=${heatmap}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -47,9 +47,9 @@ export const fetchShadows = async (inputString: string) => {
   }
 };
 
-export const fetchNone = async (inputString: string) => {
+export const fetchNone = async (inputString: string, heatmap: boolean = false) => {
   try {
-    const url = `${apiBaseUrl}/none/?fen_string=${encodeURIComponent(inputString)}`;
+    const url = `${apiBaseUrl}/none/?fen_string=${encodeURIComponent(inputString)}&heatmap=${heatmap}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {

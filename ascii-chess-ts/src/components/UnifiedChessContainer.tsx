@@ -75,6 +75,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const [showMoveControls, setShowMoveControls] = React.useState<boolean>(true);
   const [showGrid, setShowGrid] = React.useState<boolean>(true);
   const [flipBoard, setFlipBoard] = React.useState<boolean>(false);
+  const [heatmap, setHeatmap] = React.useState<boolean>(false);
   const [moveInput, setMoveInput] = React.useState<string>("");
   const [moveDropdownValue, setMoveDropdownValue] = React.useState<string>("");
   const [promotionDialog, setPromotionDialog] = React.useState<{
@@ -132,7 +133,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   const handleConnectionTypeChange = React.useCallback(
     (newConnectionType: ConnectionType) => {
       setConnectionType(newConnectionType);
-      setShowGrid(newConnectionType === "none");
+      // Grid state is now controlled independently via radio buttons
       // Set display mode based on connection type
       switch (newConnectionType) {
         case "none":
@@ -467,12 +468,23 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           e.preventDefault();
           verticalResizerRef.current?.decreaseHeight();
           break;
-        case "w":
-        case "W":
+        case "d":
+        case "D":
           e.preventDefault();
-          if (selectedPositionalView === "graph") {
-            setShowGrid(!showGrid);
-          }
+          setShowGrid(true);
+          setHeatmap(false);
+          break;
+        case "p":
+        case "P":
+          e.preventDefault();
+          setShowGrid(true);
+          setHeatmap(true);
+          break;
+        case "o":
+        case "O":
+          e.preventDefault();
+          setShowGrid(false);
+          setHeatmap(false);
           break;
         case "1":
           e.preventDefault();
@@ -531,21 +543,22 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     setDisplayMode,
     handleConnectionTypeChange,
     showNotification,
+    heatmap,
   ]);
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         let fetchedData;
         if (connectionType === "links") {
-          fetchedData = await fetchLinks(chessGameState.fen);
+          fetchedData = await fetchLinks(chessGameState.fen, heatmap);
         } else if (connectionType === "adjacencies") {
-          fetchedData = await fetchAdjacencies(chessGameState.fen);
+          fetchedData = await fetchAdjacencies(chessGameState.fen, heatmap);
         } else if (connectionType === "king_box") {
-          fetchedData = await fetchKingBox(chessGameState.fen);
+          fetchedData = await fetchKingBox(chessGameState.fen, heatmap);
         } else if (connectionType === "shadows") {
-          fetchedData = await fetchShadows(chessGameState.fen);
+          fetchedData = await fetchShadows(chessGameState.fen, heatmap);
         } else if (connectionType === "none") {
-          fetchedData = await fetchNone(chessGameState.fen);
+          fetchedData = await fetchNone(chessGameState.fen, heatmap);
         }
         if (fetchedData && fetchedData.nodes && fetchedData.edges) {
           setLinksData(fetchedData);
@@ -571,7 +584,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
       }
     };
     fetchData();
-  }, [chessGameState.fen, connectionType]);
+  }, [chessGameState.fen, connectionType, heatmap]);
   const renderHistoricalView = () => {
     switch (selectedHistoricalView) {
       case "history":
@@ -619,6 +632,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
               displayMode={displayMode}
               showGrid={showGrid}
               flipBoard={flipBoard}
+              heatmap={heatmap}
               lastMoveUCI={
                 chessGameState.positions[chessGameState.currentPositionIndex]
                   ?.uci
@@ -665,7 +679,7 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
           />
         )}
         {selectedPositionalView === "graph" && (
-          <div className="form-group">
+          <div className="form-group" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
             <label className="form-check-label">
               <input
                 className="form-check-input"
@@ -678,11 +692,32 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
             <label className="form-check-label">
               <input
                 className="form-check-input"
-                type="checkbox"
-                checked={showGrid}
-                onChange={() => setShowGrid(!showGrid)}
+                type="radio"
+                name="boardView"
+                checked={showGrid && !heatmap}
+                onChange={() => { setShowGrid(true); setHeatmap(false); }}
               />
-              Sho<u>w</u> Grid
+              Gri<u>d</u>
+            </label>
+            <label className="form-check-label">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="boardView"
+                checked={heatmap}
+                onChange={() => { setShowGrid(true); setHeatmap(true); }}
+              />
+              Heatma<u>p</u>
+            </label>
+            <label className="form-check-label">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="boardView"
+                checked={!showGrid && !heatmap}
+                onChange={() => { setShowGrid(false); setHeatmap(false); }}
+              />
+              N<u>o</u>ne
             </label>
           </div>
         )}
