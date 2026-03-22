@@ -97,11 +97,11 @@ export const renderHeatmap = (
       const heat = heatBySquare.get(square);
 
       const sum = heat ? heat.hw + heat.hb : 0;
-      // Interpolate from light (55,65,81) at sum=0 to dark (31,41,55) at sum=maxSum
+      // Interpolate from dark (31,41,55) at sum=0 to light (55,65,81) at sum=maxSum
       const t = Math.min(sum / maxSum, 1);
-      const r = Math.round(55 + (31 - 55) * t);
-      const g = Math.round(65 + (41 - 65) * t);
-      const b = Math.round(81 + (55 - 81) * t);
+      const r = Math.round(31 + (55 - 31) * t);
+      const g = Math.round(41 + (65 - 41) * t);
+      const b = Math.round(55 + (81 - 55) * t);
       const fill = `rgb(${r}, ${g}, ${b})`;
 
       heatmapSquares
