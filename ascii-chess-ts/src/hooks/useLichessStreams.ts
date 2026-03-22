@@ -1,7 +1,7 @@
 import { useCallback, useRef, useEffect } from "react";
 import { lichessGame } from "../services/lichess/game";
 import { lichessAuth } from "../services/lichess/auth";
-import { supportsStreamingFetch } from "../utils/browserDetect";
+import { supportsStreamingFetch } from "../utils/browserDetect"; // used for event stream fallback below
 
 interface StreamHandle {
   close: () => void;
@@ -33,6 +33,10 @@ export function useLichessStreams(
       if (gameStreamRef.current) {
         gameStreamRef.current.close();
       }
+
+      console.log("[useLichessStreams] Starting game stream for", gameId, {
+        userAgent: navigator.userAgent,
+      });
 
       gameStreamRef.current = lichessGame.streamGame(
         gameId,

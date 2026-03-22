@@ -4,6 +4,12 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+// Eruda mobile console — remove after debugging iOS streaming issue
+(async () => {
+  const eruda = await import("eruda" as any);
+  eruda.default.init();
+})();
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
