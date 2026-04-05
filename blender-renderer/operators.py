@@ -111,6 +111,7 @@ def _render_current_fen(operator, context):
                 if matching:
                     layer = {**matching,
                              'offset': layer['offset'],
+                             'rotation': layer.get('rotation', {}),
                              'name': layer['name'],
                              'type': 'focus'}
             render_layer(layer, global_config, data['nodes'], edges=edges)

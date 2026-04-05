@@ -408,6 +408,8 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_
         print("create_piece: rotation_config was None")
 
     piece_char = node["piece_type"]
+    if piece_char == "phantom":
+        return None
     piece_upper = piece_char.upper()
     x, y, z = square_to_coords(node["square"], piece_type=piece_upper)
 

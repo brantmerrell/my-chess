@@ -46,6 +46,13 @@ def _on_board_color_change(self, context):
         traceback.print_exc()
 
 
+def _on_move_input_change(self, context):
+    """Update callback when move_input changes - submit move on Enter (non-empty confirm)."""
+    if not self.move_input.strip():
+        return
+    bpy.ops.blchess.submit_move()
+
+
 def _on_connection_type_change(self, context):
     """Update callback when connection_type changes - only re-render the Focus layer."""
     props = context.scene.blchess_renderer
@@ -162,10 +169,11 @@ def _on_connection_type_change(self, context):
         )
 
         if matching_layer and props.connection_type != "none":
-            # Merge matching layer's config with Focus layer's offset and name
+            # Merge matching layer's config with Focus layer's offset, rotation, and name
             focus_layer = {
                 **matching_layer,
                 "offset": focus_layer["offset"],
+                "rotation": focus_layer.get("rotation", {}),
                 "name": focus_layer["name"],
                 "type": "focus",
             }
@@ -224,6 +232,7 @@ class BlendChessProperties(PropertyGroup):
         description="Chess move in UCI (e2e4) or SAN (e4) notation",
         default="",
         maxlen=10,
+        update=_on_move_input_change,
     )
 
     position_history: StringProperty(
