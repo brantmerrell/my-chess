@@ -21,6 +21,7 @@ import bpy
 
 from .properties import BlendChessProperties
 from .operators import (
+    BLCHESS_OT_animate_move,
     BLCHESS_OT_submit_fen,
     BLCHESS_OT_select_position,
     BLCHESS_OT_submit_move,
@@ -35,6 +36,7 @@ from .panels import BLCHESS_PT_main_panel
 
 classes = (
     BlendChessProperties,
+    BLCHESS_OT_animate_move,
     BLCHESS_OT_submit_fen,
     BLCHESS_OT_select_position,
     BLCHESS_OT_submit_move,

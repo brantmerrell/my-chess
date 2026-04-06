@@ -1,10 +1,22 @@
 """Utility functions for chess rendering in Blender"""
 
 import bpy
+import math
+import mathutils
 import pdb
 import yaml
 import os
 from typing import Tuple, Optional, Dict, Any
+
+
+# Registry: square -> list of piece objects created during rendering.
+# Cleared by clear_scene(); populated by create_piece() and create_ascii_piece().
+# Used by submit_move to find the exact objects to animate without name-searching.
+_anim_targets: Dict[str, list] = {}
+
+# Maps square → list of (curve_obj, point_index) for all edge endpoints at that square.
+# Cleared by clear_scene(); populated by create_link_line().
+_edge_targets: Dict[str, list] = {}
 
 
 def load_board_config() -> Dict[str, Any]:
@@ -53,6 +65,17 @@ def square_to_coords(square: str, spacing: float = 1.0, piece_type: str = 'P') -
 
     # Scale by board scale factor
     return (x * USD_BOARD_SCALE, y * USD_BOARD_SCALE, z * USD_BOARD_SCALE)
+
+
+def square_to_blender_loc(square: str) -> mathutils.Vector:
+    """
+    Return the actual Blender location for a piece on *square*.
+
+    All pieces in board_config use transform_coords=true, which remaps
+    square_to_coords (raw_x, raw_y, raw_z) → Blender (raw_x, -raw_z, raw_y).
+    """
+    raw_x, raw_y, raw_z = square_to_coords(square)
+    return mathutils.Vector((raw_x, -raw_z, raw_y))
 
 
 def import_usd_piece(usd_path: str, variant: str, location: Tuple[float, float, float], name: str, piece_type: str, color: str = "white", rotation_config: Optional[Dict[str, Any]] = None) -> Optional[bpy.types.Object]:
@@ -364,6 +387,8 @@ def _add_procedural_checker(nodes, links, base_color_input):
 def clear_scene():
     """Remove all mesh, text, and empty objects from the scene."""
     print("clear_scene")
+    _anim_targets.clear()
+    _edge_targets.clear()
     bpy.ops.object.select_all(action="DESELECT")
 
     # MESH: USD imported geometry, FONT: text fallback, EMPTY: USD container objects, CURVE: link lines
@@ -433,6 +458,7 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_
 
         if piece_obj:
             piece_obj.scale = (usd_scale, usd_scale, usd_scale)
+            _anim_targets.setdefault(node['square'], []).append(piece_obj)
             return piece_obj
 
         print(f"USD import failed for {piece_char}, falling back to text")
@@ -461,6 +487,7 @@ def create_piece(node: dict, scale: float = 1.0, use_usd: bool = True, rotation_
         bsdf.inputs["Base Color"].default_value = (0.2, 0.2, 0.2, 1.0)
 
     text_obj.data.materials.append(material)
+    _anim_targets.setdefault(node['square'], []).append(text_obj)
     return text_obj
 
 
@@ -506,6 +533,9 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, m
     ascii_x, ascii_y = _square_to_board_2d(node["square"])
     piece_char = node["piece_type"]
 
+    if piece_char == "phantom":
+        return None
+
     # Use bpy.data API directly — avoids bpy.ops context overhead
     curve_data = bpy.data.curves.new(name=f"ascii_{piece_char}_{node['square']}", type='FONT')
     curve_data.body = PIECE_SYMBOLS[piece_char]
@@ -520,6 +550,7 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, m
     if material:
         curve_data.materials.append(material)
 
+    _anim_targets.setdefault(node['square'], []).append(text_obj)
     return text_obj
 
 
@@ -615,6 +646,7 @@ def create_asterisk(square: str, z_offset: float = -0.5, scale: float = 0.5, mat
     if material:
         curve_data.materials.append(material)
 
+    _anim_targets.setdefault(square, []).append(text_obj)
     return text_obj
 
 
@@ -651,6 +683,9 @@ def create_link_line(square_from: str, square_to: str, z_offset: float = -0.5, t
 
     if material:
         curve_obj.data.materials.append(material)
+
+    _edge_targets.setdefault(square_from, []).append((curve_obj, 0))
+    _edge_targets.setdefault(square_to, []).append((curve_obj, 1))
 
     return curve_obj
 

@@ -1,18 +1,23 @@
 """Blender operators (actions/buttons)."""
 
 import json
+import time
 
 import bpy
 from bpy.types import Operator
 
 from .models import SAMPLE_SETUPS
-from .utils import clear_scene, load_board_config, render_layer
+from .utils import clear_scene, load_board_config, render_layer, square_to_blender_loc, _anim_targets, _edge_targets
 from .services.connector_service import ConnectorService
 
 
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
+# Shared state for piece-move animations (populated by submit_move,
+# consumed by BLCHESS_OT_animate_move; list so multiple layers animate in parallel).
+_pending_anims: list = []
 
 def _render_current_fen(operator, context):
     """
@@ -131,6 +136,144 @@ def _load_history(props):
 def _save_history(props, history):
     """Serialize position_history to JSON string."""
     props.position_history = json.dumps(history)
+
+
+def _trigger_animation(from_fen: str, to_fen: str, connector_url: str = "http://localhost:8000"):
+    """
+    After _render_current_fen() has rebuilt the scene for to_fen, fetch the
+    move diff from the connector, build _pending_anims, and invoke the modal.
+    """
+    try:
+        connector = ConnectorService(base_url=connector_url)
+        moves = connector.fetch_diff(from_fen, to_fen)
+        if not moves:
+            return
+
+        for move in moves:
+            from_square_str = move["from_square"]
+            to_square_str = move["to_square"]
+            world_from = square_to_blender_loc(from_square_str)
+            world_to = square_to_blender_loc(to_square_str)
+            world_delta = world_from - world_to
+
+            for piece_obj in _anim_targets.get(to_square_str, []):
+                end_loc = piece_obj.location.copy()
+                if piece_obj.parent:
+                    rot = piece_obj.parent.matrix_world.to_3x3().inverted()
+                    local_delta = rot @ world_delta
+                else:
+                    local_delta = world_delta
+                start_loc = end_loc + local_delta
+                _pending_anims.append({
+                    'piece_name': piece_obj.name,
+                    'start_loc': tuple(start_loc),
+                    'end_loc': tuple(end_loc),
+                    'duration': 2,
+                    'arc_height': 1.5,
+                    'square': to_square_str,
+                })
+
+        if _pending_anims:
+            bpy.ops.blchess.animate_move('INVOKE_DEFAULT')
+    except Exception as e:
+        import traceback
+        with open('/tmp/blchess_anim.txt', 'a') as f:
+            f.write(f"[_trigger_animation ERROR] {e}\n{traceback.format_exc()}\n")
+
+
+# ---------------------------------------------------------------------------
+# Piece-move animation (modal — uses Blender TIMER events for smooth redraws)
+# ---------------------------------------------------------------------------
+
+
+class BLCHESS_OT_animate_move(Operator):
+    """Modal operator that smoothly slides all moved pieces simultaneously."""
+
+    bl_idname = "blchess.animate_move"
+    bl_label = "Animate Move"
+    bl_options = {'INTERNAL'}
+
+    _timer = None
+    _start_time: float = 0.0
+    _duration: float = 2.0
+    _arc_height: float = 1.5
+    # List of dicts: {piece_name, start_loc, end_loc} — one per piece object
+    _animations: list = []
+
+    _tick_count: int = 0
+
+    def modal(self, context, event):
+        if event.type != 'TIMER':
+            return {'PASS_THROUGH'}
+
+        elapsed = time.time() - self._start_time
+        t = min(elapsed / self._duration, 1.0)
+        ease = t * t * (3.0 - 2.0 * t)
+
+        log_this_tick = (self._tick_count % 10 == 0)
+        self._tick_count += 1
+
+        for anim in self._animations:
+            obj = bpy.data.objects.get(anim['piece_name'])
+            if obj is None:
+                if log_this_tick:
+                    with open('/tmp/blchess_modal.txt', 'a') as f:
+                        f.write(f"MISSING: {anim['piece_name']}\n")
+                continue
+            sx, sy, sz = anim['start_loc']
+            ex, ey, ez = anim['end_loc']
+            x = sx + ease * (ex - sx)
+            y = sy + ease * (ey - sy)
+            z = sz + ease * (ez - sz) + self._arc_height * 4.0 * t * (1.0 - t)
+            obj.location = (x, y, z)
+            if log_this_tick:
+                with open('/tmp/blchess_modal.txt', 'a') as f:
+                    f.write(f"t={t:.2f} {obj.name} loc={tuple(obj.location)}\n")
+
+            # Update any edge curve endpoints that connect to this square
+            square = anim.get('square')
+            if square:
+                for curve_obj, pt_idx in _edge_targets.get(square, []):
+                    spline = curve_obj.data.splines[0]
+                    w = spline.points[pt_idx].co[3]
+                    spline.points[pt_idx].co = (x, y, 0.0, w)
+
+        for area in context.screen.areas:
+            if area.type == 'VIEW_3D':
+                area.tag_redraw()
+
+        return self._finish(context) if t >= 1.0 else {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        global _pending_anims
+        if not _pending_anims:
+            return {'CANCELLED'}
+
+        self._animations = list(_pending_anims)
+        _pending_anims.clear()
+        self._duration = float(self._animations[0].get('duration', 2.0))
+        self._arc_height = self._animations[0].get('arc_height', 1.5)
+
+        # Rewind all pieces to their start positions before the timer fires
+        for anim in self._animations:
+            obj = bpy.data.objects.get(anim['piece_name'])
+            if obj is not None:
+                obj.location = anim['start_loc']
+
+        self._start_time = time.time()
+        self._tick_count = 0
+        print(f"[anim] modal: animating {len(self._animations)} objects over {self._duration}s")
+
+        wm = context.window_manager
+        self._timer = wm.event_timer_add(1.0 / 30.0, window=context.window)
+        wm.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+    def _finish(self, context):
+        context.window_manager.event_timer_remove(self._timer)
+        self._timer = None
+        self._animations = []
+        return {'FINISHED'}
 
 
 # ---------------------------------------------------------------------------
@@ -254,15 +397,19 @@ class BLCHESS_OT_submit_move(Operator):
 
             board.push(move)
             new_fen = board.fen()
+            from_square_str = chess.square_name(move.from_square)
+            to_square_str = chess.square_name(move.to_square)
 
         except Exception as e:
             self.report({'ERROR'}, str(e))
             return {'CANCELLED'}
 
+        old_fen = props.fen_string
+
         # Truncate any forward history at current index, then append
         history = _load_history(props)
         if not history:
-            history = [props.fen_string]
+            history = [old_fen]
         idx = props.position_index
         if 0 <= idx < len(history) - 1:
             history = history[:idx + 1]
@@ -280,6 +427,7 @@ class BLCHESS_OT_submit_move(Operator):
             self.report({'ERROR'}, f"Render error: {str(e)}")
             return {'CANCELLED'}
 
+        _trigger_animation(old_fen, new_fen, connector_url=props.connector_url)
         return {'FINISHED'}
 
 
@@ -299,6 +447,7 @@ class BLCHESS_OT_undo_move(Operator):
             self.report({'WARNING'}, "No moves to undo")
             return {'CANCELLED'}
 
+        from_fen = props.fen_string
         history.pop()
         _save_history(props, history)
         props.position_index = len(history) - 1
@@ -312,6 +461,7 @@ class BLCHESS_OT_undo_move(Operator):
             self.report({'ERROR'}, f"Render error: {str(e)}")
             return {'CANCELLED'}
 
+        _trigger_animation(from_fen, props.fen_string, connector_url=props.connector_url)
         return {'FINISHED'}
 
 
@@ -366,6 +516,7 @@ class BLCHESS_OT_go_backward(Operator):
             self.report({'WARNING'}, "Already at the first position")
             return {'CANCELLED'}
 
+        from_fen = props.fen_string
         props.position_index = idx - 1
         props.fen_string = history[idx - 1]
 
@@ -377,6 +528,7 @@ class BLCHESS_OT_go_backward(Operator):
             self.report({'ERROR'}, f"Render error: {str(e)}")
             return {'CANCELLED'}
 
+        _trigger_animation(from_fen, props.fen_string, connector_url=props.connector_url)
         return {'FINISHED'}
 
 
@@ -397,6 +549,7 @@ class BLCHESS_OT_go_forward(Operator):
             self.report({'WARNING'}, "Already at the latest position")
             return {'CANCELLED'}
 
+        from_fen = props.fen_string
         props.position_index = idx + 1
         props.fen_string = history[idx + 1]
 
@@ -408,6 +561,7 @@ class BLCHESS_OT_go_forward(Operator):
             self.report({'ERROR'}, f"Render error: {str(e)}")
             return {'CANCELLED'}
 
+        _trigger_animation(from_fen, props.fen_string, connector_url=props.connector_url)
         return {'FINISHED'}
 
 

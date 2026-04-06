@@ -79,6 +79,22 @@ class ConnectorService:
         response.raise_for_status()
         return response.json()
 
+    def fetch_diff(self, from_fen: str, to_fen: str) -> list:
+        """
+        Diff two FEN positions and return a list of moved pieces.
+
+        Args:
+            from_fen: FEN string before the move
+            to_fen: FEN string after the move
+
+        Returns:
+            List of dicts with 'from_square' and 'to_square' keys
+        """
+        url = f"{self.base_url}/diff"
+        response = requests.get(url, params={"from_fen": from_fen, "to_fen": to_fen})
+        response.raise_for_status()
+        return response.json().get("moves", [])
+
     def fetch_shadows(self, fen_string: str) -> Dict[str, Any]:
         """
         Fetch position data with king safety box relationships.

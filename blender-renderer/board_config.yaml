@@ -10,7 +10,7 @@ layers:
     enabled: true
     offset:
       z: 4
-      x: 4
+      x: -7
       y: 0
     rotation:
       x: 1.5708
@@ -130,7 +130,7 @@ layers:
     type: "adjacencies"
     enabled: true
     offset:
-      z: 0
+      z: -1.5
     rotation:
       x: 0
       y: 0
