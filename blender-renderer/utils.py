@@ -7,6 +7,34 @@ import pdb
 import yaml
 import os
 from typing import Tuple, Optional, Dict, Any
+from .constants import COLOR_NAMES
+
+
+def resolve_color(value, default=None):
+    """
+    Resolve a color value from board_config to an RGBA tuple.
+
+    Accepts:
+      - A string name (e.g. "forestgreen") → looked up in COLOR_NAMES
+      - A 3-element list/tuple → alpha 1.0 appended
+      - A 4-element list/tuple → returned as-is
+      - None → returns default
+    """
+    if value is None:
+        return default
+    if isinstance(value, str):
+        resolved = COLOR_NAMES.get(value.lower())
+        if resolved is None:
+            print(f"Warning: Unknown color name '{value}', using default")
+            return default
+        return resolved
+    if isinstance(value, (list, tuple)):
+        if len(value) == 3:
+            return tuple(value) + (1.0,)
+        if len(value) == 4:
+            return tuple(value)
+    print(f"Warning: Unrecognised color value {value!r}, using default")
+    return default
 
 
 # Registry: square -> list of piece objects created during rendering.
@@ -285,7 +313,7 @@ def _apply_board_material(obj: bpy.types.Object, material_config: Optional[Dict[
         obj: Chessboard root object
         material_config: Optional dict with material properties (metallic, specular_tint)
     """
-    from .constants import USD_ASSETS_BASE, COLOR_NAMES
+    from .constants import USD_ASSETS_BASE
     import os
 
     if material_config is None:
@@ -305,19 +333,7 @@ def _apply_board_material(obj: bpy.types.Object, material_config: Optional[Dict[
         specular_tint_color = material_config.get('specular_tint', None)
 
     # Convert color name to RGBA if provided
-    specular_tint_rgba = None
-    if specular_tint_color:
-        if isinstance(specular_tint_color, str):
-            # Look up color name
-            specular_tint_rgba = COLOR_NAMES.get(specular_tint_color.lower())
-            if specular_tint_rgba is None:
-                print(f"Warning: Unknown color name '{specular_tint_color}', ignoring specular_tint")
-        elif isinstance(specular_tint_color, (list, tuple)) and len(specular_tint_color) in [3, 4]:
-            # Direct RGB or RGBA values
-            if len(specular_tint_color) == 3:
-                specular_tint_rgba = tuple(specular_tint_color) + (1.0,)
-            else:
-                specular_tint_rgba = tuple(specular_tint_color)
+    specular_tint_rgba = resolve_color(specular_tint_color) if specular_tint_color else None
 
     def apply_to_object(o):
         if o.type == 'MESH' and hasattr(o.data, 'materials'):
@@ -542,9 +558,13 @@ def create_ascii_piece(node: dict, scale: float = 0.8, z_offset: float = -1.0, m
     curve_data.align_x = 'CENTER'
     curve_data.align_y = 'CENTER'
 
+    import math
     text_obj = bpy.data.objects.new(f"ascii_{piece_char}_{node['square']}", curve_data)
     text_obj.location = (ascii_x, ascii_y, z_offset)
     text_obj.scale = (scale, scale, scale)
+    # White faces toward black (negative y in flat layer coords), so rotate 180° around Z.
+    # Black's glyphs already face toward white by default.
+    text_obj.rotation_euler = (0.0, 0.0, math.pi if node.get('color') == 'white' else 0.0)
     bpy.context.collection.objects.link(text_obj)
 
     if material:
@@ -609,7 +629,9 @@ def create_glass_pane(z_offset: float, color: list = None, alpha: float = 0.25, 
         mat.blend_method = 'BLEND'
         mat.shadow_method = 'NONE'
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+    # Ensure color is RGB (3 elements) for the glass pane — alpha is set separately
+    rgb = tuple(color)[:3]
+    bsdf.inputs["Base Color"].default_value = (*rgb, 1.0)
     bsdf.inputs["Alpha"].default_value = alpha
     bsdf.inputs["Roughness"].default_value = roughness
 
@@ -746,7 +768,7 @@ def render_layer(layer_config: Dict[str, Any], global_config: Dict[str, Any], no
         # Glass pane is configured, render it
         pane_obj = create_glass_pane(
             0.0 if layer_parent else offset_z,
-            color=pane_cfg.get('color', [0.02, 0.02, 0.05]),
+            color=resolve_color(pane_cfg.get('color'), [0.02, 0.02, 0.05]),
             alpha=pane_cfg.get('alpha', 0.25),
             roughness=pane_cfg.get('roughness', 0.1),
             scale=pane_cfg.get('scale', 1.0),
@@ -837,21 +859,21 @@ def _render_graph_layer(layer_config: Dict[str, Any], global_config: Dict[str, A
 
     asterisk_config = layer_config.get('asterisks', {})
     asterisk_scale = asterisk_config.get('scale', 0.5)
-    asterisk_color = asterisk_config.get('color', [1.0, 1.0, 0.0, 1.0])
+    asterisk_color = resolve_color(asterisk_config.get('color'), [1.0, 1.0, 0.0, 1.0])
     asterisk_mat = _make_material(f"{layer_name}_asterisk", asterisk_color)
 
     edge_config = layer_config.get('edges', {})
     edge_thickness = edge_config.get('thickness', 0.02)
 
-    # Per-type color support: use 'colors' dict keyed by edge type.
-    # Falls back to legacy single 'color' key, then to darkgoldenrod.
     _DEFAULT_EDGE_COLOR = [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-    edge_colors = edge_config.get('colors', {})
-    if not edge_colors:
+    raw_edge_colors = edge_config.get('colors', {})
+    if not raw_edge_colors:
         single = edge_config.get('color', _DEFAULT_EDGE_COLOR)
-        edge_colors = {'default': single}
-    elif 'default' not in edge_colors:
-        edge_colors['default'] = _DEFAULT_EDGE_COLOR
+        edge_colors = {'default': resolve_color(single, _DEFAULT_EDGE_COLOR)}
+    else:
+        edge_colors = {k: resolve_color(v, _DEFAULT_EDGE_COLOR) for k, v in raw_edge_colors.items()}
+        if 'default' not in edge_colors:
+            edge_colors['default'] = _DEFAULT_EDGE_COLOR
 
     # Cache materials: one per unique color to avoid redundant material creation
     _color_mat_cache = {}

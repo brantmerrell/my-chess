@@ -1,3 +1,4 @@
+---
 global:
   board_half_width: 0.35270807
   board_scale: 13.8
@@ -37,7 +38,7 @@ layers:
         caster_protection: [1.0, 0.973, 0.863, 1.0]   # cornsilk
         shadow_threat: [0.545, 0.0, 0.0, 1.0]     # darkred
         shadow_protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "3D Board"
     type: "usd"
@@ -130,7 +131,9 @@ layers:
     type: "adjacencies"
     enabled: true
     offset:
-      z: -1.5
+      x: -3
+      y: -3
+      z: -3
     rotation:
       x: 0
       y: 0
@@ -148,13 +151,15 @@ layers:
     edges:
       colors:
         adjacency: [0.118, 0.565, 1.0, 1.0]    # dodgerblue
-        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "Links"
     type: "links"
     enabled: true
     offset:
-      z: -3
+      x: -6
+      y: -6
+      z: -6
     board:
       show: false
     glass_pane:
@@ -167,15 +172,17 @@ layers:
       color: [1.0, 1.0, 0.0, 1.0]
     edges:
       colors:
-        threat:     [0.863, 0.078, 0.235, 1.0]  # crimson
-        protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
-        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
+        threat: [0.863, 0.078, 0.235, 1.0]  # crimson
+        protection: [0.409, 0.955, 0.545, 1.0]
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "King Box"
     type: "king_box"
     enabled: true
     offset:
-      z: -4.5
+      x: -9
+      y: -9
+      z: -9
     board:
       show: false
     glass_pane:
@@ -190,14 +197,16 @@ layers:
       colors:
         king_can_move: [0.133, 0.545, 0.133, 1.0]  # forestgreen
         king_blocked_ally: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
-        king_blocked_threat:  [0.863, 0.078, 0.235, 1.0]  # crimson
-        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
+        king_blocked_threat: [0.863, 0.078, 0.235, 1.0]  # crimson
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "Shadows"
     type: "shadows"
     enabled: true
     offset:
-      z: -6
+      x: -12
+      y: -12
+      z: -12
     board:
       show: false
     glass_pane:
@@ -213,14 +222,16 @@ layers:
         caster_threat: [1.0, 0.973, 0.863, 1.0]  # cornsilk
         caster_protection: [1.0, 0.973, 0.863, 1.0]  # cornsilk
         shadow_threat: [0.545, 0.0, 0.0, 1.0]    # darkred
-        shadow_protection: [0.133, 0.545, 0.133, 1.0] # forestgreen
-        default:    [0.255, 0.69, 0, 1.0]  # OrangeRed
+        shadow_protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
       thickness: 0.02
   - name: "ASCII Board"
     type: "ascii"
     enabled: true
     offset:
-      z: -7.5
+      x: -15
+      y: -15
+      z: -15
     board:
       show: false
     glass_pane:

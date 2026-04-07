@@ -169,7 +169,7 @@ def _trigger_animation(from_fen: str, to_fen: str, connector_url: str = "http://
                     'start_loc': tuple(start_loc),
                     'end_loc': tuple(end_loc),
                     'duration': 2,
-                    'arc_height': 1.5,
+                    'arc_height': 1.5 if piece_obj.parent is None else 0.0,
                     'square': to_square_str,
                 })
 
@@ -196,8 +196,7 @@ class BLCHESS_OT_animate_move(Operator):
     _timer = None
     _start_time: float = 0.0
     _duration: float = 2.0
-    _arc_height: float = 1.5
-    # List of dicts: {piece_name, start_loc, end_loc} — one per piece object
+    # List of dicts: {piece_name, start_loc, end_loc, arc_height} — one per piece object
     _animations: list = []
 
     _tick_count: int = 0
@@ -222,9 +221,10 @@ class BLCHESS_OT_animate_move(Operator):
                 continue
             sx, sy, sz = anim['start_loc']
             ex, ey, ez = anim['end_loc']
+            arc = anim.get('arc_height', 1.5)
             x = sx + ease * (ex - sx)
             y = sy + ease * (ey - sy)
-            z = sz + ease * (ez - sz) + self._arc_height * 4.0 * t * (1.0 - t)
+            z = sz + ease * (ez - sz) + arc * 4.0 * t * (1.0 - t)
             obj.location = (x, y, z)
             if log_this_tick:
                 with open('/tmp/blchess_modal.txt', 'a') as f:
@@ -252,7 +252,6 @@ class BLCHESS_OT_animate_move(Operator):
         self._animations = list(_pending_anims)
         _pending_anims.clear()
         self._duration = float(self._animations[0].get('duration', 2.0))
-        self._arc_height = self._animations[0].get('arc_height', 1.5)
 
         # Rewind all pieces to their start positions before the timer fires
         for anim in self._animations:
