@@ -5,7 +5,7 @@ import { RootState } from "../../app/store";
 import { ChessGame } from "../../chess/chessGame";
 import { LinksResponse, ProcessedEdge } from "../../types/visualization";
 import { PieceDisplayMode } from "../../types/chess";
-import { fetchLinks } from "../../services/connector";
+import { fetchConnections } from "../../services/connector";
 import { useMoveHistory } from "../../hooks/useMoveHistory";
 import { getPieceDisplay } from "../../utils/chessDisplay";
 
@@ -41,7 +41,8 @@ const HistoricalArcView: React.FC<HistoricalArcViewProps> = ({
     const fetchHistoricalData = async () => {
       try {
         const historicalDataPromises = fenHistory.map(async (fen) => {
-          const fetchedLinks = await fetchLinks(fen);
+          // Use unified endpoint for links layer
+          const fetchedLinks = await fetchConnections(fen, "links");
           const edges = fetchedLinks.edges.map((edge: any) => ({
             source:
               typeof edge.source === "string"

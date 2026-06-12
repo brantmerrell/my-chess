@@ -1,12 +1,9 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from routers.adjacencies import router as adjacencies_router
-from routers.links import router as links_router
 from routers.graphdag import router as graphdag_router
-from routers.king_box import router as king_box_router
-from routers.shadows import router as shadows_router
-from routers.none import router as none_router
+from routers.diff import router as diff_router
+from routers.connections import router as connections_router
 
 app = FastAPI()
 
@@ -18,12 +15,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(adjacencies_router)
-app.include_router(links_router)
 app.include_router(graphdag_router)
-app.include_router(king_box_router)
-app.include_router(shadows_router)
-app.include_router(none_router)
+app.include_router(diff_router)
+app.include_router(connections_router)
 
 
 @app.get("/health")

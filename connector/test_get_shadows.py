@@ -38,13 +38,12 @@ def test_shadows_starting_position():
     edges = data["edges"]
 
     caster_edge = next(
-        (s for s in edges if s["source"] == "d1" and s["type"].startswith("caster")), None
+        (s for s in edges if s["source"] == "d1" and s["type"].startswith("caster")),
+        None,
     )
     assert caster_edge is not None
 
-    shadow_edge = next(
-        (s for s in edges if s["type"].startswith("shadow")), None
-    )
+    shadow_edge = next((s for s in edges if s["type"].startswith("shadow")), None)
     assert shadow_edge is not None
 
 

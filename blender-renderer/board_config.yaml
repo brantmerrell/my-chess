@@ -1,0 +1,214 @@
+---
+global:
+  board_half_width: 0.35270807
+  board_scale: 13.8
+  square_spacing: 1.0
+  white_rotation_z: 1.5708
+  black_rotation_z: -1.5708
+layers:
+  - name: "3D Board"
+    type: "usd"
+    enabled: true
+    offset:
+      z: 0.0
+    board:
+      show: true
+      import_usd: true
+      material:
+        metallic: 0.5
+        specular_tint: "limegreen"
+    pieces:
+      scale: 5.0
+      use_usd_assets: true
+      rotations:
+        rook:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        knight:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: 1.5708
+        pawn:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        bishop:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        queen:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+        king:
+          transform_coords: true
+          white:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+          black:
+            rotation:
+              x: 1.5708
+              y: 0.0
+              z: -1.5708
+  - name: "Adjacencies"
+    type: "adjacencies"
+    enabled: true
+    offset:
+      x: -3
+      y: -3
+      z: -3
+    rotation:
+      x: 0
+      y: 0
+      z: 0
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+      roughness: 0.5
+    asterisks:
+      scale: 0.3
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      colors:
+        adjacency: [0.118, 0.565, 1.0, 1.0]    # dodgerblue
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
+      thickness: 0.02
+  - name: "Links"
+    type: "links"
+    enabled: true
+    offset:
+      x: -6
+      y: -6
+      z: -6
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+      roughness: 0.5
+    asterisks:
+      scale: 0.3
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      colors:
+        threat: [0.863, 0.078, 0.235, 1.0]  # crimson
+        protection: [0.409, 0.955, 0.545, 1.0]
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
+      thickness: 0.02
+  - name: "King Box"
+    type: "king_box"
+    enabled: true
+    offset:
+      x: -9
+      y: -9
+      z: -9
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+      roughness: 0.5
+    asterisks:
+      scale: 0.3
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      colors:
+        king_can_move: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        king_blocked_ally: [0.722, 0.525, 0.043, 1.0]  # darkgoldenrod
+        king_blocked_threat: [0.863, 0.078, 0.235, 1.0]  # crimson
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
+      thickness: 0.02
+  - name: "Shadows"
+    type: "shadows"
+    enabled: true
+    offset:
+      x: -12
+      y: -12
+      z: -12
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+      roughness: 0.5
+    asterisks:
+      scale: 0.3
+      color: [1.0, 1.0, 0.0, 1.0]
+    edges:
+      colors:
+        caster_threat: [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        caster_protection: [1.0, 0.973, 0.863, 1.0]  # cornsilk
+        shadow_threat: [0.545, 0.0, 0.0, 1.0]    # darkred
+        shadow_protection: [0.133, 0.545, 0.133, 1.0]  # forestgreen
+        default: [0.255, 0.69, 0, 1.0]  # OrangeRed
+      thickness: 0.02
+  - name: "ASCII Board"
+    type: "ascii"
+    enabled: true
+    offset:
+      x: -15
+      y: -15
+      z: -15
+    board:
+      show: false
+    glass_pane:
+      show: true
+      color: [0.02, 0.02, 0.05]
+      alpha: 0.7
+      roughness: 0.5
+    pieces:
+      scale: 0.6
+      style: "unicode_symbols"
+      align_x: "CENTER"
+      align_y: "CENTER"
+      white_color: [0.9, 0.9, 0.9, 1.0]
+      black_color: [0.2, 0.2, 0.2, 1.0]

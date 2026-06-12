@@ -27,11 +27,7 @@ import {
   makeMove,
 } from "../app/store";
 import {
-  fetchLinks,
-  fetchAdjacencies,
-  fetchKingBox,
-  fetchShadows,
-  fetchNone,
+  fetchConnections,
 } from "../services/connector";
 import { useChessGame } from "../hooks/useChessGame";
 import { useLichessGame } from "../contexts/LichessGameContext";
@@ -548,18 +544,12 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        let fetchedData;
-        if (connectionType === "links") {
-          fetchedData = await fetchLinks(chessGameState.fen, heatmap);
-        } else if (connectionType === "adjacencies") {
-          fetchedData = await fetchAdjacencies(chessGameState.fen, heatmap);
-        } else if (connectionType === "king_box") {
-          fetchedData = await fetchKingBox(chessGameState.fen, heatmap);
-        } else if (connectionType === "shadows") {
-          fetchedData = await fetchShadows(chessGameState.fen, heatmap);
-        } else if (connectionType === "none") {
-          fetchedData = await fetchNone(chessGameState.fen, heatmap);
-        }
+        // Use unified endpoint for all connection types (including "none")
+        const fetchedData = await fetchConnections(
+          chessGameState.fen,
+          connectionType, // maps directly to layers parameter (including "none")
+          heatmap
+        );
         if (fetchedData && fetchedData.nodes && fetchedData.edges) {
           setLinksData(fetchedData);
           const edges = fetchedData.edges.map((edge: any) => ({
