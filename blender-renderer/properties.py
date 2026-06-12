@@ -147,26 +147,10 @@ def _on_connection_type_change(self, context):
             print("Connection type is 'none', cleared Focus layer without re-rendering")
             return
 
-        # Fetch data for the new connection type
+        # Fetch data for the new connection type using unified endpoint
         connector_service = ConnectorService(base_url=props.connector_url)
-
-        data = None
-        edges = []
-        if props.connection_type == "adjacencies":
-            data = connector_service.fetch_adjacencies(props.fen_string)
-            edges = data.get("edges", [])
-        elif props.connection_type == "links":
-            data = connector_service.fetch_links(props.fen_string)
-            edges = data.get("edges", [])
-        elif props.connection_type == "king_box":
-            data = connector_service.fetch_king_box(props.fen_string)
-            edges = data.get("edges", [])
-        elif props.connection_type == "shadows":
-            data = connector_service.fetch_shadows(props.fen_string)
-            edges = data.get("edges", [])
-
-        if data is None:
-            return
+        data = connector_service.fetch_connections(props.fen_string, layers=props.connection_type)
+        edges = data.get("edges", [])
 
         # Find the matching graph layer config to mirror its visual settings
         matching_layer = next(

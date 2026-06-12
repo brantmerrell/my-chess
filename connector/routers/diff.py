@@ -6,7 +6,9 @@ router = APIRouter()
 
 @router.get("/diff")
 async def get_diff(
-    from_fen: str = Query(..., description="FEN string for the position before the move"),
+    from_fen: str = Query(
+        ..., description="FEN string for the position before the move"
+    ),
     to_fen: str = Query(..., description="FEN string for the position after the move"),
 ):
     """
@@ -42,9 +44,12 @@ async def get_diff(
     for from_sq, fp in vacated:
         # Prefer exact piece type + color match (handles castling correctly)
         matched = next(
-            ((to_sq, tp) for to_sq, tp in arrived_remaining
-             if fp.color == tp.color and fp.piece_type == tp.piece_type),
-            None
+            (
+                (to_sq, tp)
+                for to_sq, tp in arrived_remaining
+                if fp.color == tp.color and fp.piece_type == tp.piece_type
+            ),
+            None,
         )
         if matched:
             to_sq, _ = matched
@@ -53,13 +58,18 @@ async def get_diff(
         else:
             # Promotion: pawn vacates, promoted piece arrives (different piece_type, same color)
             matched_changed = next(
-                ((to_sq, fp2, tp2) for to_sq, fp2, tp2 in changed_remaining
-                 if fp.color == tp2.color),
-                None
+                (
+                    (to_sq, fp2, tp2)
+                    for to_sq, fp2, tp2 in changed_remaining
+                    if fp.color == tp2.color
+                ),
+                None,
             )
             if matched_changed:
                 to_sq, _, _ = matched_changed
                 moves.append({"from_square": from_sq, "to_square": to_sq})
-                changed_remaining = [(s, a, b) for s, a, b in changed_remaining if s != to_sq]
+                changed_remaining = [
+                    (s, a, b) for s, a, b in changed_remaining if s != to_sq
+                ]
 
     return {"moves": moves}

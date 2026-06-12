@@ -21,66 +21,26 @@ class ConnectorService:
             base_url = os.getenv("CONNECTOR_URL", "http://localhost:8000")
         self.base_url = base_url.rstrip("/")
 
-    def fetch_adjacencies(self, fen_string: str) -> Dict[str, Any]:
+    def fetch_connections(self, fen_string: str, layers: str = "all") -> Dict[str, Any]:
         """
-        Fetch position data with adjacency relationships.
+        Fetch position data with all requested layer types in a single call.
+
+        This unified endpoint returns nodes once (no duplication) and edges
+        distinguished by their 'type' field (adjacency, threat, protection,
+        king_can_move, shadow_threat, etc).
 
         Args:
             fen_string: FEN notation of the chess position
+            layers: Comma-separated layer names or 'all' (default)
+                   e.g., "adjacencies,links,king_box,shadows"
 
         Returns:
-            Dict containing 'nodes' and 'edges'
-
-        Raises:
-            requests.HTTPError: If the API request fails
+            Dict containing 'nodes' and 'edges' where edges have 'type' field
         """
-        url = f"{self.base_url}/adjacencies"
-        response = requests.get(url, params={"fen_string": fen_string})
-        response.raise_for_status()
-        return response.json()
-
-    def fetch_links(self, fen_string: str) -> Dict[str, Any]:
-        """
-        Fetch position data with legal move links.
-
-        Args:
-            fen_string: FEN notation of the chess position
-
-        Returns:
-            Dict containing 'nodes' and 'edges'
-        """
-        url = f"{self.base_url}/links"
-        response = requests.get(url, params={"fen_string": fen_string})
-        response.raise_for_status()
-        return response.json()
-
-    def fetch_none(self, fen_string: str) -> Dict[str, Any]:
-        """
-        Fetch position data with no connections (nodes only).
-
-        Args:
-            fen_string: FEN notation of the chess position
-
-        Returns:
-            Dict containing 'nodes' and empty 'edges'
-        """
-        url = f"{self.base_url}/none"
-        response = requests.get(url, params={"fen_string": fen_string})
-        response.raise_for_status()
-        return response.json()
-
-    def fetch_king_box(self, fen_string: str) -> Dict[str, Any]:
-        """
-        Fetch position data with king safety box (attack/defense zones).
-
-        Args:
-            fen_string: FEN notation of the chess position
-
-        Returns:
-            Dict containing 'nodes' and 'edges' showing king box boundaries
-        """
-        url = f"{self.base_url}/king_box"
-        response = requests.get(url, params={"fen_string": fen_string})
+        url = f"{self.base_url}/connections"
+        response = requests.get(
+            url, params={"fen_string": fen_string, "layers": layers}
+        )
         response.raise_for_status()
         return response.json()
 
@@ -99,18 +59,3 @@ class ConnectorService:
         response = requests.get(url, params={"from_fen": from_fen, "to_fen": to_fen})
         response.raise_for_status()
         return response.json().get("moves", [])
-
-    def fetch_shadows(self, fen_string: str) -> Dict[str, Any]:
-        """
-        Fetch position data with king safety box relationships.
-
-        Args:
-            fen_string: FEN notation of the chess position
-
-        Returns:
-            Dict containing 'nodes' and 'edges'
-        """
-        url = f"{self.base_url}/shadows"
-        response = requests.get(url, params={"fen_string": fen_string})
-        response.raise_for_status()
-        return response.json()
