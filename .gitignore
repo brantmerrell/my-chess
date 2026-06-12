@@ -10,3 +10,4 @@ __pycache__/
 .env
 **/build/
 *.mermaid
+.DS_Store
