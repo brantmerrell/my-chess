@@ -1,12 +1,7 @@
 import chess
 from fastapi import APIRouter, Query
-from typing import List
+from typing import List, Dict
 from utils import get_nodes, get_edges
-
-# Import functions from other routers
-from .king_box import convert_king_box_to_graph, get_king_box_data
-from .adjacencies import router as adj_router  # We'll extract its logic
-from .shadows import router as shadows_router  # We'll extract its logic
 
 router = APIRouter()
 
@@ -125,13 +120,74 @@ def get_shadow_edges(board: chess.Board) -> List[dict]:
 
 def get_king_box_edges(board: chess.Board) -> tuple[List[dict], List[dict]]:
     """
-    Extract king box edge generation logic.
+    Generate king box edges showing king movement constraints.
     Returns (edges, phantom_nodes) where phantom_nodes are empty squares king can move to.
     """
-    result = convert_king_box_to_graph(board, heatmap=False)
-    # Filter out just the edges and phantom nodes
-    edges = result["edges"]
-    phantom_nodes = [n for n in result["nodes"] if n.get("piece_type") == "phantom"]
+    edges = []
+    phantom_nodes = []
+
+    # Process both kings
+    for color in [chess.WHITE, chess.BLACK]:
+        king_square = board.king(color)
+        if not king_square:
+            continue
+
+        king_square_name = chess.square_name(king_square)
+        king_file = chess.square_file(king_square)
+        king_rank = chess.square_rank(king_square)
+
+        # Check all 8 squares around the king
+        for file_offset in [-1, 0, 1]:
+            for rank_offset in [-1, 0, 1]:
+                if file_offset == 0 and rank_offset == 0:
+                    continue  # Skip king's current square
+
+                new_file = king_file + file_offset
+                new_rank = king_rank + rank_offset
+
+                # Skip off-board squares
+                if not (0 <= new_file <= 7 and 0 <= new_rank <= 7):
+                    continue
+
+                target_square = chess.square(new_file, new_rank)
+                target_square_name = chess.square_name(target_square)
+                piece = board.piece_at(target_square)
+
+                # Determine edge type based on square status
+                if piece:
+                    if piece.color == color:
+                        edge_type = "king_blocked_ally"
+                    else:
+                        edge_type = "king_blocked_threat"
+                else:
+                    # Empty square - check if safe
+                    temp_board = board.copy()
+                    temp_board.set_piece_at(king_square, None)
+                    temp_board.set_piece_at(
+                        target_square, chess.Piece(chess.KING, color)
+                    )
+
+                    if temp_board.is_attacked_by(not color, target_square):
+                        edge_type = "king_blocked_threat"
+                    else:
+                        edge_type = "king_can_move"
+                        # Add phantom node for empty safe squares
+                        phantom_nodes.append(
+                            {
+                                "square": target_square_name,
+                                "piece_type": "phantom",
+                                "color": "phantom",
+                            }
+                        )
+
+                edges.append(
+                    {
+                        "type": edge_type,
+                        "source": king_square_name,
+                        "target": target_square_name,
+                    }
+                )
+
     return edges, phantom_nodes
 
 
@@ -161,7 +217,7 @@ async def get_connections(
 
     This allows clients to filter edges by type for different visualization layers
     without making multiple API calls or duplicating node data.
-    
+
     Use layers='none' to get only nodes with no edges (equivalent to /none endpoint).
     """
     try:
