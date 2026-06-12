@@ -53,10 +53,8 @@ def render_current_fen(operator, context):
     else:
         layers_param = ",".join(sorted(enabled_layer_types))
         operator.report({"INFO"}, f"Fetching layers: {layers_param}")
-    
-    data = connector_service.fetch_connections(
-        props.fen_string, layers=layers_param
-    )
+
+    data = connector_service.fetch_connections(props.fen_string, layers=layers_param)
     all_edges = data.get("edges", [])
 
     operator.report({"INFO"}, "Clearing scene...")
