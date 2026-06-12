@@ -1,5 +1,6 @@
 """Service layer for connector API communication"""
 
+import os
 import requests
 from typing import Dict, Any
 
@@ -7,13 +8,17 @@ from typing import Dict, Any
 class ConnectorService:
     """Communicate with the chess connector API."""
 
-    def __init__(self, base_url: str = "http://localhost:8000"): # just use .env CONNECTOR_URL
+    def __init__(self, base_url: str = None):
         """
         Initialize connector service.
 
         Args:
-            base_url: Base URL for the connector API (no trailing slash)
+            base_url: Base URL for the connector API (no trailing slash).
+                      If None, reads from CONNECTOR_URL environment variable.
+                      Defaults to http://localhost:8000 if not set.
         """
+        if base_url is None:
+            base_url = os.getenv("CONNECTOR_URL", "http://localhost:8000")
         self.base_url = base_url.rstrip("/")
 
     def fetch_adjacencies(self, fen_string: str) -> Dict[str, Any]:
@@ -66,13 +71,13 @@ class ConnectorService:
 
     def fetch_king_box(self, fen_string: str) -> Dict[str, Any]:
         """
-        Fetch position data with king safety box relationships.
+        Fetch position data with king safety box (attack/defense zones).
 
         Args:
             fen_string: FEN notation of the chess position
 
         Returns:
-            Dict containing 'nodes' and 'edges'
+            Dict containing 'nodes' and 'edges' showing king box boundaries
         """
         url = f"{self.base_url}/king_box"
         response = requests.get(url, params={"fen_string": fen_string})

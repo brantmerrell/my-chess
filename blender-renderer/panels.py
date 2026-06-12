@@ -23,7 +23,7 @@ class BLCHESS_PT_main_panel(Panel):
         layout.label(text="Select Position:")
         row = layout.row(align=True)
         row.prop(props, "selected_setup", text="")
-        row.operator("blchess.select_position", text="Load", icon='FILE_REFRESH')
+        row.operator("blchess.select_position", text="Load", icon="FILE_REFRESH")
 
         layout.separator()
 
@@ -34,7 +34,7 @@ class BLCHESS_PT_main_panel(Panel):
         layout.prop(props, "fen_string", text="")
         layout.prop(props, "connection_type", text="Focus")
         layout.prop(props, "board_material_color", text="Board Color")
-        layout.operator("blchess.submit_fen", text="Submit FEN", icon='PLAY')
+        layout.operator("blchess.submit_fen", text="Submit FEN", icon="PLAY")
 
         layout.separator()
 
@@ -44,8 +44,8 @@ class BLCHESS_PT_main_panel(Panel):
         layout.label(text="Move:")
         row = layout.row(align=True)
         row.prop(props, "move_input", text="")
-        row.operator("blchess.submit_move", text="", icon='FORWARD')
-        layout.operator("blchess.undo_move", text="Undo Move", icon='LOOP_BACK')
+        row.operator("blchess.submit_move", text="", icon="FORWARD")
+        layout.operator("blchess.undo_move", text="Undo Move", icon="LOOP_BACK")
 
         layout.separator()
 
@@ -55,7 +55,10 @@ class BLCHESS_PT_main_panel(Panel):
         history_len = 0
         try:
             import json
-            history_len = len(json.loads(props.position_history)) if props.position_history else 0
+
+            history_len = (
+                len(json.loads(props.position_history)) if props.position_history else 0
+            )
         except Exception:
             pass
 
@@ -63,9 +66,9 @@ class BLCHESS_PT_main_panel(Panel):
         layout.label(text=f"History: {idx_display} / {history_len}")
 
         row = layout.row(align=True)
-        row.operator("blchess.go_to_start",  text="", icon='REW')
-        row.operator("blchess.go_backward",  text="", icon='PLAY_REVERSE')
-        row.operator("blchess.go_forward",   text="", icon='PLAY')
-        row.operator("blchess.go_to_end",    text="", icon='FF')
+        row.operator("blchess.go_to_start", text="", icon="REW")
+        row.operator("blchess.go_backward", text="", icon="PLAY_REVERSE")
+        row.operator("blchess.go_forward", text="", icon="PLAY")
+        row.operator("blchess.go_to_end", text="", icon="FF")
 
         layout.separator()

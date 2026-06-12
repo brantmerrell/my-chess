@@ -20,10 +20,13 @@ try:
         sys.path.insert(0, addon_dir)
 
     import importlib.util
-    spec = importlib.util.spec_from_file_location("blend_chess_addon", os.path.join(addon_dir, "__init__.py"))
+
+    spec = importlib.util.spec_from_file_location(
+        "blend_chess_addon", os.path.join(addon_dir, "__init__.py")
+    )
     addon_module = importlib.util.module_from_spec(spec)
 
-    sys.modules['blend_chess_addon'] = addon_module
+    sys.modules["blend_chess_addon"] = addon_module
 
     spec.loader.exec_module(addon_module)
 
@@ -38,4 +41,5 @@ try:
 except Exception as e:
     print(f"Error loading Blend Chess addon: {e}")
     import traceback
+
     traceback.print_exc()

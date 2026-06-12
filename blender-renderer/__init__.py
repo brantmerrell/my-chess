@@ -12,9 +12,9 @@ bl_info = {
     "author": "Josh M",
     "version": (1, 0, 0),
     "blender": (3, 0, 0),
-    "location": "View3D > Sidebar > Blend Chess", # TODO: verify that users can find this in View3D > Sidebar > Blind Chess
+    "location": "View3D > Sidebar > Blend Chess",
     "description": "Render chess positions from connector API",
-    "category": "3D View", # To-Do: verify that blender tags this somehow
+    "category": "3D View",
 }
 
 import bpy
@@ -49,7 +49,7 @@ classes = (
 )
 
 
-def register(): # TODO: what happens when this is imported from another file?
+def register():
     """
     Register addon classes and properties with Blender.
     """
@@ -61,7 +61,7 @@ def register(): # TODO: what happens when this is imported from another file?
     )
 
 
-def unregister(): # TODO: what happens when this is imported from another file?
+def unregister():
     """
     Unregister addon classes and properties from Blender.
     """

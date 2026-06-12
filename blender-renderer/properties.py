@@ -11,7 +11,10 @@ from .constants import get_colors_for_usage
 _SETUP_ITEMS = [(str(i), s.name, s.description) for i, s in enumerate(SAMPLE_SETUPS)]
 
 # Create enum items for board colors (filtered by usage type)
-_BOARD_COLOR_ITEMS = [(name, name.title(), f"Use {name} color") for name in sorted(get_colors_for_usage("board").keys())]
+_BOARD_COLOR_ITEMS = [
+    (name, name.title(), f"Use {name} color")
+    for name in sorted(get_colors_for_usage("board").keys())
+]
 
 
 def _on_board_color_change(self, context):
@@ -27,22 +30,23 @@ def _on_board_color_change(self, context):
     try:
         config = load_board_config()
         usd_layer = next(
-            (l for l in config.get("layers", []) if l.get("type") == "usd"),
-            None
+            (l for l in config.get("layers", []) if l.get("type") == "usd"), None
         )
         if not usd_layer:
             return
 
-        board_config = usd_layer.get('board', {})
-        material_config = board_config.get('material', {})
+        board_config = usd_layer.get("board", {})
+        material_config = board_config.get("material", {})
 
         # Re-apply the board material with new color
-        from .utils import _apply_board_material
-        _apply_board_material(board_obj, material_config=material_config)
+        from .utils import apply_board_material_textures
+
+        apply_board_material_textures(board_obj, material_config=material_config)
 
     except Exception as e:
         print(f"Error updating board color: {e}")
         import traceback
+
         traceback.print_exc()
 
 
@@ -80,7 +84,11 @@ def _on_connection_type_change(self, context):
 
         # Delete only Focus layer objects (at z=2.5)
         focus_offset = focus_layer.get("offset", {})
-        focus_z = focus_offset.get("z", 2.5) if isinstance(focus_offset, dict) else focus_layer.get("z_offset", 2.5)
+        focus_z = (
+            focus_offset.get("z", 2.5)
+            if isinstance(focus_offset, dict)
+            else focus_layer.get("z_offset", 2.5)
+        )
         tolerance = 0.2  # Z-position tolerance
 
         objects_to_delete = []
@@ -93,9 +101,9 @@ def _on_connection_type_change(self, context):
             if z_diff < tolerance:
                 should_delete = True
             # For curve objects (link lines), check if their vertices are at focus_z
-            elif obj.type == 'CURVE' and obj.data.splines:
+            elif obj.type == "CURVE" and obj.data.splines:
                 for spline in obj.data.splines:
-                    if hasattr(spline, 'points') and len(spline.points) > 0:
+                    if hasattr(spline, "points") and len(spline.points) > 0:
                         # Check first point's z-coordinate
                         point_z = spline.points[0].co[2]
                         if abs(point_z - focus_z) < tolerance:
@@ -103,7 +111,9 @@ def _on_connection_type_change(self, context):
                             break
 
             if should_delete:
-                print(f"Found object to delete: {obj.name} (type={obj.type}) at z={obj.location.z}")
+                print(
+                    f"Found object to delete: {obj.name} (type={obj.type}) at z={obj.location.z}"
+                )
                 objects_to_delete.append(obj)
 
         print(f"Total objects to delete: {len(objects_to_delete)}")
