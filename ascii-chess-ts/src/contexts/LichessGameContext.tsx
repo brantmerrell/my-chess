@@ -7,30 +7,30 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { useDispatch } from "react-redux";
 import { lichessGame } from "../services/lichess/game";
 import { useLichessAuth } from "../hooks/useLichessAuth";
 import { loadFen } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
 import {
   GameState,
   LichessGameContextType,
+  StreamHandle,
   initialGameState,
 } from "../types/lichessGame";
 import { parseGameResult } from "../utils/gameResultParser";
 import { useMoveProcessor } from "../hooks/useMoveProcessor";
 import { useLichessStreams } from "../hooks/useLichessStreams";
-
-const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+import { initialFen } from "../constants/env";
 
 const LichessGameContext = createContext<LichessGameContextType | null>(null);
 
 export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { username, isAuthenticated } = useLichessAuth();
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const seekStreamRef = useRef<{ close: () => void } | null>(null);
+  const seekStreamRef = useRef<StreamHandle | null>(null);
 
   const {
     processMoves,
@@ -360,8 +360,7 @@ export const LichessGameProvider: React.FC<{ children: ReactNode }> = ({
 
     setGameState(initialGameState);
     resetToStartingPosition();
-    dispatch(loadFen({ fen: STARTING_FEN }));
-  }, [dispatch, closeSeekStream, closeGameStream, resetToStartingPosition]);
+  }, [closeSeekStream, closeGameStream, resetToStartingPosition]);
 
   // Reset when user logs out
   useEffect(() => {

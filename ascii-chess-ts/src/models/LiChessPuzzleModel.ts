@@ -1,3 +1,5 @@
+import { Position, FetchStatus } from "../types/chess";
+
 export interface LiChessPuzzleModel {
   puzzleId: string;
   gameId: string;
@@ -6,14 +8,6 @@ export interface LiChessPuzzleModel {
   solution: string[];
   themes: string[];
   initialPuzzleFEN: string;
-  setupHistory: Array<{
-    ply: number;
-    san: string;
-    uci: string;
-    fen: string;
-  }>;
-  fetchStatus: {
-    loading: boolean;
-    error: string | null | undefined;
-  };
+  setupHistory: Position[];
+  fetchStatus: FetchStatus;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../app/hooks";
 import {
@@ -26,6 +26,16 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
     undoMessage: "",
     isProcessing: false,
   });
+
+  const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const isAtLatestPosition =
     chessGameState.currentPositionIndex === chessGameState.positions.length - 1;
@@ -87,7 +97,12 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
     }
   };
 
-  const undoLastMove = () => {
+  const undoLastMove = useCallback(() => {
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+      undoTimeoutRef.current = null;
+    }
+
     // Prevent undo when not at latest position
     if (!isAtLatestPosition) {
       setState((prev) => ({
@@ -95,7 +110,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         undoMessage:
           "Cannot undo moves from historical positions. Navigate to the latest position first.",
       }));
-      setTimeout(() => {
+      undoTimeoutRef.current = setTimeout(() => {
         setState((prev) => ({ ...prev, undoMessage: "" }));
       }, 3000);
       return;
@@ -106,7 +121,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         ...prev,
         undoMessage: "No moves to undo",
       }));
-      setTimeout(() => {
+      undoTimeoutRef.current = setTimeout(() => {
         setState((prev) => ({ ...prev, undoMessage: "" }));
       }, 3000);
       return;
@@ -118,9 +133,9 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
       undoMessage: "",
       errorMessage: "",
     }));
-  };
+  }, [isAtLatestPosition, chessGameState.history.length, dispatch]);
 
-  const resetToPosition = (fen: string, setupHistory?: Position[]) => {
+  const resetToPosition = useCallback((fen: string, setupHistory?: Position[]) => {
     try {
       dispatch(
         loadFen({
@@ -140,7 +155,7 @@ export const useMoveHistory = (displayMode: PieceDisplayMode) => {
         errorMessage: "Invalid position",
       }));
     }
-  };
+  }, [dispatch]);
 
   const navigateForward = () => {
     dispatch(goForward());

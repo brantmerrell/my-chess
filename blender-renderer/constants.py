@@ -19,7 +19,7 @@ PIECE_SYMBOLS = {
 }
 
 # USD asset paths - base directory
-USD_ASSETS_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'OpenChessSet'))
+USD_ASSETS_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets', 'OpenChessSet'))
 
 # USD piece file paths (reference these files to get full geometry + materials)
 USD_PIECE_PATHS = {

@@ -3,6 +3,8 @@ import { ChessGame } from "../../chess/chessGame";
 import { Position } from "../../types/chess";
 import { STANDARD_FEN } from "../../models/SetupOptions";
 
+const MOVE_NUMBER_PREFIX = /^\d+\.\.?\.?/;
+
 export interface ChessGameState {
   fen: string;
   moves: string[];
@@ -34,7 +36,7 @@ const initialGameState: ChessGameState = {
 const createGameFromState = (state: ChessGameState): ChessGame => {
   const game = new ChessGame(state.positions[0].fen);
   state.positions.slice(1).forEach((pos) => {
-    const moveText = pos.san.replace(/^\d+\.\.?\.?/, "").trim();
+    const moveText = pos.san.replace(MOVE_NUMBER_PREFIX, "").trim();
     game.makeMove(moveText);
   });
   return game;
@@ -48,7 +50,7 @@ const createGameUpToIndex = (
   for (let i = 1; i <= index; i++) {
     if (i < state.positions.length) {
       const moveText = state.positions[i].san
-        .replace(/^\d+\.\.?\.?/, "")
+        .replace(MOVE_NUMBER_PREFIX, "")
         .trim();
       game.makeMove(moveText);
     }
@@ -69,10 +71,10 @@ export const chessGameSlice = createSlice({
           state.fen = action.payload.fen;
           state.history = action.payload.setupHistory
             .filter((pos: Position) => pos.san !== "-")
-            .map((pos: Position) => pos.san.replace(/^\d+\.\.?\.?/, "").trim());
+            .map((pos: Position) => pos.san.replace(MOVE_NUMBER_PREFIX, "").trim());
 
           state.positions.slice(1).forEach((pos: Position) => {
-            const moveText = pos.san.replace(/^\d+\.\.?\.?/, "").trim();
+            const moveText = pos.san.replace(MOVE_NUMBER_PREFIX, "").trim();
             game.makeMove(moveText);
           });
         } else {

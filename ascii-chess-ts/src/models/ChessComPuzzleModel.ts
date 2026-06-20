@@ -1,3 +1,5 @@
+import { FetchStatus } from "../types/chess";
+
 export interface ChessComPuzzleModel {
   puzzleTitle: string;
   puzzleUrl: string;
@@ -5,8 +7,5 @@ export interface ChessComPuzzleModel {
   initialPuzzleFEN: string;
   solutionPgn: string[];
   imageUrl: string;
-  fetchStatus: {
-    loading: boolean;
-    error: string | null | undefined;
-  };
+  fetchStatus: FetchStatus;
 }

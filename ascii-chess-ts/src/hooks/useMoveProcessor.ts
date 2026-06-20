@@ -1,13 +1,12 @@
 import { useCallback, useRef } from "react";
-import { useDispatch } from "react-redux";
 import { makeMove, loadFen } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
 import { ChessGame } from "../chess/chessGame";
 import { MoveCache, NotificationCallback } from "../types/lichessGame";
-
-const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+import { initialFen } from "../constants/env";
 
 export function useMoveProcessor() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const moveCacheRef = useRef<MoveCache>({
     processedMoves: [],
@@ -36,7 +35,7 @@ export function useMoveProcessor() {
 
   const resetToStartingPosition = useCallback(() => {
     resetCache();
-    dispatch(loadFen({ fen: STARTING_FEN }));
+    dispatch(loadFen({ fen: initialFen }));
   }, [dispatch, resetCache]);
 
   const addPendingMove = useCallback((uciMove: string) => {
@@ -72,7 +71,7 @@ export function useMoveProcessor() {
         cache.processedMoves = [];
         cache.gameInstance = new ChessGame();
         cache.lastMoveIndex = -1;
-        dispatch(loadFen({ fen: STARTING_FEN }));
+        dispatch(loadFen({ fen: initialFen }));
       }
 
       const newMoves = moves.slice(cache.lastMoveIndex + 1);

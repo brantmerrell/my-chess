@@ -1,13 +1,12 @@
+import { PuzzleViewModel } from "./PuzzleViewModel";
 import { LiChessPuzzleResponse } from "./LiChessPuzzleResponse";
 import { LiChessPuzzleModel } from "./LiChessPuzzleModel";
 import { ChessGame } from "../chess/chessGame";
 
-export class LiChessPuzzleViewModel {
-  private liChessPuzzleResponse: LiChessPuzzleResponse;
-  constructor(liChessPuzzleResponse: LiChessPuzzleResponse) {
-    this.liChessPuzzleResponse = liChessPuzzleResponse;
-  }
-
+export class LiChessPuzzleViewModel extends PuzzleViewModel<
+  LiChessPuzzleResponse,
+  LiChessPuzzleModel
+> {
   get puzzle(): LiChessPuzzleModel {
     const game = new ChessGame();
     const setupHistory = [
@@ -19,13 +18,13 @@ export class LiChessPuzzleViewModel {
       },
     ];
 
-    const pgnMoves = this.liChessPuzzleResponse.game.pgn
+    const pgnMoves = this.response.game.pgn
       .split(/\s+/)
       .filter((move) => !move.includes("."));
 
     let movesApplied = 0;
     for (const move of pgnMoves) {
-      if (movesApplied > this.liChessPuzzleResponse.puzzle.initialPly) {
+      if (movesApplied > this.response.puzzle.initialPly) {
         break;
       }
       const lastFen = game.toFen();
@@ -47,12 +46,12 @@ export class LiChessPuzzleViewModel {
     }
 
     return {
-      puzzleId: this.liChessPuzzleResponse.puzzle.id,
-      gameId: this.liChessPuzzleResponse.game.id,
-      puzzleRating: this.liChessPuzzleResponse.puzzle.rating,
-      puzzlePlays: this.liChessPuzzleResponse.puzzle.plays,
-      solution: this.liChessPuzzleResponse.puzzle.solution,
-      themes: this.liChessPuzzleResponse.puzzle.themes,
+      puzzleId: this.response.puzzle.id,
+      gameId: this.response.game.id,
+      puzzleRating: this.response.puzzle.rating,
+      puzzlePlays: this.response.puzzle.plays,
+      solution: this.response.puzzle.solution,
+      themes: this.response.puzzle.themes,
       initialPuzzleFEN: game.toFen(),
       setupHistory,
       fetchStatus: {

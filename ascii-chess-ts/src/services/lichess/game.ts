@@ -1,4 +1,5 @@
 import { lichessAuth } from "./auth";
+import { StreamHandle } from "../../types/lichessGame";
 
 interface GameStream {
   type: string;
@@ -231,162 +232,13 @@ class LichessGameService {
     return response.data;
   }
 
-  streamGame(
-    gameId: string,
-    onMessage: (data: GameStream) => void,
-    onConnectionChange?: (connected: boolean, error?: string) => void,
-    config?: StreamConfig,
-  ): { close: () => void } | null {
-    const token = lichessAuth.getToken();
-    if (!token) {
-      console.error("Not authenticated");
-      return null;
-    }
-
-    const streamConfig = { ...this.defaultStreamConfig, ...config };
-    let abortController = new AbortController();
-    let isClosed = false;
-    let reconnectAttempts = 0;
-    let lastHeartbeat = Date.now();
-    let heartbeatTimer: NodeJS.Timeout | null = null;
-
-    const cleanup = () => {
-      if (heartbeatTimer) {
-        clearTimeout(heartbeatTimer);
-        heartbeatTimer = null;
-      }
-      abortController.abort();
-    };
-
-    const checkHeartbeat = () => {
-      const now = Date.now();
-      if (now - lastHeartbeat > streamConfig.heartbeatInterval! * 2) {
-        console.warn("Game stream heartbeat timeout, reconnecting...");
-        cleanup();
-        if (!isClosed) {
-          reconnect();
-        }
-      }
-    };
-
-    const reconnect = () => {
-      if (isClosed || reconnectAttempts >= streamConfig.maxReconnectAttempts!) {
-        console.error("Max reconnection attempts reached or stream closed");
-        onConnectionChange?.(false, "Max reconnection attempts reached");
-        return;
-      }
-
-      reconnectAttempts++;
-      const delay = Math.min(
-        streamConfig.reconnectDelayBase! * Math.pow(2, reconnectAttempts - 1),
-        streamConfig.maxReconnectDelay!,
-      );
-
-      console.log(
-        `Attempting to reconnect game stream (attempt ${reconnectAttempts}) in ${delay}ms...`,
-      );
-
-      setTimeout(() => {
-        if (!isClosed) {
-          abortController = new AbortController();
-          startStream();
-        }
-      }, delay);
-    };
-
-    const startStream = async () => {
-      try {
-        onConnectionChange?.(false, "Connecting...");
-
-        const response = await fetch(
-          `https://lichess.org/api/board/game/stream/${gameId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/x-ndjson",
-            },
-            signal: abortController.signal,
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        console.log("Game stream connected successfully");
-        onConnectionChange?.(true);
-        reconnectAttempts = 0;
-        lastHeartbeat = Date.now();
-
-        if (streamConfig.heartbeatInterval && !heartbeatTimer) {
-          heartbeatTimer = setInterval(
-            checkHeartbeat,
-            streamConfig.heartbeatInterval,
-          );
-        }
-
-        const reader = response.body?.getReader();
-        if (!reader) {
-          throw new Error("No response body");
-        }
-
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (!isClosed) {
-          const { done, value } = await reader.read();
-          if (done) {
-            console.log("Game stream ended");
-            break;
-          }
-
-          lastHeartbeat = Date.now();
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || "";
-
-          for (const line of lines) {
-            if (line.trim()) {
-              try {
-                const data = JSON.parse(line);
-                onMessage(data);
-              } catch (e) {
-                console.error("Failed to parse game stream data:", e);
-              }
-            }
-          }
-        }
-      } catch (error: any) {
-        if (!isClosed) {
-          console.error("Game stream error:", error);
-          onConnectionChange?.(false, error.message);
-
-          if (error.name !== "AbortError") {
-            reconnect();
-          }
-        }
-      } finally {
-        cleanup();
-      }
-    };
-
-    startStream();
-
-    return {
-      close: () => {
-        console.log("Closing game stream");
-        isClosed = true;
-        cleanup();
-        onConnectionChange?.(false, "Stream closed");
-      },
-    };
-  }
-
-  streamEvents(
+  private createNdjsonStream(
+    url: string,
     onMessage: (data: any) => void,
     onConnectionChange?: (connected: boolean, error?: string) => void,
     config?: StreamConfig,
-  ): { close: () => void } | null {
+    logPrefix: string = "stream",
+  ): StreamHandle | null {
     const token = lichessAuth.getToken();
     if (!token) {
       console.error("Not authenticated");
@@ -411,7 +263,7 @@ class LichessGameService {
     const checkHeartbeat = () => {
       const now = Date.now();
       if (now - lastHeartbeat > streamConfig.heartbeatInterval! * 2) {
-        console.warn("Event stream heartbeat timeout, reconnecting...");
+        console.warn(`${logPrefix} heartbeat timeout, reconnecting...`);
         cleanup();
         if (!isClosed) {
           reconnect();
@@ -433,7 +285,7 @@ class LichessGameService {
       );
 
       console.log(
-        `Attempting to reconnect event stream (attempt ${reconnectAttempts}) in ${delay}ms...`,
+        `Attempting to reconnect ${logPrefix} (attempt ${reconnectAttempts}) in ${delay}ms...`,
       );
 
       setTimeout(() => {
@@ -448,7 +300,7 @@ class LichessGameService {
       try {
         onConnectionChange?.(false, "Connecting...");
 
-        const response = await fetch(`https://lichess.org/api/stream/event`, {
+        const response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/x-ndjson",
@@ -460,7 +312,7 @@ class LichessGameService {
           throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log("Event stream connected successfully");
+        console.log(`${logPrefix} connected successfully`);
         onConnectionChange?.(true);
         reconnectAttempts = 0;
         lastHeartbeat = Date.now();
@@ -483,7 +335,7 @@ class LichessGameService {
         while (!isClosed) {
           const { done, value } = await reader.read();
           if (done) {
-            console.log("Event stream ended");
+            console.log(`${logPrefix} ended`);
             break;
           }
 
@@ -498,14 +350,14 @@ class LichessGameService {
                 const data = JSON.parse(line);
                 onMessage(data);
               } catch (e) {
-                console.error("Failed to parse event stream data:", e);
+                console.error(`Failed to parse ${logPrefix} data:`, e);
               }
             }
           }
         }
       } catch (error: any) {
         if (!isClosed) {
-          console.error("Event stream error:", error);
+          console.error(`${logPrefix} error:`, error);
           onConnectionChange?.(false, error.message);
 
           if (error.name !== "AbortError") {
@@ -521,12 +373,31 @@ class LichessGameService {
 
     return {
       close: () => {
-        console.log("Closing event stream");
+        console.log(`Closing ${logPrefix}`);
         isClosed = true;
         cleanup();
         onConnectionChange?.(false, "Stream closed");
       },
     };
+  }
+
+  streamGame(
+    gameId: string,
+    onMessage: (data: GameStream) => void,
+    onConnectionChange?: (connected: boolean, error?: string) => void,
+    config?: StreamConfig,
+  ): StreamHandle | null {
+    const url = `https://lichess.org/api/board/game/stream/${gameId}`;
+    return this.createNdjsonStream(url, onMessage, onConnectionChange, config, "game stream");
+  }
+
+  streamEvents(
+    onMessage: (data: any) => void,
+    onConnectionChange?: (connected: boolean, error?: string) => void,
+    config?: StreamConfig,
+  ): StreamHandle | null {
+    const url = `https://lichess.org/api/stream/event`;
+    return this.createNdjsonStream(url, onMessage, onConnectionChange, config, "event stream");
   }
 
   async getOngoingGames(): Promise<any[]> {

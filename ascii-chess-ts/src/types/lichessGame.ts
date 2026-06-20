@@ -1,5 +1,9 @@
 import { ChessGame } from "../chess/chessGame";
 
+export interface StreamHandle {
+  close: () => void;
+}
+
 export interface GameState {
   gameId: string | null;
   gameUrl: string | null;

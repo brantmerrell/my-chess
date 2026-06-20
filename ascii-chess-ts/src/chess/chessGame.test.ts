@@ -37,8 +37,9 @@ describe("ChessGame Class", () => {
 
   test("asciiView returns the correct ASCII representation of the board", () => {
     const asciiView = chessGame.asciiView();
-    expect(asciiView).toContain("Board:");
     expect(asciiView).toContain("8");
     expect(asciiView).toContain("1");
+    expect(asciiView).toContain("a");
+    expect(asciiView).toContain("h");
   });
 });

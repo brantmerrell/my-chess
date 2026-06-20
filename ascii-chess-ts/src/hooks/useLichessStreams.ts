@@ -2,10 +2,7 @@ import { useCallback, useRef, useEffect } from "react";
 import { lichessGame } from "../services/lichess/game";
 import { lichessAuth } from "../services/lichess/auth";
 import { supportsStreamingFetch } from "../utils/browserDetect"; // used for event stream fallback below
-
-interface StreamHandle {
-  close: () => void;
-}
+import { StreamHandle } from "../types/lichessGame";
 
 type ConnectionChangeCallback = (connected: boolean, error?: string) => void;
 type GameUpdateCallback = (data: any) => void;

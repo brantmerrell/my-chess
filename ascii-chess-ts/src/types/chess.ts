@@ -1,5 +1,10 @@
 import { cleanChessPieceUnicode } from "../utils";
 
+export interface FetchStatus {
+  loading: boolean;
+  error: string | null | undefined;
+}
+
 export interface Position {
   ply: number;
   san: string;

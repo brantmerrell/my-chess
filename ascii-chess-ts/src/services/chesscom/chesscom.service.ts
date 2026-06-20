@@ -1,13 +1,8 @@
-export const getChessComDailyPuzzle = async () => {
-  try {
-    // constants/env.ts exports CHESS_COM_URL as "https://api.chess.com"
-    const response = await fetch("https://api.chess.com/pub/puzzle");
-    if (!response.ok) {
-      throw new Error("Chess.com API request failed");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Fetch Error:", error);
-    throw error;
-  }
+import { fetchPuzzle } from "../fetchPuzzle";
+import { CHESS_COM_URL } from "../../constants/env";
+import { ChessComPuzzleResponse } from "../../models/ChessComPuzzleResponse";
+
+export const getChessComDailyPuzzle = async (): Promise<ChessComPuzzleResponse> => {
+  console.log("Fetching Chess.com daily puzzle from:", CHESS_COM_URL);
+  return fetchPuzzle<ChessComPuzzleResponse>(`${CHESS_COM_URL}/pub/puzzle`);
 };

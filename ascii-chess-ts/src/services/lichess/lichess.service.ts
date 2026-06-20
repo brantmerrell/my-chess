@@ -1,18 +1,13 @@
+import { fetchPuzzle } from "../fetchPuzzle";
+import { LICHESS_URL } from "../../constants/env";
+import { LiChessPuzzleResponse } from "../../models/LiChessPuzzleResponse";
 import defaultLiChessPuzzle from "../../data/liChessPuzzle.json";
 
-export const getLiChessDailyPuzzle = async () => {
+export const getLiChessDailyPuzzle = async (): Promise<LiChessPuzzleResponse> => {
   try {
-    // constants/env.ts exports LICHESS_URL as "https://lichess.org"
-    const response = await fetch("https://lichess.org/api/puzzle/daily");
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      throw new Error("LiChess API request failed");
-    }
+    return await fetchPuzzle<LiChessPuzzleResponse>(`${LICHESS_URL}/api/puzzle/daily`);
   } catch (error) {
     console.error("API Fetch Error:", error);
-    return defaultLiChessPuzzle;
+    return (defaultLiChessPuzzle as unknown) as LiChessPuzzleResponse;
   }
 };
