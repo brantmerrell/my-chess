@@ -9,3 +9,5 @@ renders/
 __pycache__/
 *.pyc
 *.pyo
+
+vendor/
