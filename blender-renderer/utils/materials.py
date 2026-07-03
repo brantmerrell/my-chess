@@ -9,9 +9,44 @@ def make_material(name: str, color: list) -> bpy.types.Material:
     """Create a Principled BSDF material with the given RGBA base color."""
     mat = bpy.data.materials.new(name=name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf = ensure_principled_bsdf(mat)
     bsdf.inputs["Base Color"].default_value = tuple(color)
     return mat
+
+
+def ensure_principled_bsdf(mat: bpy.types.Material) -> bpy.types.Node:
+    """
+    Return the material's Principled BSDF, creating it (plus the Material
+    Output node and the link between them) if missing.
+
+    Nodes are looked up by type rather than name: the USD importer in newer
+    Blender versions (5.x) can hand back materials with empty node trees,
+    where name lookups like nodes.get("Principled BSDF") return None. A
+    material whose output is unlinked renders solid black.
+    """
+    if not mat.use_nodes:
+        mat.use_nodes = True
+
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+
+    bsdf = next(
+        (n for n in nodes if n.bl_idname == "ShaderNodeBsdfPrincipled"), None
+    )
+    if bsdf is None:
+        bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+
+    output = next(
+        (n for n in nodes if n.bl_idname == "ShaderNodeOutputMaterial"), None
+    )
+    if output is None:
+        output = nodes.new("ShaderNodeOutputMaterial")
+        output.location = (400, 0)
+
+    if not output.inputs["Surface"].is_linked:
+        links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
+
+    return bsdf
 
 
 def apply_board_material(

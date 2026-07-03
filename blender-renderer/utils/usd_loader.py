@@ -8,7 +8,7 @@ import bpy
 
 from ..constants import USD_ASSETS_BASE, USD_CHESSBOARD_PATH
 from .geometry import resolve_color
-from .materials import add_procedural_checker
+from .materials import add_procedural_checker, ensure_principled_bsdf
 
 
 def import_usd_piece(
@@ -121,14 +121,7 @@ def apply_piece_color(obj: bpy.types.Object, variant: str):
             for mat in target_obj.data.materials:
                 if not mat:
                     continue
-                if not mat.use_nodes:
-                    mat.use_nodes = True
-
-                nodes = mat.node_tree.nodes
-                bsdf = nodes.get("Principled BSDF")
-                if not bsdf:
-                    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-
+                bsdf = ensure_principled_bsdf(mat)
                 bsdf.inputs["Base Color"].default_value = color
 
         for child in target_obj.children:
@@ -209,18 +202,9 @@ def apply_board_material_textures(
             for mat in target_obj.data.materials:
                 if not mat:
                     continue
-                if not mat.use_nodes:
-                    mat.use_nodes = True
-
+                bsdf = ensure_principled_bsdf(mat)
                 nodes = mat.node_tree.nodes
                 links = mat.node_tree.links
-
-                bsdf = nodes.get("Principled BSDF")
-                if not bsdf:
-                    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-                    output = nodes.get("Material Output")
-                    if output:
-                        links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
 
                 bsdf.inputs["Metallic"].default_value = metallic
 
