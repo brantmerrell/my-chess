@@ -147,15 +147,10 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
     },
     [setDisplayMode]
   );
-  const fenHistory = useMemo(() => {
-    const game = new ChessGame(chessGameState.positions[0].fen);
-    const fens = [game.toFen()];
-    chessGameState.history.forEach((move) => {
-      game.makeMove(move);
-      fens.push(game.toFen());
-    });
-    return fens;
-  }, [chessGameState.positions, chessGameState.history]);
+  const fenHistory = useMemo(
+    () => chessGameState.positions.map((pos) => pos.fen),
+    [chessGameState.positions]
+  );
   // Handle scroll events on main content for mobile view indicators
   const handleMainContentScroll = React.useCallback(() => {
     if (!mainContentRef.current) return;

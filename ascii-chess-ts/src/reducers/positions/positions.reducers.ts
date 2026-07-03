@@ -33,29 +33,14 @@ const initialGameState: ChessGameState = {
   currentPositionIndex: 0,
 };
 
-const createGameFromState = (state: ChessGameState): ChessGame => {
-  const game = new ChessGame(state.positions[0].fen);
-  state.positions.slice(1).forEach((pos) => {
-    const moveText = pos.san.replace(MOVE_NUMBER_PREFIX, "").trim();
-    game.makeMove(moveText);
-  });
-  return game;
-};
+// Every Position stores its FEN, which fully determines the legal moves,
+// so positions can be restored directly instead of replaying the game.
+const movesFromFen = (fen: string): string[] => new ChessGame(fen).getMoves();
 
-const createGameUpToIndex = (
-  state: ChessGameState,
-  index: number,
-): ChessGame => {
-  const game = new ChessGame(state.positions[0].fen);
-  for (let i = 1; i <= index; i++) {
-    if (i < state.positions.length) {
-      const moveText = state.positions[i].san
-        .replace(MOVE_NUMBER_PREFIX, "")
-        .trim();
-      game.makeMove(moveText);
-    }
-  }
-  return game;
+const goToIndex = (state: ChessGameState, index: number) => {
+  state.currentPositionIndex = index;
+  state.fen = state.positions[index].fen;
+  state.moves = movesFromFen(state.fen);
 };
 
 export const chessGameSlice = createSlice({
@@ -64,22 +49,14 @@ export const chessGameSlice = createSlice({
   reducers: {
     loadFen(state, action: PayloadAction<LoadFenPayload>) {
       try {
-        const game = new ChessGame();
-
         if (action.payload.setupHistory) {
           state.positions = action.payload.setupHistory;
-          state.fen = action.payload.fen;
           state.history = action.payload.setupHistory
             .filter((pos: Position) => pos.san !== "-")
-            .map((pos: Position) => pos.san.replace(MOVE_NUMBER_PREFIX, "").trim());
-
-          state.positions.slice(1).forEach((pos: Position) => {
-            const moveText = pos.san.replace(MOVE_NUMBER_PREFIX, "").trim();
-            game.makeMove(moveText);
-          });
+            .map((pos: Position) =>
+              pos.san.replace(MOVE_NUMBER_PREFIX, "").trim(),
+            );
         } else {
-          game.loadFen(action.payload.fen);
-          state.fen = action.payload.fen;
           state.history = [];
           state.positions = [
             {
@@ -91,7 +68,8 @@ export const chessGameSlice = createSlice({
           ];
         }
 
-        state.moves = game.getMoves();
+        state.fen = action.payload.fen;
+        state.moves = movesFromFen(action.payload.fen);
         state.currentPositionIndex = state.positions.length - 1;
       } catch (error) {
         console.error("Invalid FEN string or move history", error);
@@ -100,12 +78,14 @@ export const chessGameSlice = createSlice({
     },
     makeMove(state, action) {
       try {
-        const game = createGameFromState(state);
-        // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each makeMove
+        // Moves always apply to the latest position, even when the user has
+        // navigated to an earlier one.
+        const baseFen = state.positions[state.positions.length - 1].fen;
+        const game = new ChessGame(baseFen);
         game.makeMove(action.payload);
 
         const newFen = game.toFen();
-        const [, activeColor, , , , fullmoveStr] = state.fen.split(" ");
+        const [, activeColor, , , , fullmoveStr] = baseFen.split(" ");
         const moveNumber = parseInt(fullmoveStr);
         const formattedSan =
           activeColor === "w"
@@ -131,39 +111,23 @@ export const chessGameSlice = createSlice({
       if (state.history.length > 0 && state.positions.length > 1) {
         state.history.pop();
         state.positions.pop();
-        const previousPosition = state.positions[state.positions.length - 1];
-        state.fen = previousPosition.fen;
-
-        const game = createGameFromState(state);
-        // we need memory to store a history of SAN, UCI, FEN so we don't need to reconstruct a new game from starting position for each undoMove
-        state.moves = game.getMoves();
-        state.currentPositionIndex = state.positions.length - 1; // Update index after undo
+        goToIndex(state, state.positions.length - 1);
       }
     },
-    // New navigation actions
     goToPosition(state, action: PayloadAction<number>) {
       const index = action.payload;
       if (index >= 0 && index < state.positions.length) {
-        state.currentPositionIndex = index;
-        const game = createGameUpToIndex(state, index);
-        state.fen = state.positions[index].fen;
-        state.moves = game.getMoves();
+        goToIndex(state, index);
       }
     },
     goForward(state) {
       if (state.currentPositionIndex < state.positions.length - 1) {
-        state.currentPositionIndex++;
-        const game = createGameUpToIndex(state, state.currentPositionIndex);
-        state.fen = state.positions[state.currentPositionIndex].fen;
-        state.moves = game.getMoves();
+        goToIndex(state, state.currentPositionIndex + 1);
       }
     },
     goBackward(state) {
       if (state.currentPositionIndex > 0) {
-        state.currentPositionIndex--;
-        const game = createGameUpToIndex(state, state.currentPositionIndex);
-        state.fen = state.positions[state.currentPositionIndex].fen;
-        state.moves = game.getMoves();
+        goToIndex(state, state.currentPositionIndex - 1);
       }
     },
   },
