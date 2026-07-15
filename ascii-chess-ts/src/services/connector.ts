@@ -2,7 +2,9 @@ import axios from "axios";
 
 let apiBaseUrl: string;
 if (window.location.hostname === "localhost") {
-  apiBaseUrl = "http://localhost:8000";
+  // scripts/dev.sh writes this via ascii-chess-ts/.env.development.local
+  // with the connector's ephemeral port for the current dev session.
+  apiBaseUrl = process.env.REACT_APP_CONNECTOR_URL || "http://localhost:8000";
 } else {
   apiBaseUrl = "https://connector.chess.jbm.eco";
 }
