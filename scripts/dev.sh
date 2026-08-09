@@ -21,7 +21,13 @@ print(s1.getsockname()[1], s2.getsockname()[1])
 s1.close(); s2.close()
 ')
 
-echo "my-chess dev: connector -> http://localhost:${CONNECTOR_PORT}  ascii-chess-ts -> http://localhost:${FRONTEND_PORT}"
+echo ""
+echo "======================================================================"
+echo " my-chess dev"
+echo "   connector (backend):  http://localhost:${CONNECTOR_PORT}"
+echo "   ascii-chess-ts (ui):  http://localhost:${FRONTEND_PORT}  (opening in browser)"
+echo "======================================================================"
+echo ""
 
 # Hand the connector's port to the frontend via a port file it reads at
 # startup (CRA loads .env.development.local automatically on `npm start`).
@@ -42,4 +48,4 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 cd ascii-chess-ts
-BROWSER=none npm start
+npm start

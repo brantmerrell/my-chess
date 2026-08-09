@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "bash scripts/dev.sh"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.35.0"
+  }
+}

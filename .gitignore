@@ -1,6 +1,6 @@
+notes/
 *txt
 *md
-*json
 *swp
 *svg
 package-lock.json
@@ -11,3 +11,7 @@ __pycache__/
 **/build/
 *.mermaid
 .DS_Store
+connector/taskdef-api.json
+connector/update-connector-execute.json
+ascii-chess-ts/taskdef-ui.json
+ascii-chess-ts/update-asciichessts-execute.json
