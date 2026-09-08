@@ -39,11 +39,10 @@
   }
 }
 
-/* Theme-specific styling for Quartz theme */
-.fen-input--quartz {
-  color: #000000 !important;
-  background-color: #ffffff !important;
-  border: 0.125rem solid #4e5d6c !important;
+[data-theme="dark"] #edit-string {
+  background-color: #2a2a2a;
+  color: #80ffdb;
+  border-color: #444;
 }
 
 #submitFen {

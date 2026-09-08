@@ -167,7 +167,7 @@ const ArcView: React.FC<ArcViewProps> = ({
         <span className="text-sm text-gray-300">Color by:</span>
         <div className="helper-select-container">
           <select
-            className="helper-select btn btn-light"
+            className="helper-select button is-light"
             value={colorScheme}
             onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
           >

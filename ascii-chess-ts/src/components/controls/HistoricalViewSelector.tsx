@@ -58,13 +58,13 @@ const ViewSelector: React.FC<ViewSelectorProps> = ({
 }) => {
   return (
     <div className="selector-wrapper">
-      <label className="selector-label text-info">Game View</label>
+      <label className="selector-label has-text-info">Game View</label>
       <div className="selector-container">
         <select
           value={selectedView}
           id="game-view-selector"
           onChange={(e) => onViewChange(e.target.value as ViewType)}
-          className="select-control btn btn-info"
+          className="select-control button is-info"
           aria-label="Game View Selection"
           onKeyDown={(e) => {
             if (e.key === " " || e.key === "Enter") {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./BoardDisplay.css";
-import { BootstrapTheme } from "../controls/ThemeSelector";
+import { ThemeMode } from "../controls/ThemeSelector";
 import { fetchGraphdag } from "../../services/connector";
 import { ProcessedEdge } from "../../types/visualization";
 
 interface GraphDagViewProps {
   edges: ProcessedEdge[];
-  theme: BootstrapTheme;
+  theme: ThemeMode;
 }
 
 const GraphDagView: React.FC<GraphDagViewProps> = ({ edges, theme }) => {

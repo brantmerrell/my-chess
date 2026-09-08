@@ -90,103 +90,28 @@
   background: #c82333;
 }
 
-/* Theme-specific styles */
-body.cyborg .promotion-dialog {
+/* Dark theme accents */
+[data-theme="dark"] .promotion-dialog {
   background: #2a2a2a;
   border-color: #80ffdb;
   color: #80ffdb;
 }
 
-body.cyborg .promotion-dialog h3 {
+[data-theme="dark"] .promotion-dialog h3 {
   color: #80ffdb;
 }
 
-body.cyborg .promotion-button {
+[data-theme="dark"] .promotion-button {
   background: #333;
   border-color: #80ffdb;
   color: #80ffdb;
 }
 
-body.cyborg .promotion-button:hover {
+[data-theme="dark"] .promotion-button:hover {
   background: #444;
   border-color: #80ffdb;
 }
 
-body.cyborg .promotion-move-notation {
+[data-theme="dark"] .promotion-move-notation {
   color: #80ffdb;
-}
-
-body.vapor .promotion-dialog {
-  background: #2a2a2a;
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-
-body.vapor .promotion-dialog h3 {
-  color: #ff6baf;
-}
-
-body.vapor .promotion-button {
-  background: #333;
-  border-color: #ff6baf;
-  color: #ff6baf;
-}
-
-body.vapor .promotion-button:hover {
-  background: #444;
-  border-color: #ff6baf;
-}
-
-body.vapor .promotion-move-notation {
-  color: #ff6baf;
-}
-
-body.solar .promotion-dialog {
-  background: #002b36;
-  border-color: #b58900;
-  color: #b58900;
-}
-
-body.solar .promotion-dialog h3 {
-  color: #b58900;
-}
-
-body.solar .promotion-button {
-  background: #073642;
-  border-color: #b58900;
-  color: #b58900;
-}
-
-body.solar .promotion-button:hover {
-  background: #0a4c5a;
-  border-color: #b58900;
-}
-
-body.solar .promotion-move-notation {
-  color: #b58900;
-}
-
-body.superhero .promotion-dialog {
-  background: #2b3e50;
-  border-color: #df691a;
-  color: #df691a;
-}
-
-body.superhero .promotion-dialog h3 {
-  color: #df691a;
-}
-
-body.superhero .promotion-button {
-  background: #34495e;
-  border-color: #df691a;
-  color: #df691a;
-}
-
-body.superhero .promotion-button:hover {
-  background: #3e5771;
-  border-color: #df691a;
-}
-
-body.superhero .promotion-move-notation {
-  color: #df691a;
 }

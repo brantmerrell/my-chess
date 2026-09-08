@@ -1,45 +1,29 @@
 import React from "react";
-import Selector from "../common/Selector";
 
-// I think BootstrapTheme should be called BootswatchTheme
-export type BootstrapTheme =
-  | "cyborg"
-  | "vapor"
-  | "journal"
-  | "solar"
-  | "superhero"
-  | "minty"
-  | "quartz";
+export type ThemeMode = "light" | "dark";
 
 interface ThemeSelectorProps {
-  currentTheme: BootstrapTheme;
-  onThemeChange: (theme: BootstrapTheme) => void;
+  currentTheme: ThemeMode;
+  onThemeChange: (theme: ThemeMode) => void;
 }
 
-const THEME_OPTIONS = [
-  { value: "cyborg", label: "Cyborg" },
-  { value: "superhero", label: "Superhero" },
-  { value: "vapor", label: "Vapor" },
-  { value: "solar", label: "Solar" },
-  { value: "quartz", label: "Quartz" },
-  { value: "journal", label: "Journal" },
-] as const;
-
-// TODO
-// Quartz bootwatch theme
-// LiChess themes
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   currentTheme,
   onThemeChange,
 }) => {
+  const isDark = currentTheme === "dark";
+
   return (
-    <Selector
+    <button
+      type="button"
       id="theme-selector"
-      value={currentTheme}
-      onChange={onThemeChange}
-      options={THEME_OPTIONS}
-      ariaLabel="Theme Selection"
-    />
+      className="button is-small"
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      aria-pressed={isDark}
+      onClick={() => onThemeChange(isDark ? "light" : "dark")}
+    >
+      {isDark ? "🌙 Dark" : "☀️ Light"}
+    </button>
   );
 };
 

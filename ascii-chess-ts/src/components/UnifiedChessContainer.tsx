@@ -27,7 +27,6 @@ import { useMoveSubmission } from "../hooks/useMoveSubmission";
 import { useNotification } from "../hooks/useNotification";
 import { useUrlSync, parseUrlParams } from "../hooks/useUrlSync";
 import { useLichessGame } from "../contexts/LichessGameContext";
-import { useTheme } from "../hooks/useTheme";
 
 type HistoricalViewType = "history" | "fencount";
 
@@ -40,7 +39,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   displayMode,
   setDisplayMode,
 }) => {
-  const { theme } = useTheme();
   const [mode, setMode] = useState<SetupMode>(() => parseUrlParams().mode);
   const [selectedHistoricalView, setSelectedHistoricalView] =
     useState<HistoricalViewType>("history");
@@ -137,7 +135,6 @@ const UnifiedChessContainer: React.FC<UnifiedChessContainerProps> = ({
   return (
     <div className="chess-container">
       <SetupModeComponent
-        theme={theme}
         fen={fen}
         setFen={setFen}
         submitFen={submitFen}

@@ -41,7 +41,7 @@ const TimeControlButtons: React.FC<TimeControlButtonsProps> = ({
         {timeControls.map((tc) => (
           <button
             key={tc.label}
-            className={`btn btn-${tc.category === "rapid" ? "info" : "primary"} time-control-btn`}
+            className={`button is-${tc.category === "rapid" ? "info" : "primary"} time-control-btn`}
             onClick={() => onTimeControlSelect(tc)}
             disabled={disabled}
           >

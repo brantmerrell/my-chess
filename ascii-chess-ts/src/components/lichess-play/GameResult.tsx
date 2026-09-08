@@ -44,7 +44,7 @@ const GameResult: React.FC<GameResultProps> = ({
           {result === "draw" && "Draw"}
         </span>
         <span className="result-reason">{getReasonDisplay(reason)}</span>
-        <button className="btn btn-success btn-sm" onClick={onNewGame}>
+        <button className="button is-success is-small" onClick={onNewGame}>
           🎮 New Game
         </button>
       </div>

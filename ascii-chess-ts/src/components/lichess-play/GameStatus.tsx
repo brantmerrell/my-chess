@@ -35,7 +35,7 @@ const GameStatus: React.FC<GameStatusProps> = ({
             <span>W: {Math.floor(timeLeft.white / 1000)}s</span>
             <span>B: {Math.floor(timeLeft.black / 1000)}s</span>
             <button
-              className="btn btn-danger time-control-btn"
+              className="button is-danger time-control-btn"
               onClick={onResign}
               style={{
                 fontSize: "12px",

@@ -39,37 +39,13 @@ div.board-display .ascii-board span,
   text-transform: none !important;
 }
 
-.ascii-board--cyborg {
+.ascii-board--light {
   font-size: 1.9375rem;
   background-color: #2a9fd6;
 }
 
-.ascii-board--vapor {
+.ascii-board--dark {
   font-size: 1.9375rem;
-  background-color: #6f42c1; /* Vapor (primary) */
-}
-
-.ascii-board--journal {
-  font-size: 1.9375rem;
-  background-color: #eb6864; /* Journal (primary) */
-}
-
-.ascii-board--solar {
-  font-size: 1.9375rem;
-  background-color: #b58900; /* Solar (primary) */
-}
-
-.ascii-board--superhero {
-  font-size: 1.9375rem;
-  background-color: #df6919; /* Superhero (primary) */
-}
-
-.ascii-board--minty {
-  font-size: 1.9375rem;
-  background-color: #78c2ad; /* Minty (primary) */
-}
-
-.ascii-board--quartz {
-  font-size: 1.8125rem;
-  background-color: #e83283; /* Quartz (primary) */
+  background-color: #2a2a2a;
+  color: #80ffdb;
 }

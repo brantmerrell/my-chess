@@ -1,25 +1,23 @@
 import React from "react";
-import { BootstrapTheme } from "./ThemeSelector";
 
 type SetupMode = "play" | "analysis";
 
 interface ModeTabsProps {
   mode: SetupMode;
-  theme: BootstrapTheme;
   onModeChange: (mode: SetupMode) => void;
 }
 
-const ModeTabs: React.FC<ModeTabsProps> = ({ mode, theme, onModeChange }) => {
+const ModeTabs: React.FC<ModeTabsProps> = ({ mode, onModeChange }) => {
   return (
     <div className="mode-tabs">
       <button
-        className={`tab ${mode === "analysis" ? "active" : ""} ${theme}`}
+        className={`tab ${mode === "analysis" ? "active" : ""}`}
         onClick={() => onModeChange("analysis")}
       >
         Sandbox
       </button>
       <button
-        className={`tab ${mode === "play" ? "active" : ""} ${theme}`}
+        className={`tab ${mode === "play" ? "active" : ""}`}
         onClick={() => onModeChange("play")}
       >
         Lichess

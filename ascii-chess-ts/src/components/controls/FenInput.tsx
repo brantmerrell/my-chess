@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./FenInput.css";
-import { BootstrapTheme } from "./ThemeSelector";
 import FenKeyboard from "./FenKeyboard";
 
 interface FenInputProps {
   fen: string;
   onFenChange: (fen: string) => void;
   onSubmitFen: () => void;
-  theme: BootstrapTheme;
   isCustomMode: boolean;
 }
 
@@ -15,7 +13,6 @@ const FenInput: React.FC<FenInputProps> = ({
   fen,
   onFenChange,
   onSubmitFen,
-  theme,
   isCustomMode,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -141,7 +138,6 @@ const FenInput: React.FC<FenInputProps> = ({
         <input
           ref={inputRef}
           id="edit-string"
-          className={`fen-input--${theme}`}
           type="text"
           value={fen}
           onChange={handleInputChange}
@@ -165,7 +161,7 @@ const FenInput: React.FC<FenInputProps> = ({
         <button
           id="submitFen"
           onClick={onSubmitFen}
-          className="btn btn-primary"
+          className="button is-primary"
           disabled={!isCustomMode}
         >
           Submit FEN

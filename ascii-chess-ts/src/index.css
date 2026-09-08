@@ -1,5 +1,14 @@
 @import "./shared/containers.css";
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+  background-color: #1a1a1a;
+  color: #e8e8e8;
+}
+
 body {
   margin: 0;
   margin-left: 3.125rem;

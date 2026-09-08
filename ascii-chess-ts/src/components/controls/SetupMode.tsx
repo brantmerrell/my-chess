@@ -9,7 +9,6 @@ import TimeControlButtons, {
 import GameStatus from "../lichess-play/GameStatus";
 import GameResult from "../lichess-play/GameResult";
 import UserInfo from "../lichess-play/UserInfo";
-import { BootstrapTheme } from "./ThemeSelector";
 import { useLichessAuth } from "../../hooks/useLichessAuth";
 import { useLichessGame } from "../../contexts/LichessGameContext";
 import { LichessGameLink } from "../lichess-play/LichessGameLink";
@@ -23,7 +22,6 @@ import "./SetupMode.css";
 export type SetupMode = "play" | "analysis";
 
 interface SetupModeProps {
-  theme: BootstrapTheme;
   fen: string;
   setFen: (fen: string) => void;
   submitFen: () => void;
@@ -36,7 +34,6 @@ interface SetupModeProps {
   onModeChange: (mode: SetupMode) => void;
 }
 const SetupModeComponent: React.FC<SetupModeProps> = ({
-  theme,
   fen,
   setFen,
   submitFen,
@@ -77,11 +74,10 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
   };
   return (
     <div className="setup-mode-container">
-      <ModeTabs mode={mode} theme={theme} onModeChange={onModeChange} />
+      <ModeTabs mode={mode} onModeChange={onModeChange} />
       {mode === "analysis" && (
         <div className="analysis-controls">
           <SelectPosition
-            theme={theme}
             onCustomSelect={() => {
               const fenInput = document.getElementById("edit-string") as HTMLInputElement;
               fenInput?.focus();
@@ -89,7 +85,6 @@ const SetupModeComponent: React.FC<SetupModeProps> = ({
           />
           <FenInput
             fen={fen}
-            theme={theme}
             onFenChange={handleFenChange}
             onSubmitFen={submitFen}
             isCustomMode={selectedSetup === CUSTOM_SETUP_ID}

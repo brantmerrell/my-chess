@@ -280,7 +280,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
           id="submitMove"
           onClick={handleMoveSubmit}
           disabled={!isAtLatestPosition}
-          className={`btn ${isAtLatestPosition ? "btn-info" : "btn-secondary"}`}
+          className={`button ${isAtLatestPosition ? "is-info" : "is-light"}`}
           title={
             !isAtLatestPosition
               ? "Navigate to latest position to make moves"
@@ -295,7 +295,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
           id="undo"
           onClick={handleUndoMove}
           disabled={!isAtLatestPosition || !hasHistory}
-          className={`btn ${isAtLatestPosition && hasHistory ? "btn-danger" : "btn-secondary"}`}
+          className={`button ${isAtLatestPosition && hasHistory ? "is-danger" : "is-light"}`}
           title={
             !isAtLatestPosition
               ? "Navigate to latest position to undo moves"
@@ -319,7 +319,7 @@ const MoveControls: React.FC<MoveControlsProps> = ({
       />
 
       {undoMessage && (
-        <div className="undo-message text-danger" style={{ marginTop: "10px" }}>
+        <div className="undo-message has-text-danger" style={{ marginTop: "10px" }}>
           {undoMessage}
         </div>
       )}

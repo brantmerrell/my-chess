@@ -10,15 +10,13 @@ import {
   StaticPositionSetup,
 } from "../../models/SetupOptions";
 import { setSelectedSetup } from "../../reducers/setups/setups.actions";
-import { BootstrapTheme } from "../controls/ThemeSelector";
 import "./SelectPosition.css";
 
 interface SelectPositionProps {
-  theme: BootstrapTheme;
   onCustomSelect?: () => void;
 }
 
-const SelectPosition: React.FC<SelectPositionProps> = ({ theme, onCustomSelect }) => {
+const SelectPosition: React.FC<SelectPositionProps> = ({ onCustomSelect }) => {
   const dispatch = useAppDispatch();
   const selectedSetup = useSelector((state: RootState) => state.selectedSetup);
 
@@ -50,7 +48,7 @@ const SelectPosition: React.FC<SelectPositionProps> = ({ theme, onCustomSelect }
       <select
         aria-label="Position Selection"
         id="position-selector"
-        className={`dropdown-toggle position-select btn btn-secondary position-select--${theme}`}
+        className="position-select button is-light"
         value={selectedSetup}
         onChange={handleOptionChange}
         onKeyDown={(e) => {

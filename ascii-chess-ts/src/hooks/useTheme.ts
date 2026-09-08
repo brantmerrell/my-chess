@@ -1,33 +1,22 @@
-import { useState, useEffect } from "react";
-import type { BootstrapTheme } from "../components/controls/ThemeSelector";
+import { useState, useLayoutEffect } from "react";
+import type { ThemeMode } from "../components/controls/ThemeSelector";
 
-export const useTheme = (initialTheme: BootstrapTheme = "solar") => {
-  const [theme, setTheme] = useState<BootstrapTheme>(() => {
-    const savedTheme = localStorage.getItem("chess-theme");
-    return (savedTheme as BootstrapTheme) || initialTheme;
-  });
+const getInitialTheme = (): ThemeMode => {
+  const savedTheme = localStorage.getItem("chess-theme");
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
 
-  useEffect(() => {
-    const loadTheme = async () => {
-      try {
-        const previousThemeLink = document.getElementById("bootstrap-theme");
-        if (previousThemeLink) {
-          previousThemeLink.remove();
-        }
+export const useTheme = () => {
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
-        const link = document.createElement("link");
-        link.id = "bootstrap-theme";
-        link.rel = "stylesheet";
-        link.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${theme}/bootstrap.min.css`;
-        document.head.appendChild(link);
-
-        localStorage.setItem("chess-theme", theme);
-      } catch (error) {
-        console.error("Error loading theme:", error);
-      }
-    };
-
-    loadTheme();
+  useLayoutEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("chess-theme", theme);
   }, [theme]);
 
   return { theme, setTheme };

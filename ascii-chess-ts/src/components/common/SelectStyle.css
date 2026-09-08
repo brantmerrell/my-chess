@@ -23,8 +23,8 @@
   width: 10rem;
 }
 
-/* Override Bootstrap btn classes with more specific selectors */
-select.select-control.btn {
+/* Override Bulma button classes with more specific selectors */
+select.select-control.button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -35,7 +35,7 @@ select.select-control.btn {
   padding-right: 3rem !important;
 }
 
-select.select-control.btn:focus {
+select.select-control.button:focus {
   outline: 0.1875rem solid #ffd700 !important;
   outline-offset: 0.125rem;
   box-shadow: 0 0 0 0.1875rem rgba(255, 215, 0, 0.4) !important;

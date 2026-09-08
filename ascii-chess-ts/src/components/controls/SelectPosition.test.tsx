@@ -6,7 +6,7 @@ import SelectPosition from "./SelectPosition";
 test("renders SelectPosition component", () => {
   render(
     <Provider store={store}>
-      <SelectPosition theme="cyborg" />
+      <SelectPosition />
     </Provider>,
   );
 
@@ -16,7 +16,7 @@ test("renders SelectPosition component", () => {
 test("changes selected setup on option change", () => {
   render(
     <Provider store={store}>
-      <SelectPosition theme="cyborg" />
+      <SelectPosition />
     </Provider>,
   );
 

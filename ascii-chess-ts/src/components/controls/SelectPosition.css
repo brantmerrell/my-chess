@@ -22,13 +22,6 @@ body {
   background-position: right 0.75rem center;
 }
 
-/* Theme-specific fixes for Quartz theme dropdown text alignment */
-.position-select--quartz {
-  height: 2.75rem !important;
-  line-height: 2.75rem;
-  padding: 0 0.625rem;
-}
-
 .position-select:focus {
   outline: 0.1875rem solid #ffd700 !important;
   outline-offset: 0.125rem;
